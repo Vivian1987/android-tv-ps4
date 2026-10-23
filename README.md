@@ -1,9 +1,11 @@
 # Android TV 13 for PS4
 
-![Android TV for PS4](branding/banner-official-assets-v6.png)
+![Android TV for PS4](branding/repository-banner.svg)
 
 Android TV 13 adapted for PlayStation 4, based on **BRTDTV's Android TV x86**.
 PS4 adaptation and installer by Codey O'Connor.
+
+[Status](#status) · [Source layout](#source-layout) · [Building](#building) · [Credits](#credits)
 
 ## Status
 
@@ -23,7 +25,7 @@ Other console models are not confirmed by the testing recorded here.
 
 | Path | Contents |
 | --- | --- |
-| `installer/` | Native PS4 installer, interface and packaging scripts |
+| [`installer/`](installer/README.md) | Native PS4 installer, interface and packaging scripts |
 | `ramboot/` | Linux boot, Android startup and diagnostic tools |
 | `patches/` | Kernel, graphics and quota patches |
 | `probe/` | Console hardware probe |

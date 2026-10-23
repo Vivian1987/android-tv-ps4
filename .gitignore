@@ -42,3 +42,6 @@ installer-font.h
 !/branding/*-official-assets-v6.svg
 !/installer/sparse-v014/source/installer-artwork.h
 !/installer/sparse-v014/source/installer-font.h
+
+!/branding/repository-banner.svg
+!/installer/README.md

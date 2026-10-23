@@ -2,6 +2,8 @@
 
 The selected branding is v6, recorded in `branding/selected.json`:
 
+- `repository-banner.svg`: compact README layout using the same v6 logo assets.
+
 - `icon-official-assets-v6.png` and `.svg`: installer/package icon.
 - `banner-official-assets-v6.png` and `.svg`: package and repository banner.
 - `identity-official-assets-v6.png` and `.svg`: combined artwork layout.

@@ -15,6 +15,11 @@
     "asset": "https://gmedia.playstation.com/is/image/SIEPDC/ps4-accessories-ds4-jet-black-screen-01-en-28oct20?fmt=png-alpha&wid=1200",
     "file": "dualshock4-jet-black.png",
     "sha256": "2bf557d358c39a10354bf94ed8352082cfdff77add37b0b6e16a4a7e48555761",
-    "credit": "Sony Interactive Entertainment; official DualShock 4 product image. Original image embedded without retouching."
+    "credit": "Sony Interactive Entertainment; official DualShock 4 product image. Original image embedded without retouching.",
+    "transparent_derivative": {
+      "file": "dualshock4-jet-black-transparent.png",
+      "method": "AI-assisted background removal from the cited Sony product image",
+      "sha256": "00ea176ca732361408dc1a5b4884173f5f913949d510c70ab219d5ff1330d4e7"
+    }
   }
 }

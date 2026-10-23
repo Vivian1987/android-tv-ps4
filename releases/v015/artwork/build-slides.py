@@ -17,7 +17,7 @@ slides.append(base+text(196,'ANDROID TV 13',16,'#7ebeff')+text(254,'Your apps.',
 <image x="518" y="171" width="690" height="325" preserveAspectRatio="xMidYMid meet" xlink:href="{welcome}"/>
 </svg>''')
 controller=f'''<defs><clipPath id="controller-photo"><rect x="540" y="154" width="676" height="374" rx="12"/></clipPath></defs>
-<image x="540" y="151" width="676" height="380.25" preserveAspectRatio="xMidYMid meet" clip-path="url(#controller-photo)" xlink:href="{url(a/'dualshock4-jet-black.png')}"/>'''
+<image x="540" y="151" width="676" height="380.25" preserveAspectRatio="xMidYMid meet" clip-path="url(#controller-photo)" xlink:href="{url(a/'dualshock4-jet-black-transparent.png')}"/>'''
 slides.append(base+text(196,'CONTROLLER NAVIGATION',16,'#7ebeff')+text(254,'Your controller.',42,'#ffffff',500)+text(306,'Your remote.',42,'#ffffff',500)+text(364,'Navigate with the D-pad.')+text(398,'Press the PS button to go Home.')+controller+'</svg>')
 console='''<g transform="translate(590 185)"><path d="M55 52L470 12L574 117L158 159Z" fill="#334c69" stroke="#88a4bf"/><path d="M55 52L158 159V275L55 168Z" fill="#101d31"/><path d="M158 159L574 117V234L158 275Z" fill="#1c2d44" stroke="#4f6884"/><path d="M55 111L158 218L574 176" stroke="#080f1d" stroke-width="12"/><path d="M158 215L574 173" stroke="#5cbaff" stroke-width="3"/><path d="M183 248L265 240" stroke="#0a101a" stroke-width="6"/>
 <text x="330" y="326" text-anchor="middle" font-family="Roboto" font-size="24" fill="#c7d6e9">Internal storage</text></g>'''

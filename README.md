@@ -8,23 +8,22 @@ Based on **BRTDTV's Android TV x86 builds**, adapted to run on PlayStation 4.
 
 ## Downloads
 
-The installer is still being tested. There is no download available yet;
-installation instructions will accompany the release.
+Source code is available in this repository. The installer is in development;
+there is currently no public binary release.
 
 This version runs Android TV 13. Newer versions are planned after testing.
 
 ## Compatibility
 
 Development and testing have been on a **PS4 CUH-1102A (Aeolia)**.
-Other models have not been confirmed yet.
+Compatibility with other models is unverified.
 
-The current launch path requires GoldHEN with BinLoader enabled. The latest
-installer is still awaiting complete on-console testing, including fresh setup,
-playback and data persistence after reboot.
+Launching requires **GoldHEN with BinLoader enabled on port 9090**.
+
+The current installer has passed package validation. Full installation, playback
+and reboot-persistence testing for this revision is not complete.
 
 ## Installation and use
-
-Installation instructions will be published with the tested installer.
 
 The installer copies Android and its boot files to the internal drive, then
 sends the Linux loader through GoldHEN BinLoader. On first boot, Linux prepares
@@ -57,8 +56,8 @@ The repository includes the [PS4 installer](installer/README.md),
 [boot tools](ramboot/), [hardware probe](probe/) and [kernel and graphics patches](patches/).
 
 For build requirements and setup, see the [build guide](docs/BUILD.md).
-The scripts still rely on files and tools from the development setup, so
-building from a fresh checkout needs additional preparation.
+Build scripts use local workspace paths and external toolchains. The build guide
+documents those dependencies; this checkout does not provide a standalone build.
 
 ## Credits
 

@@ -25,7 +25,7 @@ The package is prepared locally; it has not been uploaded to GitHub Releases.
 ![Android TV first-run setup](releases/v015/artwork/android-first-run.png)
 *Android TV's first-run setup from the development console.*
 
-![Controller navigation artwork](releases/v015/artwork/slide-1.png)
+![Controller navigation artwork](releases/v015/artwork/controller-preview.png)
 *Controller preview artwork for the native installer. Progress and status are
 rendered separately while installation runs; this image shows the artwork.*
 

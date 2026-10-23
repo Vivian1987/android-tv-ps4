@@ -1,11 +1,11 @@
 # Installer source
 
-**Current release work: [v0.15](../releases/v015/source/).**
+**Current installer: [v0.15](../releases/v015/source/).**
 
 This directory retains the preceding installer iterations, through v0.14.
 
-This is the native PS4 installer and its package tooling. Current source does
-not imply a published or fully tested release; see the [project status](../README.md#download).
+These are the older native PS4 installers and their package tools. See the
+[README](../README.md#release-and-compatibility) for current release and test status.
 
 ## v0.14 source
 
@@ -19,11 +19,10 @@ not imply a published or fully tested release; see the [project status](../READM
 | [`upload.py`](sparse-v014/upload.py) | Development deployment to the console |
 
 See [build preparation](../docs/BUILD.md) for external dependencies and current
-workspace requirements. Upload scripts act on a console; they are not build checks.
+build inputs. Upload scripts act on a console; they are not build checks.
 
 ## Earlier iterations
 
 `launcher/`, `prebuilt-*`, `raw-v007/` and `sparse-v008/` through `sparse-v013/`
-retain earlier development source. They document the implementation's progression
-and are not separate recommended downloads. Start with [`releases/v015/source`](../releases/v015/source/) when
+contain earlier development versions. Start with [`releases/v015/source`](../releases/v015/source/) when
 reading the current installer.

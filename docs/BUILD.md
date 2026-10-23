@@ -8,16 +8,16 @@ validates the package, and writes `release.json` and `SHA256SUMS` beside it.
 
 | Component | Purpose |
 | --- | --- |
-| [`install-prebuilt.c`](../releases/v015/source/install-prebuilt.c) | PS4 app entry point, installation checks, file staging and boot handoff. |
+| [`install-prebuilt.c`](../releases/v015/source/install-prebuilt.c) | Starts the PS4 app, checks the installation, copies files and starts the boot process. |
 | [`image-copy.c`](../releases/v015/source/image-copy.c) | System-image copy and interrupted-copy handling. |
-| [`android-supervisor.c`](../releases/v015/power/android-supervisor.c) | Host-side handling of Android shutdown and restart requests. |
+| [`android-supervisor.c`](../releases/v015/power/android-supervisor.c) | Receives Android shutdown and restart requests on the Linux host. |
 | [`build-release.py`](../releases/v015/build-release.py) | Compile, package, validate and record input hashes. |
 | [`artwork/`](../releases/v015/artwork/) | Installer slide sources and artwork generator. |
 
 [Storage accounting and capacity configuration](STORAGE.md) describe the image
 layout and the 32 GiB build settings. The current source includes artwork
-changes made after the recorded PKG build; consult the manifest generated for
-a particular package when identifying its inputs.
+changes made after the recorded PKG build. Use that package’s build manifest
+to identify the files it was built with.
 
 ## Dependencies
 
@@ -30,9 +30,9 @@ a particular package when identifying its inputs.
   `libgallium-baseline.so`, `linux.elf`, `bootargs.txt`, `vram.txt` and
   `data-gib.txt` containing `32` followed by a newline.
 
-The toolchain, template, helper objects and system assets are external inputs.
-The public checkout does not yet reproduce all of them from source. The builder
-records the helper and asset hashes in its output manifest.
+You need to supply the toolchain, template, helper objects and system assets.
+This repository does not contain everything needed to rebuild those components.
+The builder records the helper and asset hashes in its output manifest.
 
 ## Package build
 
@@ -51,7 +51,7 @@ python3 releases/v015/build-release.py \
 
 Output: `Android-TV-PS4-13-v0.15-32GiB.pkg`, `validation.txt`, `release.json`
 and `SHA256SUMS`. Package validation checks package structure and integrity;
-it does not substitute for testing installation and playback on a console.
+installation and playback still need testing on a console.
 
 ## Installer artwork
 

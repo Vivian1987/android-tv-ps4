@@ -17,12 +17,8 @@ headers. `Roboto-LICENSE.txt` is retained beside the font data.
 
 Android TV and PlayStation branding belongs to its respective owners. The
 source URL records identify provenance; they are not a licence grant. Existing
-third-party licence notices remain applicable. No blanket project licence has
-been selected in this initial repository setup.
+third-party licence notices remain applicable. The repository has no overall project licence.
 
-No desktop screenshots, personal userdata, account records, keys or private
-runtime archives are included. Gameplay/playback screenshots can be selected
-for the release post when its notes are complete.
 
 ## v0.15 previews
 

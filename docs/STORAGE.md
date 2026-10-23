@@ -1,9 +1,9 @@
-# Storage accounting — v0.15, 32 GiB edition
+# Storage — v0.15, 32 GiB edition
 
 These figures describe the recorded package with SHA-256
 `d9524c23141adc7c7d6f49955d607d5ec325524fcf006b1dd693f73bfe9226b4`.
-Its eight build assets were checked against the release manifest before adding
-up their sizes. Actual installed PS4 allocation has not been measured here.
+The eight build assets match the hashes in the release manifest. The totals
+below use their file sizes; actual installed disk usage has not been measured.
 
 | Item | Bytes | GiB |
 | --- | ---: | ---: |
@@ -15,9 +15,9 @@ up their sizes. Actual installed PS4 allocation has not been measured here.
 | Also retaining a separate downloaded PKG | 43,537,506,483 | 40.547 |
 
 GiB means 1,073,741,824 bytes. Decimal GB means 1,000,000,000 bytes.
-Allowing about 42 GiB (45 GB) provides rounding room above the last estimate;
-it is planning guidance, not an installer-enforced reservation or a measured
-maximum including arbitrary old downloads/backups.
+Allow about 42 GiB (45 GB) for this installation, including some free space.
+The installer does not reserve that space. Any old downloads or backups on
+the drive need to be counted separately.
 
 ## Why the system is counted twice
 
@@ -32,8 +32,8 @@ The installed package is distinct from a downloaded copy staged under
 on the internal drive. A download on external storage does not add that copy
 to internal-drive usage.
 
-The package file's size is used as an estimate of the installed launcher
-footprint. PS4 allocation overhead is not measured by the package file size.
+The installed launcher estimate uses the PKG file size. It does not include
+extra space the PS4 filesystem may use to store it.
 The copied-files total includes `system.sfs`, `libgallium-baseline.so`,
 `bzImage`, `initramfs.cpio.gz`, `bootargs.txt`, `vram.txt` and `data-gib.txt`.
 Markers, logs, filesystem overhead and retained boot backups add further space.
@@ -61,8 +61,8 @@ that already has development history.
 
 ## How the 32 GiB capacity is selected
 
-32 GiB is a release configuration choice, not a partition size or a fundamental
-limit of the storage design. The [package builder](../releases/v015/build-release.py)
+This release starts at 32 GiB. The capacity is set in the build configuration.
+The [package builder](../releases/v015/build-release.py)
 requires `data-gib.txt` to contain `32`, compiles the installer with
 `EDITION_GIB=32`, and records the edition and logical byte count in its manifest.
 The [installer](../releases/v015/source/install-prebuilt.c) copies that capacity
@@ -83,6 +83,6 @@ by this release.
 
 Existing images are checked against the selected capacity. Changing the number
 does not expand an existing filesystem: the current installer rejects an
-edition mismatch and has no resize operation. A larger fresh image and an
-in-place expansion are separate operations; this release only implements the
-former at its configured size.
+edition mismatch and has no resize operation. The first-boot code creates a
+new image at the configured size; it cannot expand an image that already
+contains your data.

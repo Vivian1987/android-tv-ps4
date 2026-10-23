@@ -39,7 +39,8 @@ Android system images and compiled packages are not stored in Git.
 
 ## Credits
 
-**BRTDTV** provides the Android TV x86 foundation used by this project.
+Thanks to **BRTDTV** for their work bringing Android TV to x86 PCs. This PS4
+port builds on that foundation.
 
 - [BRTDTV Telegram group](https://t.me/+7cbIufx3Eh5hZmYx)
 - [New Telegram group](https://t.me/+t15cB5esYJUxZjdh)

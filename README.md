@@ -4,7 +4,7 @@
 
 Based on **BRTDTV's Android TV x86 builds**, adapted to run on PlayStation 4.
 
-[Downloads](#downloads) · [Compatibility](#compatibility) · [Installation and use](#installation-and-use) · [How storage works](#how-storage-works) · [Source code](#source-code) · [Credits](#credits)
+[Downloads](#downloads) · [Compatibility](#compatibility) · [Installation and use](#installation-and-use) · [How storage works](#how-storage-works) · [Source code](#source-code) · [Exploring the source](#exploring-the-source) · [Credits](#credits)
 
 ## Downloads
 
@@ -52,12 +52,33 @@ boots, independently of that overlay.
 
 ## Source code
 
-The repository includes the [PS4 installer](installer/README.md),
+The release target is **v0.15, 32 GiB**. Its [installer source](releases/v015/source/),
+[build script](releases/v015/build-release.py) and
+[Android-to-console power control](releases/v015/power/README.md) are available here.
+
+The repository also includes [earlier installer iterations](installer/README.md),
 [boot tools](ramboot/), [hardware probe](probe/) and [kernel and graphics patches](patches/).
 
 For build requirements and setup, see the [build guide](docs/BUILD.md).
 Build scripts use local workspace paths and external toolchains. The build guide
 documents those dependencies; this checkout does not provide a standalone build.
+
+## Exploring the source
+
+Curious how it works? You can use a coding agent to explore the source and ask
+questions in your own terms—from how the installer copies Android to how
+Android's restart request reaches the console. Ask it to show the files behind
+its explanation, and follow up on whatever interests you.
+
+Some starting points:
+
+- “Walk me through a first installation.” — [Installer flow](releases/v015/source/install-prebuilt.c)
+- “What happens if copying is interrupted?” — [Copy and resume logic](releases/v015/source/image-copy.c)
+- “How does Android restart the PS4?” — [Power-control supervisor](releases/v015/power/android-supervisor.c)
+
+Ask it to use the version you're exploring, distinguish code behaviour from
+console-tested results, and say when the answer depends on a file that isn't
+included. Earlier installer iterations remain in this repository.
 
 ## Credits
 

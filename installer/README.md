@@ -1,11 +1,13 @@
 # Installer source
 
-**Current development revision: [`sparse-v014`](sparse-v014/).**
+**Current release work: [v0.15](../releases/v015/source/).**
+
+This directory retains the preceding installer iterations, through v0.14.
 
 This is the native PS4 installer and its package tooling. Current source does
 not imply a published or fully tested release; see the [project status](../README.md#downloads).
 
-## Current revision
+## v0.14 source
 
 | File | Purpose |
 | --- | --- |
@@ -23,5 +25,5 @@ workspace requirements. Upload scripts act on a console; they are not build chec
 
 `launcher/`, `prebuilt-*`, `raw-v007/` and `sparse-v008/` through `sparse-v013/`
 retain earlier development source. They document the implementation's progression
-and are not separate recommended downloads. Start with `sparse-v014/` when
+and are not separate recommended downloads. Start with [`releases/v015/source`](../releases/v015/source/) when
 reading the current installer.

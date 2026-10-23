@@ -50,3 +50,11 @@ installer-font.h
 !/releases/v015/artwork/*.png
 !/releases/v015/artwork/*.svg
 !/releases/v015/artwork/official-asset-sources.json
+
+!/releases/v015/source/*
+!/releases/v015/build-release.py
+!/releases/v015/image-metadata.h
+!/releases/v015/power/android-supervisor.c
+!/releases/v015/power/README.md
+!/releases/v015/tests/*.py
+!/releases/v015/tests/*.c

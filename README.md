@@ -2,102 +2,88 @@
 
 ![Android TV for PS4](branding/repository-banner.svg)
 
-Android TV 13 for PS4, based on **BRTDTV's Android TV x86 builds**.
-The PS4 app installs the system on the internal drive and launches it through
-a Linux payload. Android gets a 32 GiB data image inside the existing PS4
-filesystem; the installer does not repartition the drive.
+A PS4 port of **BRTDTV's Android TV x86 builds**, installed and launched through
+a PS4 app. It runs from the internal drive, with no PC needed after installation.
+Android's files sit inside the existing PS4 filesystem. No repartitioning.
 
-Once installed, launch it from the PS4 home screen with GoldHEN and BinLoader
-enabled. No PC or NAS is needed to run it.
-
-[Download](#download) · [Preview](#preview) · [Requirements](#requirements) · [Installation](#installation) · [Storage](#how-storage-works) · [Source](#exploring-the-source) · [Credits](#credits)
+[Download](#download) · [Preview](#preview) · [Requirements](#requirements) · [Installation](#installation) · [Storage](#storage) · [Source](#source) · [Credits](#credits)
 
 ## Download
 
-**v0.15 · Android TV 13 · 32 GiB edition**  
-Package: `Android-TV-PS4-13-v0.15-32GiB.pkg` · approximately 2.35 GB
+**v0.15 — Android TV 13, 32 GiB edition**
 
-[GitHub Releases](https://github.com/odiecay/android-tv-ps4/releases)
+`Android-TV-PS4-13-v0.15-32GiB.pkg` · 2.35 GB
 
-The package is prepared locally; it has not been uploaded to GitHub Releases.
+The PKG has not been uploaded to [GitHub Releases](https://github.com/odiecay/android-tv-ps4/releases) yet.
 
 ## Preview
 
-![Android TV first-run setup](releases/v015/artwork/android-first-run.png)
-*Android TV first-run setup.*
+![Android TV setup screen](releases/v015/artwork/android-first-run.png)
 
-![Controller navigation artwork](releases/v015/artwork/controller-preview.png)
-*Updated installer artwork. The current packaged build predates this artwork
-change. The blank progress area is cropped out of this preview.*
+![Controller navigation preview](releases/v015/artwork/controller-preview.png)
+
+*Installer artwork, revised since the last PKG build.*
 
 ## Requirements
 
-- A compatible PS4 running GoldHEN, with **BinLoader enabled on port 9090**.
-- Free internal storage for the Android system, a 2 GiB margin, and the Android
-  apps and files you plan to add.
-- An internet connection for online setup and apps.
+- GoldHEN with BinLoader enabled on port **9090**.
+- Internal drive space for the system, at least 2 GiB spare, and room for your Android apps and files.
+- Internet access for online setup and apps.
 
-The development console is a **CUH-1102A (Aeolia), firmware 13.52**. v0.14
-installed and booted independently on that console with Ethernet connectivity.
-v0.15 adds installer recovery, revised previews and Android-to-console power
-handling. The recorded v0.15 package passed validation and was transferred to
-the console with its checksum verified; its installation test is pending.
-Other hardware revisions and firmware combinations are unverified.
+Test hardware: **CUH-1102A (Aeolia), firmware 13.52**. Other PS4 models and
+firmware versions have not been tested.
+
+v0.14 installed and booted on this console, with Ethernet working. v0.15 has
+passed package checks but has not completed its console test.
 
 ## Installation
 
 1. Load GoldHEN and enable BinLoader on port **9090**.
-2. Install the PKG using the PS4 package installer.
-3. Open **Android TV for PS4** from the home screen. The app copies Android
-   and its boot files to the internal drive, showing progress as it works.
-4. The installer launches Linux automatically. On first boot, Linux creates
-   Android's writable storage and starts Android TV.
-5. Complete Android TV setup, then install the apps you want to use.
+2. Install the PKG with the PS4 package installer.
+3. Open **Android TV for PS4** from the home screen.
+4. Leave it running while it copies the system and prepares the boot files.
+   It then boots Linux, creates Android's data storage and starts Android TV.
+5. Complete Android TV setup.
 
-Keep the console powered on during installation and first boot.
+For later boots, load GoldHEN, enable BinLoader and open the app again.
+It keeps your Android data and skips the installation. Restarting the console
+returns to the PS4 operating system.
 
-To use Android again, load GoldHEN, enable BinLoader and open the app. It
-reuses the existing installation and your Android data rather than copying the
-system again. Restarting the physical console returns to the PS4 operating system.
+## Storage
 
-## How storage works
+The installer stores Android as files on the internal drive. It does not
+create partitions or format the drive.
 
-Android lives inside the PS4's existing filesystem. The installer does not
-create partitions or reformat the drive.
+`system.sfs` is the compressed, read-only system. Linux mounts it, then mounts
+the `system.img` inside it. Apps, settings and downloads go into `data.img`,
+an ext4 filesystem that Linux mounts as a virtual disk.
 
-The system is stored in a compressed, read-only image (`system.sfs`). Linux
-mounts it, then mounts the `system.img` filesystem inside. Apps, settings and
-downloads live separately in `data.img`: a file formatted as ext4 and mounted
-as a virtual disk.
+The data image has a **32 GiB limit**, but it is sparse: it takes up physical
+drive space as data is written, rather than reserving all 32 GiB at once.
+Android and your PS4 games share the drive's free space. Formatting overhead
+means Android reports slightly less than 32 GiB usable.
 
-That virtual disk has a **32 GiB capacity**. It is a **sparse file**, so empty
-space inside it does not consume the full amount of physical storage upfront.
-As Android writes data, the file occupies more of the PS4 drive's shared free
-space. The capacity is not reserved space, and filesystem overhead reduces the
-usable amount Android reports.
+The PS4-specific changes to Android's system are applied at boot in a RAM
+overlay. Apps and settings stay in the data image between boots. Uninstalling
+the launcher PKG does not delete that image.
 
-PS4-specific system changes are applied at boot through a temporary in-memory
-overlay. Your Android data stays on disk independently of that overlay.
-Removing the launcher PKG does not remove the separate Android data image.
+## Source
 
-## Exploring the source
+The current installer is in [`releases/v015`](releases/v015/).
+Older versions are in [`installer/`](installer/README.md).
 
-Curious how it works? You can use a coding agent to explore the source and ask
-questions in your own terms. Ask it to show the files behind its explanation,
-and follow up on whatever interests you.
+You can ask a coding agent to read the source and explain the parts you want
+to understand. For example:
 
-- “Walk me through a first installation.” — [Installer flow](releases/v015/source/install-prebuilt.c)
-- “What happens if copying is interrupted?” — [Copy and resume logic](releases/v015/source/image-copy.c)
-- “How is Android restart forwarded to the PS4?” — [Power-control supervisor](releases/v015/power/android-supervisor.c)
+- [How does installation work?](releases/v015/source/install-prebuilt.c)
+- [What happens if a copy is interrupted?](releases/v015/source/image-copy.c)
+- [How does Android's restart request reach the console?](releases/v015/power/android-supervisor.c)
 
-Start with [`releases/v015`](releases/v015/) for this release. Earlier installer
-iterations remain under [`installer/`](installer/README.md). Ask the agent to
-use the right version, distinguish implementation from tested behaviour, and
-identify any missing source needed to answer your question.
+Have it point to the code it used. Check that it is reading the right version;
+code alone does not prove a feature has been tested on hardware.
 
-For dependencies and build commands, see the [build guide](docs/BUILD.md).
-The build requires external toolchains and prepared binary inputs; this
-checkout is not a self-contained build of every bundled component.
+[Build instructions](docs/BUILD.md) list the required tools and external files.
+Not every bundled component can be rebuilt from this checkout alone.
 
 ## Credits
 

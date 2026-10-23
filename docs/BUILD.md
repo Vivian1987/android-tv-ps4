@@ -4,6 +4,21 @@ The current package builder is [`releases/v015/build-release.py`](../releases/v0
 It compiles the 32 GiB installer, creates the PS4 executable and package,
 validates the package, and writes `release.json` and `SHA256SUMS` beside it.
 
+## Source map
+
+| Component | Purpose |
+| --- | --- |
+| [`install-prebuilt.c`](../releases/v015/source/install-prebuilt.c) | PS4 app entry point, installation checks, file staging and boot handoff. |
+| [`image-copy.c`](../releases/v015/source/image-copy.c) | System-image copy and interrupted-copy handling. |
+| [`android-supervisor.c`](../releases/v015/power/android-supervisor.c) | Host-side handling of Android shutdown and restart requests. |
+| [`build-release.py`](../releases/v015/build-release.py) | Compile, package, validate and record input hashes. |
+| [`artwork/`](../releases/v015/artwork/) | Installer slide sources and artwork generator. |
+
+[Storage accounting and capacity configuration](STORAGE.md) describe the image
+layout and the 32 GiB build settings. The current source includes artwork
+changes made after the recorded PKG build; consult the manifest generated for
+a particular package when identifying its inputs.
+
 ## Dependencies
 
 - Clang 18 and LLD 18.

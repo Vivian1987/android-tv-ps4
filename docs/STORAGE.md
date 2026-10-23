@@ -58,3 +58,31 @@ than retaining a second complete copy on successful installation. Existing boot
 files may be kept as `.before-sparse-v015` backups. Old packages, logs, failed
 installations and backups must be counted separately when estimating a drive
 that already has development history.
+
+## How the 32 GiB capacity is selected
+
+32 GiB is a release configuration choice, not a partition size or a fundamental
+limit of the storage design. The [package builder](../releases/v015/build-release.py)
+requires `data-gib.txt` to contain `32`, compiles the installer with
+`EDITION_GIB=32`, and records the edition and logical byte count in its manifest.
+The [installer](../releases/v015/source/install-prebuilt.c) copies that capacity
+file alongside the Android files and checks the installed edition on later runs.
+
+The supplied first-boot script reads `data-gib.txt`, creates `data.img.part`
+with `truncate -s` using the capacity multiplied by 1,073,741,824, and formats
+that file with `mke2fs` as ext4. After checking it, it renames the file to
+`data.img`. Formatting applies to this image file, not the PS4 drive.
+That script is bundled in the external initramfs input; it is not currently
+included as standalone source in the public checkout.
+
+The first-boot script accepts 32, 64 or 128 GiB, but this package builder is
+configured for 32 GiB. Building a larger edition requires updating the capacity
+asset, compiler definition, package naming and manifest values together. This
+is not an end-user capacity setting, and 64/128 GiB editions are not provided
+by this release.
+
+Existing images are checked against the selected capacity. Changing the number
+does not expand an existing filesystem: the current installer rejects an
+edition mismatch and has no resize operation. A larger fresh image and an
+in-place expansion are separate operations; this release only implements the
+former at its configured size.

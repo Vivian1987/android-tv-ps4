@@ -4,7 +4,6 @@
 !/*.py
 !/.gitignore
 !/README.md
-!/release-notes.txt
 !/installer/**/*.py
 !/installer/**/*.c
 !/installer/**/*.h

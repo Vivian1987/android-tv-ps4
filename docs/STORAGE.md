@@ -86,3 +86,14 @@ does not expand an existing filesystem: the current installer rejects an
 edition mismatch and has no resize operation. The first-boot code creates a
 new image at the configured size; it cannot expand an image that already
 contains your data.
+
+## System and data mounts
+
+Linux mounts the compressed, read-only `system.sfs`, then mounts the
+`system.img` inside it. The separate `data.img` is an ext4 filesystem mounted
+as a virtual disk. These files live on the existing PS4 filesystem; creating
+them does not partition or format the drive.
+
+PS4-specific system changes are applied in a RAM overlay at boot. Apps and
+settings are saved in the data image and persist between boots. Formatting
+leaves slightly less than the configured 32 GiB usable inside Android.

@@ -1,0 +1,9 @@
+{
+  "version": "v6",
+  "based_on": "v3",
+  "artwork": "identity-official-assets-v6.png",
+  "artwork_source": "identity-official-assets-v6.svg",
+  "icon": "icon-official-assets-v6.png",
+  "banner": "banner-official-assets-v6.png",
+  "note": "Centered original logo assets, restrained blue depth; no logo redraws."
+}

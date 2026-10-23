@@ -1,0 +1,13 @@
+{
+  "android_tv": {
+    "page": "https://www.android.com/tv/",
+    "asset": "https://www.gstatic.com/marketing-cms/assets/images/66/dc/e06b61764581b13c41e71e469475/android-tv-logo.webp",
+    "sha256": "5d4acea906bff3d3826548c75267a682501812228e0a16060c8d70844ace7681"
+  },
+  "ps4": {
+    "page": "https://www.playstation.com/en-us/ps4/",
+    "asset": "https://gmedia.playstation.com/is/image/SIEPDC/ps4-badge-01-en-20jul20?$1200px--t$",
+    "sha256": "ed46781139820deec3121617d11078e22af2bc7182123a8c721c741f8e0715e7"
+  },
+  "composition": "Original downloaded logos embedded in SVG. Proportional scaling only; no AI redraw. Only the connecting word for is typeset."
+}

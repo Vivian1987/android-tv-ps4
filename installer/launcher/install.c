@@ -1,0 +1,128 @@
+/* Development self-contained installer. App assets opened before elevation. */
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/statfs.h>
+#include <orbis/SystemService.h>
+#include <orbis/Sysmodule.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <orbis/libkernel.h>
+#include "image-stream.h"
+#ifndef EDITION_GIB
+#error Edition required
+#endif
+#define IMAGE "/user/app/ps4-android.img"
+#define STAGE IMAGE ".installing"
+#define READY IMAGE ".ready"
+#define GIB (1024ULL*1024*1024)
+extern int ps4_as_root(void(*fn)(void*),void*arg);
+/* Avoid SDK lstat/fstatat/link/statvfs stubs. */
+static int path_stat(const char *path,struct stat *st){
+ int fd=open(path,O_RDONLY|O_NOFOLLOW);if(fd<0)return -1;
+ int result=fstat(fd,st),saved=errno;close(fd);errno=saved;return result;
+}
+static int commit_file(const char *from,const char *to){
+ struct stat st;
+ if(path_stat(to,&st)==0){errno=EEXIST;return -1;}
+ if(errno!=ENOENT)return -1;
+ /* Exclusive staging file serializes this installer's writers. */
+ return rename(from,to);
+}
+static int files[6];
+static const char *names[6]={"android.stream","bzImage","initramfs.cpio.gz","bootargs.txt","vram.txt","linux.elf"};
+static void notice(const char *s){sceKernelDebugOutText(0,"[PS4ATV] %s\n",s);OrbisNotificationRequest n;memset(&n,0,sizeof(n));n.type=NotificationRequest;n.targetId=-1;snprintf(n.message,sizeof(n.message),"PS4 Android TV: %s",s);sceKernelSendNotificationRequest(0,&n,sizeof(n),0);}
+static void failure(const char *s){int saved=errno;char message[256];snprintf(message,sizeof(message),"%s (errno %d)",s,saved);notice(message);}
+static void progress(uint64_t done,uint64_t total){static int last=-1;int percent=(int)(done*100/total);if(percent/10!=last){last=percent/10;char msg[128];snprintf(msg,sizeof(msg),"Installing %d GiB edition: %d%%. Keep the console powered on.",EDITION_GIB,percent);notice(msg);}}
+static int copy_file(int from,const char *target){
+ int to=open(target,O_WRONLY|O_CREAT|O_EXCL,0600);if(to<0)return -1;
+ char *buf=malloc(1024*1024);int status=-1;if(!buf){close(to);return -1;}
+ if(lseek(from,0,SEEK_SET)<0)goto end;
+ for(;;){ssize_t n=read(from,buf,1024*1024);if(n<0&&errno==EINTR)continue;if(n<0)goto end;if(!n)break;
+  ssize_t at=0;while(at<n){ssize_t w=write(to,buf+at,n-at);if(w<0&&errno==EINTR)continue;if(w<=0)goto end;at+=w;}}
+ if(fsync(to)==0)status=0;
+end:free(buf);if(close(to))status=-1;return status;
+}
+static int install_boot(void){
+ char targets[4][128],stages[4][160],backups[4][160];int existed[4]={0},committed=0;
+ if(mkdir("/data/linux",0755)&&errno!=EEXIST)return -1;
+ if(mkdir("/data/linux/boot",0755)&&errno!=EEXIST)return -1;
+ /* Refuse ambiguous prior staging/backup files before touching anything. */
+ for(int i=0;i<4;i++){
+  snprintf(targets[i],sizeof(targets[i]),"/data/linux/boot/%s",names[i+1]);
+  snprintf(stages[i],sizeof(stages[i]),"%s.ps4android-next",targets[i]);
+  snprintf(backups[i],sizeof(backups[i]),"%s.before-ps4android",targets[i]);
+  struct stat st;if(path_stat(stages[i],&st)==0||path_stat(backups[i],&st)==0)return -1;
+  existed[i]=path_stat(targets[i],&st)==0;
+ }
+ for(int i=0;i<4;i++)if(copy_file(files[i+1],stages[i]))return -1;
+ for(int i=0;i<4;i++){
+  if(existed[i]&&rename(targets[i],backups[i]))goto rollback;
+  if(rename(stages[i],targets[i])){if(existed[i])rename(backups[i],targets[i]);goto rollback;}
+  committed++;
+ }
+ {int d=open("/data/linux/boot",O_RDONLY);if(d<0)return -1;int r=fsync(d);close(d);return r;}
+rollback:
+ for(int i=committed-1;i>=0;i--){unlink(targets[i]);if(existed[i])rename(backups[i],targets[i]);}
+ return -1;
+}
+static int installation_ready(void){
+ char actual[128]={0},expected[128];
+ int fd=open(READY,O_RDONLY);if(fd<0)return 0;
+ ssize_t n=read(fd,actual,sizeof(actual)-1);close(fd);
+ int length=snprintf(expected,sizeof(expected),"PS4ANDROID13\nedition=%d\n",EDITION_GIB);
+ return n==length && memcmp(actual,expected,(size_t)length)==0;
+}
+static int send_loader(void){
+ int sock=socket(AF_INET,SOCK_STREAM,0);if(sock<0)return -1;
+ struct sockaddr_in addr;memset(&addr,0,sizeof(addr));addr.sin_family=AF_INET;addr.sin_port=htons(9090);addr.sin_addr.s_addr=htonl(0x7f000001);
+ if(connect(sock,(struct sockaddr*)&addr,sizeof(addr))){close(sock);return -1;}
+ char buf[65536];if(lseek(files[5],0,SEEK_SET)<0){close(sock);return -1;}
+ for(;;){ssize_t n=read(files[5],buf,sizeof(buf));if(n<0&&errno==EINTR)continue;if(n<0){close(sock);return -1;}if(!n)break;
+  ssize_t at=0;while(at<n){ssize_t w=send(sock,buf+at,n-at,0);if(w<0&&errno==EINTR)continue;if(w<=0){close(sock);return -1;}at+=w;}}
+ shutdown(sock,SHUT_WR);close(sock);return 0;
+}
+static void install_or_boot(void *unused){
+ (void)unused;struct stat st;
+ if(path_stat(IMAGE,&st)==0){
+  if(!S_ISREG(st.st_mode)||(uint64_t)st.st_size!=EDITION_GIB*GIB||!installation_ready()){
+   notice("Existing installation differs or is incomplete. It has been preserved; no resize or overwrite performed.");return;}
+  notice("Booting Android from the internal HDD.");
+  if(send_loader())notice("Could not send boot payload. Enable GoldHEN BinLoader (9090), then launch again.");
+  return;
+ }
+ if(errno!=ENOENT){failure("Cannot inspect installation path");return;}
+ struct statfs space;int storage=open("/user",O_RDONLY|O_DIRECTORY);if(storage<0){failure("Internal storage is inaccessible");return;}
+ int space_result=fstatfs(storage,&space),space_error=errno;close(storage);errno=space_error;if(space_result){failure("Cannot query internal free space");return;}
+ if((space.f_bavail>0?(uint64_t)space.f_bavail:0)*space.f_bsize<(EDITION_GIB+10)*GIB){notice("Insufficient space for the selected edition and installation headroom.");return;}
+ if(mkdir("/user/app",0755)&&errno!=EEXIST){notice("Cannot create installation directory.");return;}
+ int out=open(STAGE,O_RDWR|O_CREAT|O_EXCL,0600);if(out<0){notice("An installation staging file exists or storage is inaccessible. Existing data preserved.");return;}
+ int r=ps4_unpack_image(files[0],out,EDITION_GIB*GIB,progress);if(close(out))r=-1;
+ if(r){notice("Image verification or allocation failed. Incomplete staging retained; boot files unchanged.");return;}
+ if(commit_file(STAGE,IMAGE)){notice("Cannot commit image. Staging retained.");return;}
+ unlink(STAGE);
+ if(install_boot()){notice("Boot staging failed. Existing Android image preserved; installation requires recovery.");return;}
+ int ready=open(READY ".next",O_WRONLY|O_CREAT|O_EXCL,0600);if(ready<0){notice("Cannot save completion marker; installation requires verification.");return;}
+ char state[128];int n=snprintf(state,sizeof(state),"PS4ANDROID13\nedition=%d\n",EDITION_GIB);
+ int ok=write(ready,state,n)==n&&fsync(ready)==0;close(ready);
+ if(!ok){unlink(READY ".next");notice("Cannot persist installation state.");return;}
+ if(commit_file(READY ".next",READY)){notice("Cannot commit installation state.");return;}
+ unlink(READY ".next");
+ int d=open("/user/app",O_RDONLY);if(d>=0){fsync(d);close(d);}
+ notice("Installation complete. Launch this application again to boot Android. Enable GoldHEN BinLoader first.");
+}
+int main(void){
+ sceSysmoduleLoadModuleInternal(ORBIS_SYSMODULE_INTERNAL_SYSTEM_SERVICE);
+ notice("Installer 0.03 started");
+ for(int i=0;i<6;i++)files[i]=-1;
+ for(int i=0;i<6;i++){char path[128];snprintf(path,sizeof(path),"/app0/assets/%s",names[i]);files[i]=open(path,O_RDONLY);if(files[i]<0){notice("Package content missing. Nothing installed.");goto end;}}
+ if(ps4_as_root(install_or_boot,NULL))notice("Could not obtain or restore required console filesystem access.");
+end:for(int i=0;i<6;i++)if(files[i]>=0)close(files[i]);sceKernelUsleep(3000000);sceSystemServiceLoadExec("exit",NULL);
+ /* Never return through the SDK _exit path: it raises SIGSYS here. */
+ for(;;)sceKernelUsleep(1000000);
+}

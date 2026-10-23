@@ -1,0 +1,16 @@
+--- DrmDisplay.cpp
++++ DrmDisplay.cpp
+@@ -293,7 +293,10 @@
+     if (!enabled())
+         return;
+ 
+-    auto& fb = mFramebuffers.try_emplace(buffer, mDevice, buffer).first->second;
++    // Use the allocation identity, not the recyclable imported-handle address.
++    const auto* h = reinterpret_cast<cros_gralloc_handle_t>(buffer);
++    const uint64_t key = (uint64_t(h->width) << 32) | h->id;
++    auto& fb = mFramebuffers.try_emplace(key, mDevice, buffer).first->second;
+     if (!fb.id()) {
+         // The framebuffer error was already logged
+         return;
+
+// DrmDisplay.h: change map key from buffer_handle_t to uint64_t; include cros_gralloc_handle.h for this minigbm-specific build.

@@ -1,0 +1,11 @@
+--- a/DrmDisplay.cpp
++++ b/DrmDisplay.cpp
+@@ -306,6 +306,10 @@
+         if (drmModePageFlip(mDevice.fd(), mCrtc, fb.id(), DRM_MODE_PAGE_FLIP_EVENT, this)) {
+             PLOG(ERROR) << "Failed to perform page flip for display " << *this;
+             mFlipPending = false;
++            // A page flip cannot change the CRTC framebuffer pixel format.
++            // Retry presentation via a modeset instead of retrying an invalid
++            // flip forever (e.g. first-boot animation -> setup wizard).
++            mModeSet = false;
+         }

@@ -23,3 +23,11 @@ been selected in this initial repository setup.
 No desktop screenshots, personal userdata, account records, keys or private
 runtime archives are included. Gameplay/playback screenshots can be selected
 for the release post when its notes are complete.
+
+## v0.15 previews
+
+`releases/v015/artwork/` contains the installer slides and their generator.
+The controller slide uses Sony's DualShock 4 product image; its original URL
+and hash are recorded in that directory's `official-asset-sources.json`.
+`android-first-run.png` shows the Android setup screen from development.
+The rendered slides are artwork, not captures of the running progress UI.

@@ -2,83 +2,100 @@
 
 ![Android TV for PS4](branding/repository-banner.svg)
 
-Based on **BRTDTV's Android TV x86 builds**, adapted to run on PlayStation 4.
+Install Android TV on your PS4's internal drive with a native PS4 installer.
+Based on **BRTDTV's Android TV x86 builds**, with PS4-specific hardware support
+and **32 GiB of Android storage—without repartitioning your drive**.
 
-[Downloads](#downloads) · [Compatibility](#compatibility) · [Installation and use](#installation-and-use) · [How storage works](#how-storage-works) · [Source code](#source-code) · [Exploring the source](#exploring-the-source) · [Credits](#credits)
+Once installed, launch it from the PS4 home screen with GoldHEN and BinLoader
+enabled. No PC or NAS is needed to run it.
 
-## Downloads
+[Download](#download) · [Preview](#preview) · [Requirements](#requirements) · [Installation](#installation) · [Storage](#how-storage-works) · [Source](#exploring-the-source) · [Credits](#credits)
 
-Source code is available in this repository. The installer is in development;
-there is currently no public binary release.
+## Download
 
-This version runs Android TV 13. Newer versions are planned after testing.
+**v0.15 · Android TV 13 · 32 GiB edition**  
+Package: `Android-TV-PS4-13-v0.15-32GiB.pkg` · approximately 2.35 GB
 
-## Compatibility
+[GitHub Releases](https://github.com/odiecay/android-tv-ps4/releases)
 
-Development and testing have been on a **PS4 CUH-1102A (Aeolia)**.
-Compatibility with other models is unverified.
+The package is prepared locally; it has not been uploaded to GitHub Releases.
 
-Launching requires **GoldHEN with BinLoader enabled on port 9090**.
+## Preview
 
-The current installer has passed package validation. Full installation, playback
-and reboot-persistence testing for this revision is not complete.
+![Android TV first-run setup](releases/v015/artwork/android-first-run.png)
+*Android TV's first-run setup from the development console.*
 
-## Installation and use
+![Controller navigation artwork](releases/v015/artwork/slide-1.png)
+*Controller preview artwork for the native installer. Progress and status are
+rendered separately while installation runs; this image shows the artwork.*
 
-The installer copies Android and its boot files to the internal drive, then
-sends the Linux loader through GoldHEN BinLoader. On first boot, Linux prepares
-Android's writable storage and starts Android. Subsequent launches reuse that
-storage. Restarting the console returns to the PS4 operating system.
+## Requirements
+
+- A compatible PS4 running GoldHEN, with **BinLoader enabled on port 9090**.
+- Free internal storage for the Android system, a 2 GiB margin, and the Android
+  apps and files you plan to add.
+- An internet connection for online setup and apps.
+
+The development console is a **CUH-1102A (Aeolia), firmware 13.52**. v0.14
+installed and booted independently on that console with Ethernet connectivity.
+v0.15 adds installer recovery, revised previews and Android-to-console power
+handling; its full console acceptance test is not recorded as complete.
+Other hardware revisions and firmware combinations are unverified.
+
+## Installation
+
+1. Install the PKG using the PS4 package installer.
+2. Load GoldHEN and enable BinLoader on port **9090**.
+3. Open **Android TV for PS4** from the home screen. The app copies Android
+   and its boot files to the internal drive, showing progress as it works.
+4. The installer launches Linux automatically. On first boot, Linux creates
+   Android's writable storage and starts Android TV.
+5. Complete Android TV setup, then install the apps you want to use.
+
+Keep the console powered on during installation and first boot.
+
+To use Android again, load GoldHEN, enable BinLoader and open the app. It
+reuses the existing installation and your Android data rather than copying the
+system again. Restarting the physical console returns to the PS4 operating system.
 
 ## How storage works
 
-Android TV installs inside the PS4's existing filesystem—no repartitioning or
-drive formatting.
+Android lives inside the PS4's existing filesystem. The installer does not
+create partitions or reformat the drive.
 
 The system is stored in a compressed, read-only image (`system.sfs`). Linux
 mounts it, then mounts the `system.img` filesystem inside. Apps, settings and
 downloads live separately in `data.img`: a file formatted as ext4 and mounted
 as a virtual disk.
 
-In the current build, that virtual disk has a **32 GiB capacity**. It is a
-**sparse file**, so empty space inside it does not consume the full amount of
-physical storage upfront. As Android writes data, the file occupies more of
-the PS4 drive's shared free space. The 32 GiB is a capacity limit, not reserved
-space.
+That virtual disk has a **32 GiB capacity**. It is a **sparse file**, so empty
+space inside it does not consume the full amount of physical storage upfront.
+As Android writes data, the file occupies more of the PS4 drive's shared free
+space. The capacity is not reserved space, and filesystem overhead reduces the
+usable amount Android reports.
 
-PS4-specific system changes are applied at each boot through a temporary
-in-memory overlay. Android's writable data is stored on disk for reuse between
-boots, independently of that overlay.
-
-## Source code
-
-The release target is **v0.15, 32 GiB**. Its [installer source](releases/v015/source/),
-[build script](releases/v015/build-release.py) and
-[Android-to-console power control](releases/v015/power/README.md) are available here.
-
-The repository also includes [earlier installer iterations](installer/README.md),
-[boot tools](ramboot/), [hardware probe](probe/) and [kernel and graphics patches](patches/).
-
-For build requirements and setup, see the [build guide](docs/BUILD.md).
-Build scripts use local workspace paths and external toolchains. The build guide
-documents those dependencies; this checkout does not provide a standalone build.
+PS4-specific system changes are applied at boot through a temporary in-memory
+overlay. Your Android data stays on disk independently of that overlay.
+Removing the launcher PKG does not remove the separate Android data image.
 
 ## Exploring the source
 
 Curious how it works? You can use a coding agent to explore the source and ask
-questions in your own terms—from how the installer copies Android to how
-Android's restart request reaches the console. Ask it to show the files behind
-its explanation, and follow up on whatever interests you.
-
-Some starting points:
+questions in your own terms. Ask it to show the files behind its explanation,
+and follow up on whatever interests you.
 
 - “Walk me through a first installation.” — [Installer flow](releases/v015/source/install-prebuilt.c)
 - “What happens if copying is interrupted?” — [Copy and resume logic](releases/v015/source/image-copy.c)
 - “How does Android restart the PS4?” — [Power-control supervisor](releases/v015/power/android-supervisor.c)
 
-Ask it to use the version you're exploring, distinguish code behaviour from
-console-tested results, and say when the answer depends on a file that isn't
-included. Earlier installer iterations remain in this repository.
+Start with [`releases/v015`](releases/v015/) for this release. Earlier installer
+iterations remain under [`installer/`](installer/README.md). Ask the agent to
+use the right version, distinguish implementation from tested behaviour, and
+identify any missing source needed to answer your question.
+
+For dependencies and build commands, see the [build guide](docs/BUILD.md).
+The build requires external toolchains and prepared binary inputs; this
+checkout is not a self-contained build of every bundled component.
 
 ## Credits
 

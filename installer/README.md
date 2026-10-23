@@ -5,7 +5,7 @@
 This directory retains the preceding installer iterations, through v0.14.
 
 This is the native PS4 installer and its package tooling. Current source does
-not imply a published or fully tested release; see the [project status](../README.md#downloads).
+not imply a published or fully tested release; see the [project status](../README.md#download).
 
 ## v0.14 source
 

@@ -1,42 +1,59 @@
-# Development build notes
+# Building v0.15
 
-These notes describe the existing build scripts. They are not installation
-instructions, and the initial repository setup does not modify their behaviour.
+The current package builder is [`releases/v015/build-release.py`](../releases/v015/build-release.py).
+It compiles the 32 GiB installer, creates the PS4 executable and package,
+validates the package, and writes `release.json` and `SHA256SUMS` beside it.
 
-## Current installer
+## Dependencies
 
-`installer/sparse-v014/build.py` compiles the native installer with Clang 18
-and links it with LLD 18 and the OpenOrbis PS4 toolchain. It expects:
+- Clang 18 and LLD 18.
+- OpenOrbis PS4 Toolchain, including create-fself, create-gp4 and PkgTool.Core.
+- The runtime libraries required by PkgTool.Core.
+- A package template containing `sce_sys/` and `sce_module/`.
+- Prepared `privileged.o`, `jailbreak.o` and `kernelrw.o` helper objects.
+- Prepared release assets: `bzImage`, `initramfs.cpio.gz`, `system.sfs`,
+  `libgallium-baseline.so`, `linux.elf`, `bootargs.txt`, `vram.txt` and
+  `data-gib.txt` containing `32` followed by a newline.
 
-- The OpenOrbis SDK at the development workspace's `toolchains/OpenOrbis/PS4Toolchain`.
-- A prepared `/dev/shm/ps4-v014` build directory, including `image-metadata.h`
-  and the referenced vendor include directory.
-- Prepared `privileged.o`, `jailbreak.o` and `kernelrw.o` objects under
-  `installer-pkg-build/32` in the local workspace.
-- The source headers, including the artwork/font headers, in this checkout.
+The toolchain, template, helper objects and system assets are external inputs.
+The public checkout does not yet reproduce all of them from source. The builder
+records the helper and asset hashes in its output manifest.
 
-`installer/sparse-v014/package.py` then uses Pillow, Inkscape, create-gp4 and
-PkgTool.Core. It expects prepared `sce_sys` and `sce_module` inputs from the
-local recovery workspace and a populated build-directory `assets/` containing
-the Android/Linux boot assets. It selects the v6 branding in `branding/`.
+## Package build
 
-The scripts currently contain absolute paths. Their external inputs are not
-all reconstructed by this repository. A clean clone cannot yet reproduce the
-package without that preparation; packaging portability remains work to do.
+Replace these example paths with your prepared inputs:
 
-## Prototype boot tools
+```sh
+python3 releases/v015/build-release.py \
+  --sdk /path/to/OpenOrbis/PS4Toolchain \
+  --template /path/to/package-template \
+  --objects /path/to/helper-objects \
+  --runtime /path/to/pkgtool-runtime-libraries \
+  --assets /path/to/release-assets \
+  --build /path/to/build-directory \
+  --output /path/to/output-directory
+```
 
-`ramboot/build-standard.py` builds the earlier network-backed development
-prototype from locally retained boot artifacts and verifies expected hashes.
-`boot-orbis.py` reads a local boot manifest, stages files on the console and
-sends a loader payload. These are operational development tools, not a generic
-end-user installer. Local manifests and credentials are intentionally untracked.
+Output: `Android-TV-PS4-13-v0.15-32GiB.pkg`, `validation.txt`, `release.json`
+and `SHA256SUMS`. Package validation checks package structure and integrity;
+it does not substitute for testing installation and playback on a console.
 
-## Repository checks
+## Installer artwork
 
-Python syntax can be checked without executing deployment scripts. Do not run
-upload, remote, or boot scripts merely to test a checkout: they act on hardware.
+Generated artwork and font headers are included under `releases/v015/source/`.
+To regenerate the preview slides, install Pillow and Inkscape, then run:
 
-Large Android images, packages, toolchains, private userdata and authentication
-material are not included in Git. Downloadable release artifacts are separate
-from the source repository.
+```sh
+python3 releases/v015/artwork/build-slides.py
+```
+
+Rebuild the PKG after changing artwork. Regenerating a header does not modify
+an already-built package.
+
+## Earlier development tools
+
+`installer/` retains earlier installer revisions. The root-level boot scripts
+and `ramboot/` include tools from the network-backed prototype and may rely on
+local manifests, paths and credentials. They are separate from the standalone
+release installer. Upload and boot scripts act on hardware; do not run them as
+build checks.

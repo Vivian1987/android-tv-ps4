@@ -6,8 +6,6 @@ I took **BRTDTV's Android TV 13 for PCs** and adapted it to run on the PS4.
 You install and launch it through a PS4 app. Android lives in files on the
 existing internal drive, so there's no repartitioning.
 
-![Android TV setup screen on PS4](releases/v015/artwork/android-first-run.png)
-
 ## Release
 
 **v0.15 · Android TV 13 · 32 GiB**

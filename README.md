@@ -4,7 +4,7 @@
 
 Based on **BRTDTV's Android TV x86 builds**, adapted to run on PlayStation 4.
 
-[Downloads](#downloads) · [Compatibility](#compatibility) · [Source code](#source-code) · [Credits](#credits)
+[Downloads](#downloads) · [Compatibility](#compatibility) · [Installation and use](#installation-and-use) · [How storage works](#how-storage-works) · [Source code](#source-code) · [Credits](#credits)
 
 ## Downloads
 
@@ -18,8 +18,38 @@ This version runs Android TV 13. Newer versions are planned after testing.
 Development and testing have been on a **PS4 CUH-1102A (Aeolia)**.
 Other models have not been confirmed yet.
 
-The installer is designed to keep Android and its data on the PS4's internal
-drive without repartitioning it.
+The current launch path requires GoldHEN with BinLoader enabled. The latest
+installer is still awaiting complete on-console testing, including fresh setup,
+playback and data persistence after reboot.
+
+## Installation and use
+
+Installation instructions will be published with the tested installer.
+
+The installer copies Android and its boot files to the internal drive, then
+sends the Linux loader through GoldHEN BinLoader. On first boot, Linux prepares
+Android's writable storage and starts Android. Subsequent launches reuse that
+storage. Restarting the console returns to the PS4 operating system.
+
+## How storage works
+
+Android TV installs inside the PS4's existing filesystem—no repartitioning or
+drive formatting.
+
+The system is stored in a compressed, read-only image (`system.sfs`). Linux
+mounts it, then mounts the `system.img` filesystem inside. Apps, settings and
+downloads live separately in `data.img`: a file formatted as ext4 and mounted
+as a virtual disk.
+
+In the current build, that virtual disk has a **32 GiB capacity**. It is a
+**sparse file**, so empty space inside it does not consume the full amount of
+physical storage upfront. As Android writes data, the file occupies more of
+the PS4 drive's shared free space. The 32 GiB is a capacity limit, not reserved
+space.
+
+PS4-specific system changes are applied at each boot through a temporary
+in-memory overlay. Android's writable data is stored on disk for reuse between
+boots, independently of that overlay.
 
 ## Source code
 

@@ -41,10 +41,9 @@ Android system images and compiled packages are not stored in Git.
 
 **BRTDTV** provides the Android TV x86 foundation used by this project.
 
-- [BRTDTV](https://t.me/brtdtv)
-- [Android TV x86 BR](https://t.me/Android_roms_x86)
-- [TD Android TV no PC](https://www.youtube.com/@TDAndroidTVnoPC)
-- [Community FAQ](https://brtdtvfaqs.page.gd/)
+- [BRTDTV Telegram group](https://t.me/+7cbIufx3Eh5hZmYx)
+- [New Telegram group](https://t.me/+t15cB5esYJUxZjdh)
+- [TD Android TV no PC — YouTube](https://www.youtube.com/@TDAndroidTVnoPC)
 
 See [asset attribution](docs/ASSETS.md) for branding sources and included font
 licence information.

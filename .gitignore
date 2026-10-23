@@ -58,3 +58,5 @@ installer-font.h
 !/releases/v015/power/README.md
 !/releases/v015/tests/*.py
 !/releases/v015/tests/*.c
+
+!/docs/STORAGE.md

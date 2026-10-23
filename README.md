@@ -27,7 +27,9 @@ The PKG has not been uploaded to [GitHub Releases](https://github.com/odiecay/an
 ## Requirements
 
 - GoldHEN with BinLoader enabled on port **9090**.
-- Internal drive space for the system, at least 2 GiB spare, and room for your Android apps and files.
+- Allow about **42 GiB (45 GB) of drive space** to accommodate a full Android
+  data image, the installed app, system files, a retained PKG download and free
+  space. Initial use is smaller because the data image is sparse.
 - Internet access for online setup and apps.
 
 Test hardware: **CUH-1102A (Aeolia), firmware 13.52**. Other PS4 models and
@@ -62,6 +64,16 @@ The data image has a **32 GiB limit**, but it is sparse: it takes up physical
 drive space as data is written, rather than reserving all 32 GiB at once.
 Android and your PS4 games share the drive's free space. Formatting overhead
 means Android reports slightly less than 32 GiB usable.
+
+The 32 GiB is only the data image. System and boot files add about **2.17 GiB**,
+and the installed launcher retains roughly **2.19 GiB** of package contents.
+Together, a fully allocated installation is about **36.4 GiB (39 GB)**, before
+filesystem overhead, logs and backups. Keeping the downloaded PKG on the
+internal drive adds another **2.19 GiB**.
+
+The installer's **2 GiB spare-space check is not the total space requirement**.
+It does not reserve room for the data image to grow. See the
+[storage breakdown](docs/STORAGE.md) for the calculation.
 
 The PS4-specific changes to Android's system are applied at boot in a RAM
 overlay. Apps and settings stay in the data image between boots. Uninstalling

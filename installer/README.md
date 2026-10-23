@@ -3,7 +3,7 @@
 **Current development revision: [`sparse-v014`](sparse-v014/).**
 
 This is the native PS4 installer and its package tooling. Current source does
-not imply a published or fully tested release; see the [project status](../README.md#status).
+not imply a published or fully tested release; see the [project status](../README.md#downloads).
 
 ## Current revision
 

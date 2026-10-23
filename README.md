@@ -2,41 +2,33 @@
 
 ![Android TV for PS4](branding/repository-banner.svg)
 
-Android TV 13 adapted for PlayStation 4, based on **BRTDTV's Android TV x86**.
+Based on **BRTDTV's Android TV x86 builds**, adapted to run on PlayStation 4.
 
-[Status](#status) · [Source layout](#source-layout) · [Building](#building) · [Credits](#credits)
+[Downloads](#downloads) · [Compatibility](#compatibility) · [Source code](#source-code) · [Credits](#credits)
 
-## Status
+## Downloads
 
-In development. This repository contains source code and development tooling.
-No downloadable release or end-user installation guide has been published yet.
+The installer is still being tested. There is no download available yet;
+installation instructions will accompany the release.
 
-| Component | Current target |
-| --- | --- |
-| Android | Android TV 13 |
-| Development console | PS4 CUH-1102A (Aeolia) |
-| Installer source | `installer/sparse-v014` |
-| Storage design | Compressed system image and sparse ext4 userdata within the existing PS4 user partition; no repartitioning |
+This version runs Android TV 13. Newer versions are planned after testing.
 
-Other console models are not confirmed by the testing recorded here.
+## Compatibility
 
-## Source layout
+Development and testing have been on a **PS4 CUH-1102A (Aeolia)**.
+Other models have not been confirmed yet.
 
-| Path | Contents |
-| --- | --- |
-| [`installer/`](installer/README.md) | Native PS4 installer, interface and packaging scripts |
-| `ramboot/` | Linux boot, Android startup and diagnostic tools |
-| `patches/` | Kernel, graphics and quota patches |
-| `probe/` | Console hardware probe |
-| `branding/` | Icon and banner assets |
+The installer is designed to keep Android and its data on the PS4's internal
+drive without repartitioning it.
 
-## Building
+## Source code
 
-See [build dependencies and preparation](docs/BUILD.md).
+The repository includes the [PS4 installer](installer/README.md),
+[boot tools](ramboot/), [hardware probe](probe/) and [kernel and graphics patches](patches/).
 
-The build scripts currently depend on development-machine paths, external
-toolchains and prepared inputs. A clean clone is not yet a standalone build.
-Android system images and compiled packages are not stored in Git.
+For build requirements and setup, see the [build guide](docs/BUILD.md).
+The scripts still rely on files and tools from the development setup, so
+building from a fresh checkout needs additional preparation.
 
 ## Credits
 
@@ -47,5 +39,4 @@ port builds on that foundation.
 - [New Telegram group](https://t.me/+t15cB5esYJUxZjdh)
 - [TD Android TV no PC — YouTube](https://www.youtube.com/@TDAndroidTVnoPC)
 
-See [asset attribution](docs/ASSETS.md) for branding sources and included font
-licence information.
+[Artwork sources and font licence](docs/ASSETS.md).

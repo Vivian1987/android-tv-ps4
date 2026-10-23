@@ -3,7 +3,6 @@
 ![Android TV for PS4](branding/repository-banner.svg)
 
 Android TV 13 adapted for PlayStation 4, based on **BRTDTV's Android TV x86**.
-PS4 adaptation and installer by Codey O'Connor.
 
 [Status](#status) · [Source layout](#source-layout) · [Building](#building) · [Credits](#credits)
 

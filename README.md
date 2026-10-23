@@ -43,8 +43,6 @@ This release uses a **32 GiB sparse data image** for Android's apps, settings
 and downloads. It occupies space as data is written, sharing the internal
 drive with your PS4 games. The system files and launcher use additional space.
 
-Uninstalling the launcher PKG does not delete the Android data image.
-
 [Storage details](docs/STORAGE.md) cover the disk-space calculation, how the
 system and data images are mounted, and how the 32 GiB capacity is set.
 

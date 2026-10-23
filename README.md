@@ -8,6 +8,18 @@ This project grew out of building Android TV x86 media boxes and experimenting
 with Linux on PS4. Wanting Kayo Sports on the console brought those two projects
 together. Newer Android TV versions are on the horizon, pending testing.
 
+## Based on BRTDTV
+
+This project is based on **BRTDTV's Android TV x86 work**. Their builds were
+what I used for my Intel PC media boxes and provided the Android TV foundation
+for this PS4 project. Credit to BRTDTV for that work; this repository contains
+my PS4 adaptation, installer and supporting development tools.
+
+- [BRTDTV on Telegram](https://t.me/brtdtv)
+- [Android TV x86 BR release channel](https://t.me/Android_roms_x86)
+- [TD Android TV no PC on YouTube](https://www.youtube.com/@TDAndroidTVnoPC)
+- [BRTDTV community FAQ](https://brtdtvfaqs.page.gd/)
+
 ## Development
 
 This repository contains the installer source, Linux boot tooling, graphics and

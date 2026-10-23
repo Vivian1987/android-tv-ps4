@@ -49,3 +49,13 @@ Do not invent release promises, support obligations, or verified capabilities.
 The post was criticised for being AI-written; Codey is knowingly using AI to
 help write this one too. No final joke or wording has been selected.
 The notes and post are not finished.
+
+Upstream credit — Codey's clarification
+This project is based on BRTDTV's Android TV x86 work. Credit them clearly
+as the Android TV foundation, not merely an inspiration.
+Project: https://t.me/brtdtv
+Release channel: https://t.me/Android_roms_x86
+YouTube: https://www.youtube.com/@TDAndroidTVnoPC
+Community FAQ: https://brtdtvfaqs.page.gd/
+Links cross-checked against the Android TV x86 BR release channel. The exact
+upstream image revision used for this port has not yet been identified here.

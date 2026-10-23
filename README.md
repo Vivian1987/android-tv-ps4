@@ -23,9 +23,9 @@ v0.14 installed and booted with Ethernet on **CUH-1102A (Aeolia), firmware
 
 ## Installation
 
-You need GoldHEN, internet access for online setup, and about **42 GiB (45 GB)**
-of available internal-drive space to allow for a full installation and a
-retained PKG download. Initial disk use is smaller.
+You need GoldHEN and about **42 GiB (45 GB)** of available internal-drive
+space to allow for a full installation and a retained PKG download. Initial
+disk use is smaller.
 
 1. Load GoldHEN and enable BinLoader on port **9090**.
 2. Install the PKG with the PS4 package installer.

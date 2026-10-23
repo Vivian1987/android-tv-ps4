@@ -45,3 +45,8 @@ installer-font.h
 
 !/branding/repository-banner.svg
 !/installer/README.md
+
+!/releases/v015/artwork/*.py
+!/releases/v015/artwork/*.png
+!/releases/v015/artwork/*.svg
+!/releases/v015/artwork/official-asset-sources.json

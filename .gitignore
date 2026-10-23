@@ -60,3 +60,5 @@ installer-font.h
 !/releases/v015/tests/*.c
 
 !/docs/STORAGE.md
+
+!/docs/DEVELOPMENT.md

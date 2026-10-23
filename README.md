@@ -18,14 +18,14 @@ The package is built but has not been published to
 [GitHub Releases](https://github.com/odiecay/android-tv-ps4/releases).
 It has passed package checks; console testing is incomplete.
 
-v0.14 installed and booted with Ethernet on **CUH-1102A (Aeolia), firmware
-13.52**. Other models, firmware versions and streaming apps are unverified.
+This build targets **Aeolia** hardware. v0.14 installed and booted with
+Ethernet on **CUH-1102A, firmware 13.52**. Other models, firmware versions and streaming apps are unverified.
 
 ## Installation
 
-You need GoldHEN and about **42 GiB (45 GB)** of available internal-drive
-space to allow for a full installation and a retained PKG download. Initial
-disk use is smaller.
+You need GoldHEN. Allow about **42 GiB (45 GB)** for a fully used installation,
+a retained PKG download and some free space. This is a planning estimate, not
+the minimum needed to install; initial disk use is smaller.
 
 1. Load GoldHEN and enable BinLoader on port **9090**.
 2. Install the PKG with the PS4 package installer.
@@ -47,6 +47,9 @@ drive with your PS4 games. The system files and launcher use additional space.
 system and data images are mounted, and how the 32 GiB capacity is set.
 
 ## Source
+
+The [developer notes](docs/DEVELOPMENT.md) explain how the port works, the
+decisions behind it and what to consider when changing it.
 
 The current installer is in [`releases/v015`](releases/v015/).
 [Build instructions](docs/BUILD.md) list the tools and external files it needs,

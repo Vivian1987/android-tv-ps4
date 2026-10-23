@@ -2,9 +2,10 @@
 
 ![Android TV for PS4](branding/repository-banner.svg)
 
-Install Android TV on your PS4's internal drive with a native PS4 installer.
-Based on **BRTDTV's Android TV x86 builds**, with PS4-specific hardware support
-and **32 GiB of Android storage—without repartitioning your drive**.
+Android TV 13 for PS4, based on **BRTDTV's Android TV x86 builds**.
+The PS4 app installs the system on the internal drive and launches it through
+a Linux payload. Android gets a 32 GiB data image inside the existing PS4
+filesystem; the installer does not repartition the drive.
 
 Once installed, launch it from the PS4 home screen with GoldHEN and BinLoader
 enabled. No PC or NAS is needed to run it.
@@ -23,11 +24,11 @@ The package is prepared locally; it has not been uploaded to GitHub Releases.
 ## Preview
 
 ![Android TV first-run setup](releases/v015/artwork/android-first-run.png)
-*Android TV's first-run setup from the development console.*
+*Android TV first-run setup.*
 
 ![Controller navigation artwork](releases/v015/artwork/controller-preview.png)
-*Controller preview artwork for the native installer. Progress and status are
-rendered separately while installation runs; this image shows the artwork.*
+*Updated installer artwork. The current packaged build predates this artwork
+change. The blank progress area is cropped out of this preview.*
 
 ## Requirements
 
@@ -39,13 +40,14 @@ rendered separately while installation runs; this image shows the artwork.*
 The development console is a **CUH-1102A (Aeolia), firmware 13.52**. v0.14
 installed and booted independently on that console with Ethernet connectivity.
 v0.15 adds installer recovery, revised previews and Android-to-console power
-handling; its full console acceptance test is not recorded as complete.
+handling. The recorded v0.15 package passed validation and was transferred to
+the console with its checksum verified; its installation test is pending.
 Other hardware revisions and firmware combinations are unverified.
 
 ## Installation
 
-1. Install the PKG using the PS4 package installer.
-2. Load GoldHEN and enable BinLoader on port **9090**.
+1. Load GoldHEN and enable BinLoader on port **9090**.
+2. Install the PKG using the PS4 package installer.
 3. Open **Android TV for PS4** from the home screen. The app copies Android
    and its boot files to the internal drive, showing progress as it works.
 4. The installer launches Linux automatically. On first boot, Linux creates
@@ -86,7 +88,7 @@ and follow up on whatever interests you.
 
 - “Walk me through a first installation.” — [Installer flow](releases/v015/source/install-prebuilt.c)
 - “What happens if copying is interrupted?” — [Copy and resume logic](releases/v015/source/image-copy.c)
-- “How does Android restart the PS4?” — [Power-control supervisor](releases/v015/power/android-supervisor.c)
+- “How is Android restart forwarded to the PS4?” — [Power-control supervisor](releases/v015/power/android-supervisor.c)
 
 Start with [`releases/v015`](releases/v015/) for this release. Earlier installer
 iterations remain under [`installer/`](installer/README.md). Ask the agent to

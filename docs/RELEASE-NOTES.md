@@ -2,6 +2,8 @@
 
 [Installation](INSTALL.md) · [Package checksum and compatibility](COMPATIBILITY.md) · [Usage checklist](RELEASE-CHECKLIST.md)
 
+[Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0). GitHub hosts the PKG in two parts; [join them and verify the checksum](DOWNLOAD.md) before installing.
+
 Android TV 13 boots directly on PlayStation 4 hardware through a PS4 home-screen launcher. The package installs its system and startup files on the internal drive. Later launches reuse your Android apps, accounts and settings.
 
 ## Package and requirements
@@ -22,7 +24,7 @@ The default friendly device name is **PlayStation 4**, including the Android set
 
 ## First use
 
-Load GoldHEN, enable BinLoader, install the PKG and open **Android TV for PS4**. Watch the installer progress, Linux startup and Android animation, then complete Android setup. The first launch prepares the installation and apps, so it takes longer than later launches. HDMI can reconnect during the operating-system handoff. The [installation guide](INSTALL.md) explains each stage; measured durations belong to the final walkthrough rather than a promised countdown.
+Load GoldHEN, enable BinLoader, install the PKG and open **Android TV for PS4**. **Allow 5–10 minutes for the first installation and boot.** Android's files are installed to the console, runtime components are extracted, and its storage, apps and environment are prepared. Leave the console on while installation progress or the Android animation is running. Later launches reuse the setup. HDMI can reconnect during the operating-system handoff; the [installation guide](INSTALL.md) explains each stage and how to distinguish the initial wait from a startup failure.
 
 Sign into YouTube and Spotify using their offered phone/QR/PIN flows. Use Spotify Connect or YouTube's phone-pairing flow to control playback from another device. Pair accessories through Android's **Remotes & accessories** settings. A DualShock 4 and Google TV Streamer 4K Voice Remote have paired and navigated Android on the tested hardware. The checklist covers their buttons and reconnection separately.
 

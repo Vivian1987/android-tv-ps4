@@ -14,7 +14,9 @@ The launcher installs files on the existing PS4 filesystem. It does not repartit
 
 The package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB figure is Android's writable storage capacity, not the download size. Storage is allocated as it is used.
 
-[Releases](https://github.com/odiecay/android-tv-ps4/releases) · [Package checksum and compatibility](docs/COMPATIBILITY.md) · [Installation guide](docs/INSTALL.md)
+[Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Join the download parts](docs/DOWNLOAD.md) · [Package checksum and compatibility](docs/COMPATIBILITY.md) · [Installation guide](docs/INSTALL.md)
+
+The release download is split into two files to fit GitHub's asset size limit. Join them into the original PKG and verify its checksum before installing. The latest test of this exact package installed successfully but stopped before Linux boot; the recorded startup failures are described in [Compatibility](docs/COMPATIBILITY.md).
 
 **Test hardware: CUH-1102A, Aeolia, firmware 13.52, with GoldHEN.** The current payload explicitly checks for firmware 13.52. Other console revisions and firmware versions need their own porting and validation work.
 
@@ -24,6 +26,8 @@ The package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB f
 2. Install the PKG using the PS4 package installer.
 3. Open **Android TV for PS4**. The installer copies its bundled files, prepares Linux, and starts Android automatically.
 4. Complete Android setup. Connect Wi-Fi or Ethernet for online services.
+
+**Allow 5–10 minutes for the first installation and boot.** The launcher and runtime install and extract Android's files to the console, then prepare its storage, apps and environment. Leave the console on while progress or the Android animation is running; later launches reuse the setup. See [what appears on screen](docs/INSTALL.md#what-appears-on-screen) for the stages and troubleshooting.
 
 For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is mapped to console power-off. Apps, accounts and settings remain on the internal drive between launches.
 

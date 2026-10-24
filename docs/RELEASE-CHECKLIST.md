@@ -24,7 +24,7 @@ Start a stopwatch when opening the launcher and record elapsed times:
 | Setup or usable launcher | | |
 | Longest blank/no-signal interval | | |
 
-These measurements become the public first-boot guide. Do not replace them with estimates from another build.
+The first-boot guide asks users to allow 5–10 minutes. Record actual timings here alongside the package hash so that guidance can be refined for different consoles and drives.
 
 ## 2. Google account and applications
 

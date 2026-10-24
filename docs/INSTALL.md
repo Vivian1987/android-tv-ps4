@@ -10,6 +10,8 @@ A USB controller is useful for setup. A DualShock 4 and a Google TV Streamer 4K 
 
 ## First installation
 
+First [download and join the two release parts](DOWNLOAD.md), then verify the reconstructed PKG's SHA256.
+
 1. Load GoldHEN in PS4 mode.
 2. In **GoldHEN → Servers**, enable **BinLoader** on **9090**.
 3. Install `Android-TV-for-PS4.pkg` using the PS4 package installer.
@@ -28,7 +30,9 @@ The launcher contains the installation and boot files. FTP is only one way of tr
 | Android animation | Android starts its graphics and framework services. On first boot it also prepares apps and user storage. |
 | Android setup | Choose language, network and account options, then enter the launcher. |
 
-The first start takes longer than later starts. The display can reconnect during the handoff and graphics initialization. Startup duration depends on the console and storage. The [walkthrough](RELEASE-CHECKLIST.md#1-fresh-installation-and-startup) includes a timing table for recording your experience. A prolonged blank screen or missing animation should be reported with its elapsed time and last visible stage.
+**Allow 5–10 minutes for the first installation and boot after opening the launcher.** It installs the Android files to the console, extracts the runtime components and prepares Android's storage, apps and operating environment. Leave the console on while the installation progress or Android animation is running. Later launches reuse that setup and take less time.
+
+The display can reconnect during the handoff and graphics initialization. The 5–10 minutes is a guide, not a countdown; timing varies with the console and storage. An explicit startup error is a failure to investigate, not part of that wait. If the display stays blank with no animation or progress beyond that window, note the elapsed time and last visible stage and follow the troubleshooting below. The [walkthrough](RELEASE-CHECKLIST.md#1-fresh-installation-and-startup) includes a timing table for reporting your experience.
 
 ## If BinLoader startup stops
 

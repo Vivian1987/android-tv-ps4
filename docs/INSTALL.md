@@ -28,7 +28,7 @@ The launcher contains the installation and boot files. FTP is only one way of tr
 | Android animation | Android starts its graphics and framework services. On first boot it also prepares apps and user storage. |
 | Android setup | Choose language, network and account options, then enter the launcher. |
 
-The first start takes longer than later starts. The display can reconnect during the handoff and graphics initialization. The [release walkthrough](RELEASE-CHECKLIST.md#1-fresh-installation-and-startup) records timings for this exact package. No measured first-boot duration is published yet. A prolonged blank screen or missing animation should be reported with its elapsed time and last visible stage.
+The first start takes longer than later starts. The display can reconnect during the handoff and graphics initialization. Startup duration depends on the console and storage. The [walkthrough](RELEASE-CHECKLIST.md#1-fresh-installation-and-startup) includes a timing table for recording your experience. A prolonged blank screen or missing animation should be reported with its elapsed time and last visible stage.
 
 ## If BinLoader startup stops
 
@@ -40,7 +40,11 @@ For the observed connection-refused failure, recover in this order:
 
 You do not need to reinstall a completed installation. The launcher checks the existing files and tries a new local payload delivery. A successful send is only the first part of booting; the progress display and logs distinguish delivery from Linux preparation.
 
-This recovery was observed after the 1.0 candidate's first installation. The first attempt returned `ECONNREFUSED` (`61`) with zero payload bytes sent; after the toggle, the retry delivered the complete payload and reached Linux preparation. This identifies the failed stage, not the underlying reason the listener was unavailable.
+Error `61` means the launcher could not connect to BinLoader; no payload bytes were delivered. Avoid probing port 9090 with a scanner or an empty TCP connection, which can disturb the receiver.
+
+Error `12` during Linux preparation means the loader could not allocate a required contiguous memory buffer. The latest recorded failure involved the 12,305,408-byte kernel image buffer. Installation had completed, but Linux had not started. Preserve `launcher-boot.log` and report the failure; repeatedly reopening the app is not a confirmed remedy.
+
+A payload-received banner confirms delivery, not execution. If the launcher remains waiting, the GoldHEN log and payload status identify whether the runner actually started. See [known startup issues](COMPATIBILITY.md#known-issues-and-limits).
 
 ## Returning to PS4 and launching again
 
@@ -48,7 +52,7 @@ Android **Restart** is mapped to a physical console restart into PS4 mode. Andro
 
 The previous installation, apps, accounts and pairings are stored in Android's data image. A normal subsequent launch reuses that image. Reinstalling the same storage edition is not a factory reset.
 
-The current candidate includes cleanup for the bundled app and service mounts before physical power operations. Its final power test is tracked in [Compatibility](COMPATIBILITY.md).
+The power supervisor closes Android's app and system mounts before requesting the console power operation.
 
 ## Connectivity and controllers
 

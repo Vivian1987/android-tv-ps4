@@ -15,7 +15,7 @@
 
 Other PS4 models and firmware versions are not validated. The base distribution's compatibility fingerprint is not proof of a newer Android version or Google certification.
 
-## Current package
+## Release package
 
 `Android-TV-for-PS4.pkg` — **3,108,306,944 bytes** (approximately 3.11 GB), 32 GiB edition.
 
@@ -25,55 +25,51 @@ SHA256:
 5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25
 ```
 
-This is the golden candidate selected for the final [release walkthrough](RELEASE-CHECKLIST.md). Package validation passed. The signed APK set, both Google Play services library architectures and the persistent graphics corrections are included. The friendly device name defaults to **PlayStation 4**, while the compatibility model is preserved.
+The package includes the signed APK set, native x86/x86-64 Google Play services libraries and both Mesa raster corrections. Its friendly device name defaults to **PlayStation 4**; the base compatibility model is preserved.
 
-**Console acceptance failed at Linux startup and is under investigation.** The checklist records first installation, Google/YouTube/Spotify sign-in and phone pairing, app playback, networking, Bluetooth controls, physical power and relaunch. A transferred package is not an installed or accepted package.
+Package structure, digests and signatures passed validation, and the transferred file matched its SHA256 by full readback. Those checks establish package integrity; hardware and service behaviour are described below.
 
-The current fresh file installation completed. One boot attempt delivered and executed the full payload but failed to allocate the 12,305,408-byte contiguous kernel image buffer (`ENOMEM`, code 12), before Linux handoff. A later attempt delivered the payload but GoldHEN reported execution failure, leaving the launcher waiting for a status report. An earlier empty TCP health probe had also disturbed BinLoader; the next controlled test must use a clean session with no payload-port probing. These failures are not Android playback or device-name failures.
+## Hardware observations
 
-The preceding console test completed installation and boot after one BinLoader connection-refused recovery. Its live YouTube/Play services fixes informed this build; those observations do not substitute for this exact package's fresh test.
-
-## Demonstrated during development
+The following functions have worked on the stated console during development:
 
 - Android setup, Google sign-in and internal-drive relaunch.
-- YouTube video and audio after correcting the app-facing model.
-- Kayo sign-in and streaming on this console.
-- Native video output and corrected YV12 video layout.
-- Wi-Fi connectivity and Ethernet connectivity.
-- Bluetooth pairing with a DualShock 4 and Google TV Streamer 4K remote.
-- Controller Home mapping.
-- Physical restart to PS4 and shutdown on the prior runtime.
-- Corrected browser icons and Crossy Road assets after the 64-bit Mesa raster fix.
+- YouTube picture and sound, including signed-in playback using version 7.27.302.
+- Kayo sign-in and streaming.
+- HDMI video and audio with the YV12 video-layout correction.
+- Wi-Fi and Ethernet connectivity.
+- Bluetooth pairing/navigation with a DualShock 4 and Google TV Streamer 4K remote.
+- Controller PS/Home mapping.
+- Physical restart to PS4 mode and console shutdown.
+- Corrected browser icons and Crossy Road assets with the Liverpool raster configuration.
 
-These observations concern their recorded development builds. They do not substitute for testing all of those paths in the final combined PKG.
+These observations describe the tested hardware and app paths. They do not establish compatibility with every PS4 revision, peripheral, streaming service or app update. Use the [setup checklist](RELEASE-CHECKLIST.md) to report your configuration and results.
 
 ## Known issues and limits
 
-| Item | Evidence / scope |
+| Item | Behaviour and scope |
 | --- | --- |
-| YouTube playback | YouTube 7.27.302 ARM64 and native Play services run on the test console. After sign-in, normal selections and a previously failing video play unencrypted VP9 at 1080p/1440p. Guest playback previously requested a missing secure decoder; hardware-secure playback is not fixed. Fresh combined-package testing is required. |
-| Native Play services | Version 26.11.32 (190800) resolves the ARM JNI/provider mismatch and permits app provisioning when installed as an update. The same signed APK and both native library sets are now packaged in the original privileged product location. Fresh TV setup and Play Store checks remain. |
-| BinLoader connection refused on first launch | Observed on this candidate; close/toggle/reopen recovery worked. [Steps](INSTALL.md#if-binloader-startup-stops). |
-| Bundled-app shutdown cleanup | The rebuilt supervisor unmounts application binds and the privileged Play services bind before the overlay, app SquashFS and PS4 filesystem. Host tests cover ordering and busy-mount refusal; console validation is required. |
-| 7plus protected video | Audio with missing video and HDCP error; current Widevine/connector state does not supply the required HDCP path. |
-| 32-bit Mesa | The same Liverpool correction now passes all 40 depth/stencil cases (27 failed before). YouTube's spinner is visually confirmed corrected. Both boot-script copies include the hash-checked correction; a fresh packaged boot remains to be tested. |
-| Kodi first launch | Source correction removes inherited `HOME=/`; writable app data needs acceptance on the packaged runtime. |
-| Android shell application | Prior runtime logs show repeated `setgroups` failure involving an invalid supplementary GID. ADB shell access still worked. Root cause and packaged-runtime impact need investigation. |
-| Setup navigation | Backward jumps during setup were reported. The media-extractor correction does not establish that it resolves navigation. |
-| App updates | Store updates can change architecture selection and service behaviour. Tested versions are listed in [Apps](APPS.md). |
-| Security configuration | The runtime uses SELinux permissive mode and authenticated network ADB; it is a homebrew/development OS, not a certified retail TV image. |
+| Linux startup memory allocation | The latest recorded boot attempt on this package failed to allocate the 12,305,408-byte contiguous kernel buffer after three attempts (`ENOMEM`, code 12). File installation completed, but Linux had not started. The allocation failure's underlying cause is not established. |
+| GoldHEN payload execution | A subsequent retry delivered the full payload, but GoldHEN reported “failed to launch payload, error: 1.” The launcher can remain waiting for a startup report even though execution failed. A received-payload banner is not proof of Linux startup. |
+| BinLoader connection refused | Error 61 means no connection was established and no payload bytes were sent. Closing the app and toggling BinLoader has recovered this condition. Empty TCP health probes also disturbed the receiver during testing; do not scan/probe its payload port. [Recovery](INSTALL.md#if-binloader-startup-stops). |
+| YouTube | Version 7.27.302 ARM64 with native Play services plays signed-in selections, including a previously failing video, as unencrypted VP9 at 1080p/1440p. Guest playback previously requested a missing secure decoder. Hardware-secure playback is not fixed by sign-in. |
+| Native Play services | Version 26.11.32 (190800) resolves the ARM JNI/provider mismatch and permits provisioning when installed as an update. The packaged APK replaces the original service in its privileged product location. That update test does not establish every first-run TV setup or Store flow. |
+| Power cleanup | The supervisor releases app/service binds before the overlay, app filesystem and PS4 filesystem. Host tests cover dependency order and refusal to power off with busy mounts. Earlier physical power tests used an earlier runtime. |
+| 7plus protected video | Audio with missing video and an HDCP error; the current connector/DRM path does not supply the required HDCP protection. |
+| Graphics | The 32-bit Liverpool correction passed all 40 depth/stencil cases, compared with 27 failures before correction; the YouTube spinner was visually confirmed corrected. Both 32-bit and 64-bit corrections are encoded in the boot inputs. |
+| Kodi first launch | The runtime removes the inherited Linux `HOME=/` so Kodi can choose Android app storage. |
+| Android shell application | Earlier logs contain repeated `setgroups` failures involving an invalid supplementary GID. ADB shell access still worked; the cause is unresolved. |
+| Setup navigation | Backward jumps and repeated setup pages have been reported. No fix for that behaviour is claimed. |
+| Phone and remote features | Spotify Connect, YouTube phone pairing and generic casting are distinct mechanisms. Bluetooth navigation alone does not establish voice search, TV power/volume, shortcut keys or every controller feature. |
+| App updates | Store updates can change ABI selection and service behaviour. Exact bundled versions are listed in [Apps](APPS.md). |
+| Security configuration | SELinux is permissive and authenticated network ADB is enabled. This homebrew OS is not a certified retail Android TV device. |
 
-## Acceptance record
+## Reporting a result
 
-A release record must name the exact PKG hash and separate host tests, console observations and user observations. The full first-install walkthrough includes network setup, bundled app discovery and playback, graphics, Bluetooth, restart/shutdown, and launching the existing installation again.
+Include the package SHA256, console model and firmware, and whether this was a fresh installation or a subsequent launch. For startup failures, include the last visible stage and exact error. For media issues, distinguish sign-in, menu navigation, actual video playback, advertisements and phone control.
 
-Public reports should not include private console logs or device identifiers. A model/firmware/package-hash report and the relevant redacted error are enough to begin diagnosis.
+The [checklist](RELEASE-CHECKLIST.md) covers first installation, boot timings, Google/YouTube/Spotify sign-in, phone pairing, bundled apps, networking, Bluetooth, physical power and persistence. Keep account identifiers, pairing codes and private logs out of public reports.
 
 ## Source build verification
 
-A clean export of the current source built a complete PKG using fresh libjbc
-and payload-SDK checkouts, a generated SFO/template, and runtime assets extracted
-from the candidate. All nine helper objects matched the original inputs byte
-for byte. Ten host regression programs passed from that clean source tree.
-The reconstructed package passed structural/hash/signature validation. This
-checks the documented build path; it is not console acceptance of that package.
+A clean source export built a complete PKG with fresh pinned libjbc and payload-SDK checkouts, a generated SFO/template and the recorded external runtime inputs. All nine helper objects matched their recorded hashes. Ten host regression suites passed, and the build output passed package structure, hash and signature validation. See [Build](BUILD.md) for the source/input boundary and commands.

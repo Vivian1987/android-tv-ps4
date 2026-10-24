@@ -1,6 +1,6 @@
 # Bundled applications
 
-The manifest records the exact signed APKs and splits selected for the ten-app candidate and its native Google Play services replacement. Each installation creates its own app data. APK signatures are preserved; extracted native libraries are copied unchanged into the system-app layout.
+The manifest records the exact signed APKs and splits included in release 1.0 and its native Google Play services replacement. Each installation creates its own app data. APK signatures are preserved; extracted native libraries are copied unchanged into the system-app layout.
 
 | App | Version | Selected native ABI | Source |
 | --- | --- | --- | --- |
@@ -17,9 +17,9 @@ The manifest records the exact signed APKs and splits selected for the ten-app c
 
 The package has ten apps plus Google Play services across eighteen APK files, including language/density/native splits. `bundled-apps.sfs` also holds their extracted native libraries because Android scans these as immutable system applications. Selecting a universal APK does not force ARM translation: the preparation script chooses x86-64 or x86 where present. YouTube and Crossy Road use ARM64 translation.
 
-The APK set has passed file, package, ABI and signing checks. On the development console, YouTube 7.27.302 plays ordinary menu-selected videos after sign-in, including a previously failing selection; logs show unencrypted VP9 at 1080p and 1440p. Guest playback previously selected an unavailable secure decoder. Sign-in is the verified working route on this build; this does not establish hardware DRM support or universal success for protected content. A fresh install of the combined package must reproduce these results.
+The APK set has passed file, package, ABI and signing checks. On the development console, YouTube 7.27.302 plays ordinary menu-selected videos after sign-in, including a previously failing selection; logs show unencrypted VP9 at 1080p and 1440p. Guest playback previously selected an unavailable secure decoder. Sign-in is the verified working route on this build; this does not establish hardware DRM support or universal success for protected content. Results for protected content and guest sessions remain service-specific.
 
-Google Play services **26.11.32 (190800-885792908)** replaces the base ARM-only service in `/system/product/priv-app/GooglePlayServices`. Both x86 and x86-64 native library sets are included, preserving the signed APK. This version fixed the native provider/provisioning error when installed as an update on the test console. It is the general Android variant; first-run TV setup, Play Store installation and sign-in must be checked with it preinstalled. No account databases, tokens, provisioning state or trusted debugging keys are copied from the console.
+Google Play services **26.11.32 (190800-885792908)** replaces the base ARM-only service in `/system/product/priv-app/GooglePlayServices`. Both x86 and x86-64 native library sets are included, preserving the signed APK. This version fixed the native provider/provisioning error when installed as an update on the test console. It is the general Android variant. The documented runtime result used it as an installed update; that result does not establish every TV setup or Store flow. No account databases, tokens, provisioning state or trusted debugging keys are copied from the console.
 
 App updates can change code, ABI selection or service behaviour. The repository retains the version/signature manifest for diagnosis. Account requirements and playback restrictions remain those of each service.
 

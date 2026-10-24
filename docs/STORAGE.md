@@ -33,7 +33,7 @@ The first-boot script uses `truncate -s` and `mke2fs` to create a **32 GiB logic
 
 The file grows in physical allocation as Android writes data. It still has a fixed 32 GiB filesystem capacity, and the PS4's physical free space is shared with games and other files. Android's apparent free space inside its image does not reserve that space on the PS4 drive.
 
-## Accounting for the current candidate
+## Storage accounting for release 1.0
 
 These figures describe the package SHA256 `5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25`.
 

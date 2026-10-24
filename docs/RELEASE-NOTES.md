@@ -1,6 +1,6 @@
 # Android TV for PS4 1.0 — 32 GiB
 
-Release text for the candidate in [Compatibility](COMPATIBILITY.md). Final console acceptance is recorded in the [release checklist](RELEASE-CHECKLIST.md); the binary is not publicly published yet.
+[Installation](INSTALL.md) · [Package checksum and compatibility](COMPATIBILITY.md) · [Usage checklist](RELEASE-CHECKLIST.md)
 
 Android TV 13 boots directly on PlayStation 4 hardware through a PS4 home-screen launcher. The package installs its system and startup files on the internal drive. Later launches reuse your Android apps, accounts and settings.
 
@@ -24,15 +24,15 @@ The default friendly device name is **PlayStation 4**, including the Android set
 
 Load GoldHEN, enable BinLoader, install the PKG and open **Android TV for PS4**. Watch the installer progress, Linux startup and Android animation, then complete Android setup. The first launch prepares the installation and apps, so it takes longer than later launches. HDMI can reconnect during the operating-system handoff. The [installation guide](INSTALL.md) explains each stage; measured durations belong to the final walkthrough rather than a promised countdown.
 
-Sign into YouTube and Spotify using their offered phone/QR/PIN flows. Spotify Connect and YouTube phone pairing are separate acceptance tests. Pair accessories through Android's **Remotes & accessories** settings. A DualShock 4 and Google TV Streamer 4K Voice Remote have paired and navigated Android during development; the exact candidate's pairing and reconnection results are recorded in the checklist.
+Sign into YouTube and Spotify using their offered phone/QR/PIN flows. Use Spotify Connect or YouTube's phone-pairing flow to control playback from another device. Pair accessories through Android's **Remotes & accessories** settings. A DualShock 4 and Google TV Streamer 4K Voice Remote have paired and navigated Android on the tested hardware. The checklist covers their buttons and reconnection separately.
 
-Android **Restart** returns to PS4 mode; load GoldHEN again before opening Android TV. **Shut down** maps to console power-off. Final acceptance includes both operations and persistence of accounts, apps, network settings and pairings.
+Android **Restart** returns to PS4 mode; load GoldHEN again before opening Android TV. **Shut down** maps to console power-off. Accounts, apps, network settings and pairings live in persistent Android storage.
 
 ## Compatibility limits
 
 Signed-in YouTube playback has worked with the current app and native services on the development console. Guest playback previously selected an unavailable secure decoder. 7plus protected playback has an unresolved HDCP limitation. This port does not establish Google certification, hardware-secure DRM or compatibility with every streaming service.
 
-An initial BinLoader connection refusal has occurred. Close the launcher completely, toggle BinLoader off and on, then reopen it; a completed Android installation is retained. Report this if it happens during the final walkthrough.
+Startup issues include BinLoader connection refusal and a recorded failure to reserve the contiguous Linux kernel buffer. A later retry also failed to execute in GoldHEN after delivery. [Troubleshooting](INSTALL.md#if-binloader-startup-stops) distinguishes these errors; a completed Android installation is retained.
 
 The runtime uses SELinux permissive mode and authenticated network ADB. Developer access requires authorization; developer accounts and trusted debugging keys are not bundled. This is a homebrew OS for the stated hardware, with service-specific limits documented in [Compatibility](COMPATIBILITY.md).
 

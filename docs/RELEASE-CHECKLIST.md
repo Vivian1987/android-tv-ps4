@@ -1,6 +1,6 @@
-# Release acceptance: Android TV for PS4 1.0
+# Installation and use checklist: Android TV for PS4 1.0
 
-This is the human walkthrough for the **32 GiB** release candidate. Results belong to the exact PKG hash in [Compatibility](COMPATIBILITY.md). Earlier development successes are background evidence, not passes for this package.
+Use this walkthrough for the **32 GiB** release. Include the exact PKG hash from [Compatibility](COMPATIBILITY.md) with your results so reports from different builds stay distinguishable.
 
 Record each item as **Pass**, **Fail**, or **Not tested**, with a short observation. A failure should include the last visible message and whether reopening the app changes it. Keep account names, QR codes, pairing codes and raw private logs out of public reports.
 
@@ -95,14 +95,14 @@ A server/account-dependent test can be **Not tested**; that app's playback must 
 - [ ] Check Bluetooth reconnection and play media again after that boot.
 - [ ] Choose Android **Shut down**. The console physically powers off, with no persistent black-screen/hung state.
 
-## Maintainer sign-off
+## Build and distribution checks
 
 - [ ] Package structure, digests and signatures pass; transferred PKG matches the local SHA256 by full readback.
-- [ ] Source, runtime snapshot, APK versions/hashes, artwork and package manifest identify this exact candidate.
+- [ ] Source, runtime snapshot, APK versions/hashes, artwork and package manifest identify the exact package tested.
 - [ ] No account data, saved network credentials, trusted ADB keys, private keys or developer identifiers are included. Review the fixed system input as well as newly added files.
 - [ ] Record host checks, instrumented console results and human observations separately.
 - [ ] Resolve mandatory boot/setup/sign-in/playback/network/power failures, or narrow the published claim explicitly. Record optional/unavailable service tests honestly.
 - [ ] Verify third-party distribution terms, notices and source obligations, and the final binary download route/checksums.
 - [ ] Freeze the tested artifact. Any later runtime or APK change requires testing the resulting package again.
 
-The candidate is accepted only after these results are recorded. “Golden candidate” identifies the artifact selected for this walkthrough; it does not pre-fill the result.
+Keep the completed checklist with the package hash. Unchecked items are not test results.

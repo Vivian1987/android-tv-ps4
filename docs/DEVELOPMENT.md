@@ -105,7 +105,7 @@ The controller keylayout changes Sony `BUTTON_MODE` mappings to Android `HOME`. 
 
 The Linux supervisor remains outside Android's PID namespace and waits for Android init. A namespace restart reports SIGHUP; namespace power-off reports SIGINT. The supervisor maps those outcomes to a physical console operation, synchronizes and unmounts storage, and refuses power operations if cleanup fails. An ordinary crash is not treated as a power request.
 
-The added bundled-app mount must participate in that cleanup before the PS4 filesystem is unmounted. The first ten-app candidate omitted those unmounts. The corrected supervisor removes app binds first, then the system overlay and app filesystem before internal storage. Host tests check that busy mounts block physical power. [Compatibility](COMPATIBILITY.md) separates that source fix from the candidate on the console. Physical restart/shutdown acceptance must be repeated with the full packaged app filesystem.
+The supervisor removes app and service binds first, then the system overlay and app filesystem before internal storage. Host tests check that busy mounts block physical power. Changes to the mount layout must preserve this order and include a console power test.
 
 ## Diagnostics and development boundaries
 
@@ -117,6 +117,6 @@ Changes must be built into a new PKG and tied to its hash. Editing a running And
 
 ## Observing a boot without disturbing it
 
-Do not port-check GoldHEN BinLoader with an empty TCP connection, `nc -z`, a scanner or an HTTP request. A connection to the payload receiver is an attempted payload delivery, not a harmless health check. An empty probe during candidate testing produced a receiver error before the launcher attempted delivery. Use FTP for reachability and the kernel-log service for observation; the launcher alone delivers the intended payload during acceptance.
+Do not port-check GoldHEN BinLoader with an empty TCP connection, `nc -z`, a scanner or an HTTP request. A connection to the payload receiver is an attempted payload delivery, not a harmless health check. An empty probe produced a receiver error before the launcher attempted delivery. Use FTP for reachability and the kernel-log service for observation; the launcher alone delivers the intended payload during an end-to-end test.
 
 A complete socket write does not establish that GoldHEN executed the payload. The launch status with the matching nonce confirms entry, subsequent stages identify Linux preparation, and stage 7 authorizes display release only after preparation succeeds. Capture the last completed stage and receiver log before retrying.

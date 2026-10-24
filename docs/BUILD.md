@@ -49,7 +49,7 @@ This produces:
 - `build/prepared/template`: product SFO and the OpenOrbis sample runtime modules.
 - `build/prepared/helper-build.json`: source revisions and object/template hashes.
 
-All nine helper object hashes have been reproduced against the candidate's inputs on the checked compiler environment. There is no requirement to copy opaque helper objects from the developer's machine.
+All nine helper object hashes have been reproduced against the recorded release inputs on the checked compiler environment. There is no requirement to copy opaque helper objects from the developer's machine.
 
 ## Obtain the runtime assets
 
@@ -76,7 +76,7 @@ assets/
   bundled-apps.sfs
 ```
 
-Verify the source PKG against its published SHA256 before extraction. Development before public binary publication requires supplying these same inputs independently; the source checkout does not download the Android distribution or APKs for you.
+Verify the source PKG against its published SHA256 before extraction. When building without an extracted PKG, supply those same inputs independently. The source checkout does not download the Android distribution or APKs for you.
 
 The selected runtime must match `runtime-inputs.json`, `bundled-apps.json` and `bundled-apps-image.json`. Do not bypass a hash failure to combine unrelated development builds. The builder also rejects extra files in the asset directory.
 
@@ -99,7 +99,7 @@ The builder compiles the kexec blob and local payload runner, embeds the bundled
 
 Outputs are `Android-TV-for-PS4.pkg`, `SHA256SUMS`, `release.json` and `validation.txt`. The manifest records runtime, source, artwork, helper and payload hashes. Package validation is not a console boot test.
 
-The title is **Android TV for PS4**, title ID **ATVX13001**, application version **1.00**, and content ID **IV0000-ATVX13001_00-PS4ANDROIDTV0000**. Development candidates keep this product identity.
+The title is **Android TV for PS4**, title ID **ATVX13001**, application version **1.00**, and content ID **IV0000-ATVX13001_00-PS4ANDROIDTV0000**. Rebuilds keep this product identity.
 
 ## Host regression tests
 

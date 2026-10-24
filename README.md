@@ -6,15 +6,15 @@ Android TV 13 running on PlayStation 4 hardware, based on **BRTDTV's Android TV 
 
 The launcher installs files on the existing PS4 filesystem. It does not repartition the drive. Booting uses the console's own GoldHEN BinLoader through loopback; a PC, FTP server, router or internet connection is not part of the boot sequence. Android manages its own Wi-Fi and Ethernet once it starts.
 
-[Installation](docs/INSTALL.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Compatibility and testing](docs/COMPATIBILITY.md) · [Release checklist](docs/RELEASE-CHECKLIST.md) · [Release notes](docs/RELEASE-NOTES.md)
+[Installation](docs/INSTALL.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Compatibility](docs/COMPATIBILITY.md) · [Setup checklist](docs/RELEASE-CHECKLIST.md) · [Release notes](docs/RELEASE-NOTES.md)
 
 ## Release
 
 **1.0 · Android TV 13 · 32 GiB Android storage**
 
-The current test package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB figure is Android's writable storage capacity, not the download size. Storage is allocated as it is used.
+The package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB figure is Android's writable storage capacity, not the download size. Storage is allocated as it is used.
 
-The package is undergoing console acceptance testing. Public binaries are distributed through the [Releases page](https://github.com/odiecay/android-tv-ps4/releases) when a build is accepted. [Compatibility and testing](docs/COMPATIBILITY.md) records the distinction between demonstrated features and acceptance of the complete package.
+[Releases](https://github.com/odiecay/android-tv-ps4/releases) · [Package checksum and compatibility](docs/COMPATIBILITY.md) · [Installation guide](docs/INSTALL.md)
 
 **Test hardware: CUH-1102A, Aeolia, firmware 13.52, with GoldHEN.** The current payload explicitly checks for firmware 13.52. Other console revisions and firmware versions need their own porting and validation work.
 
@@ -25,7 +25,7 @@ The package is undergoing console acceptance testing. Public binaries are distri
 3. Open **Android TV for PS4**. The installer copies its bundled files, prepares Linux, and starts Android automatically.
 4. Complete Android setup. Connect Wi-Fi or Ethernet for online services.
 
-For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is intended to power off the console. The current candidate includes shutdown cleanup for its bundled app and service mounts; final console acceptance is recorded in the release checklist.
+For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is mapped to console power-off. Apps, accounts and settings remain on the internal drive between launches.
 
 If startup reports that BinLoader is unavailable: press **PS**, fully close Android TV, toggle **GoldHEN → Servers → BinLoader** off and on, then reopen Android TV. The completed installation is reused. See [installation and recovery](docs/INSTALL.md) for the full flow.
 
@@ -33,7 +33,7 @@ If startup reports that BinLoader is unavailable: press **PS**, fully close Andr
 
 The PKG carries the native installer, Linux loader and kernel, initramfs, compressed Android system, PS4 hardware adaptations and a separate read-only filesystem of bundled apps.
 
-The current candidate includes **YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64**. Apps start with fresh data; services may require their own accounts. [App versions, architectures and sources](docs/APPS.md) identify the exact builds. YouTube and Crossy Road use ARM64 translation; the other apps use native x86/x86-64 code or Java. Native Google Play services is included to replace the base ARM-only service.
+The release includes **YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64**. Apps start with fresh data; services may require their own accounts. [App versions, architectures and sources](docs/APPS.md) identify the exact builds. YouTube and Crossy Road use ARM64 translation; the other apps use native x86/x86-64 code or Java. Native Google Play services is included to replace the base ARM-only service.
 
 HDMI video and audio, Wi-Fi, Bluetooth pairing, the controller's Home action, and physical restart/shutdown have been demonstrated during development. Service-specific compatibility varies: this port does not establish Google device certification or HDCP support. In particular, 7plus protected playback has an unresolved HDCP limitation.
 

@@ -1,59 +1,46 @@
-# Android TV for PS4 1.0 — 32 GiB
+# Android TV for PS4 1.0
 
-[Installation](INSTALL.md) · [Package checksum and compatibility](COMPATIBILITY.md) · [Usage checklist](RELEASE-CHECKLIST.md)
+The first public release: Android TV 13 on PlayStation 4, installed from a single PKG and booted from the console's internal drive.
 
-[Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0). GitHub hosts the PKG in two parts; [join them and verify the checksum](DOWNLOAD.md) before installing.
+[Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Join the download](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-Android TV 13 boots directly on PlayStation 4 hardware through a PS4 home-screen launcher. The package installs its system and startup files on the internal drive. Later launches reuse your Android apps, accounts and settings.
+## Highlights
 
-## Download to installation
+- **Android TV 13** with Google Play services and the Play Store
+- **One-PKG install** from the PS4 home screen. Nothing is repartitioned, and Android lives in ordinary files on the internal drive.
+- **Boots without a PC or network.** The launcher hands its payload to GoldHEN on the console itself.
+- **32 GiB of Android storage** that only takes up space as you use it
+- **Ten apps pre-installed:** YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64 ([versions](APPS.md))
+- **Bluetooth controllers and remotes:** DualShock 4 and Google TV Streamer remote tested; the PS button goes to Home
+- **Wi-Fi and Ethernet**, managed by Android
+- **Restart and Shut down** in Android return to the PS4 system or power the console off
 
-1. Download **Android-TV-for-PS4.pkg.part1**, **Android-TV-for-PS4.pkg.part2** and **Join-PKG-Windows.cmd** from the [release assets](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) into the same folder.
-2. On Windows, **double-click Join-PKG-Windows.cmd**. It joins the two parts and checks the SHA256. Wait for **READY: Android-TV-for-PS4.pkg**. No extra software is required.
-3. Copy the completed **Android-TV-for-PS4.pkg** to the top level of an **exFAT USB drive**. Connect it to the PS4, load GoldHEN and install the PKG through the **Package Installer**.
-4. Enable **GoldHEN → Servers → BinLoader** on **9090** and open **Android TV for PS4**.
-5. Allow **5–10 minutes** for the first installation and boot. Complete Android setup when it appears. Subsequent boots take about **2 minutes**.
+## Requirements
 
-On Linux/macOS, download **join-pkg.sh** beside the two parts and run `sh join-pkg.sh`. It performs the same joining and verification. [Full instructions and manual commands](DOWNLOAD.md).
+- PS4 **CUH-1102A (Aeolia)** on firmware **13.52** with GoldHEN. Other models and firmware aren't supported yet.
+- GoldHEN **BinLoader** enabled on port **9090**
+- An exFAT USB drive to install the PKG
+- About 8 GiB of free internal space to install. Usage grows as Android fills its storage, up to about 43 GiB if all 32 GiB is used ([Storage](STORAGE.md)).
 
-The `.part1` and `.part2` files are consecutive pieces of the original PKG. Joining restores it byte for byte; it does not modify or rebuild it. Install the joined `.pkg`, not the individual parts. GitHub's **Source code** ZIP/TAR downloads contain the repository, not the installer.
+## Install
 
-## Package and requirements
+1. Download both PKG parts and the joining tool from the release page.
+2. Windows: double-click **Join-PKG-Windows.cmd**. Linux/macOS: run `sh join-pkg.sh`. Wait for **READY**.
+3. Copy `Android-TV-for-PS4.pkg` to an exFAT USB drive and install it with GoldHEN's Package Installer.
+4. Enable BinLoader and open **Android TV for PS4**.
 
-- `Android-TV-for-PS4.pkg`, approximately **3.11 GB**.
-- **32 GiB** of Android userdata capacity, allocated on the PS4 drive as it is used. No disk repartitioning or 32 GiB download is required.
-- Tested development hardware: **CUH-1102A / Aeolia / firmware 13.52**, with GoldHEN. The payload checks this firmware; other models and firmware are not supported by the current test evidence.
-- GoldHEN **BinLoader on port 9090** must be enabled. The launcher sends its bundled payload locally; boot does not require a PC, FTP, a router or internet access.
-- Online services need internet access after Android starts. Android handles its own Ethernet and Wi-Fi settings.
+The **first launch takes 5–10 minutes**. Later launches take about **2 minutes**.
 
-## Included applications
+## Known issues
 
-**YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64** are bundled, along with native Google Play services. You can open them without downloading them first. You supply your own accounts, subscriptions, servers and media.
+- No HDCP, and this isn't a Google-certified device. Some DRM-protected video won't play (7plus, for example).
+- YouTube needs you to sign in; guest playback can fail.
+- On one Kayo 4.6.1 screen, the controller's X button does nothing. Use the Google TV remote's centre button.
+- Setup may leave the base device name in place. Set it to **PlayStation 4** in Settings so Spotify Connect shows the right name.
+- If BinLoader is unavailable (error 61), close the app, toggle BinLoader off and on, and reopen it.
 
-YouTube **7.27.302** and Crossy Road use ARM64 translation. Native x86/x86-64 builds are selected for other native-code applications; BiglyBT is Java-only. Exact signed APK versions and sources are in [Apps](APPS.md).
+See [Compatibility](COMPATIBILITY.md) for the full list.
 
-Set Android's **Device name** to **PlayStation 4** after setup if the base name is still shown. Spotify discovery reads that setting. The compatibility model is kept separate so naming the console does not repeat the earlier YouTube compatibility rejection.
+## Credits
 
-## First use
-
-Load GoldHEN, enable BinLoader, install the PKG and open **Android TV for PS4**. **Allow 5–10 minutes for the first installation and boot.** Android's files are installed to the console, runtime components are extracted, and its storage, apps and environment are prepared. Leave the console on while installation progress or the Android animation is running. After the first installation, subsequent boots take about **2 minutes** and reuse the setup. HDMI can reconnect during the operating-system handoff; the [installation guide](INSTALL.md) explains each stage and how to distinguish the initial wait from a startup failure.
-
-Sign into YouTube and Spotify using their offered phone/QR/PIN flows. Use Spotify Connect or YouTube's phone-pairing flow to control playback from another device. Pair accessories through Android's **Remotes & accessories** settings. A DualShock 4 and Google TV Streamer 4K Voice Remote have paired and navigated Android on the tested hardware. The checklist covers their buttons and reconnection separately.
-
-Android **Restart** returns to PS4 mode; load GoldHEN again before opening Android TV. **Shut down** maps to console power-off. Accounts, apps, network settings and pairings live in persistent Android storage.
-
-## Compatibility limits
-
-Signed-in YouTube playback has worked with the current app and native services on the development console. Guest playback previously selected an unavailable secure decoder. 7plus protected playback has an unresolved HDCP limitation. This port does not establish Google certification, hardware-secure DRM or compatibility with every streaming service.
-
-Kayo 4.6.1 ignored DualShock 4 X on one selection screen; the Google TV Streamer remote's centre/select button advanced it. Use the remote for that screen. Standard gamepad mappings are preserved for games.
-
-Fresh installation and Android boot have been confirmed on the test console. Earlier testing encountered BinLoader connection refusal, a kernel-buffer allocation error and a payload execution failure. [Troubleshooting](INSTALL.md#if-binloader-startup-stops) explains these errors and recovery; a completed installation is retained.
-
-The runtime uses SELinux permissive mode and authenticated network ADB. Developer access requires authorization; developer accounts and trusted debugging keys are not bundled. This is a homebrew OS for the stated hardware, with service-specific limits documented in [Compatibility](COMPATIBILITY.md).
-
-## Source and further development
-
-The repository contains the port's launcher, payload/loader changes, runtime scripts, helper sources, kernel configuration/patch, graphics corrections, tests and packaging tools. [Build instructions](BUILD.md) identify the pinned source dependencies and external Android, graphics and APK inputs; this is not a full AOSP distribution source tree. [Contributing](../CONTRIBUTING.md) explains how to extend hardware support and provide useful test results.
-
-Based on **BRTDTV's Android TV x86** distribution and the work of the PS4 Linux community, GoldHEN, OpenOrbis, Scene-Collective, sleirsgoevy, Ps3itaTeam, Android-x86, AOSP, Linux, Mesa and the bundled app authors. See [Credits](CREDITS.md).
+Built on **BRTDTV's Android TV x86**, with work from the PS4 Linux community, GoldHEN, OpenOrbis, Scene-Collective, sleirsgoevy, Ps3itaTeam, Android-x86, AOSP, Linux, Mesa and the app developers. [Full credits](CREDITS.md).

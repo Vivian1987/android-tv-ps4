@@ -1,71 +1,58 @@
-# Download Android TV for PS4 1.0
+# Downloading Android TV for PS4 1.0
 
-Download both package parts from the [1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) into the same folder:
+GitHub limits release files to 2 GiB, so the 3.11 GB PKG is split into two parts. Download both from the [1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) into the same folder, then join them using one of the methods below. Joining restores the original PKG exactly. You'll need about 6.3 GB free for the parts and the finished file.
 
-- `Android-TV-for-PS4.pkg.part1`
-- `Android-TV-for-PS4.pkg.part2`
+## Windows
 
-GitHub limits individual release assets to under 2 GiB. These are two pieces of one **3,108,306,944-byte PKG**, not separate packages. Join them before transferring the PKG to your PS4. Allow about 6.3 GB of free space on your computer for the parts and the reconstructed file together.
+1. Download `Android-TV-for-PS4.pkg.part1`, `Android-TV-for-PS4.pkg.part2` and [Join-PKG-Windows.cmd](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/Join-PKG-Windows.cmd) into one folder.
+2. Double-click **Join-PKG-Windows.cmd**.
+3. Wait for **READY: Android-TV-for-PS4.pkg**.
 
-## Windows: double-click to join and verify
+The tool checks the SHA256 of the finished PKG. It works on Windows 10 and 11 with nothing extra to install and no admin rights. Your downloaded parts are kept, and an existing PKG is checked rather than overwritten. If a part is incomplete or the checksum is wrong, you'll get an error instead of a PKG. [Tool source](../tools/Join-PKG-Windows.cmd).
 
-1. Download [Join-PKG-Windows.cmd](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/Join-PKG-Windows.cmd) into the same folder as both parts.
-2. Double-click **Join-PKG-Windows.cmd**. No extra program or administrator access is needed on Windows 10/11.
-3. Leave the window open while it joins the parts and checks the SHA256. Wait for **READY: Android-TV-for-PS4.pkg**.
-4. Copy that completed PKG to the top level of an **exFAT USB drive**, connect it to the PS4, load GoldHEN and install it through the **Package Installer**.
-5. Enable **GoldHEN → Servers → BinLoader** on port **9090**, then open **Android TV for PS4**.
+## Linux or macOS
 
-The tool keeps your downloads. If a PKG already exists, it verifies it without overwriting it. An incomplete download or checksum failure produces an error instead of an install-ready file. The tool's [source](../tools/Join-PKG-Windows.cmd) is in this repository.
-
-**Allow 5–10 minutes for the first installation and boot**, while Android installs and extracts its files and prepares its storage, apps and environment. Subsequent boots take about **2 minutes**.
-
-## Linux or macOS: join and verify script
-
-Download [join-pkg.sh](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/join-pkg.sh) beside both parts. Open a terminal in that folder and run:
+Download both parts and [join-pkg.sh](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/join-pkg.sh) into one folder, open a terminal there, and run:
 
 ```sh
 sh join-pkg.sh
 ```
 
-The script joins the parts, verifies the completed PKG and reports **READY**. Follow steps 4–5 above to install it. [Script source](../tools/join-pkg.sh).
+Wait for **READY**. [Script source](../tools/join-pkg.sh).
 
-## Manual alternative: Windows
+## Joining manually
 
-Open **Command Prompt** in the download folder and run:
+Windows (Command Prompt):
 
 ```bat
 copy /b Android-TV-for-PS4.pkg.part1+Android-TV-for-PS4.pkg.part2 Android-TV-for-PS4.pkg
 certutil -hashfile Android-TV-for-PS4.pkg SHA256
 ```
 
-If using PowerShell, run the first command through `cmd /c`:
+Windows (PowerShell):
 
 ```powershell
 cmd /c "copy /b Android-TV-for-PS4.pkg.part1+Android-TV-for-PS4.pkg.part2 Android-TV-for-PS4.pkg"
 Get-FileHash .\Android-TV-for-PS4.pkg -Algorithm SHA256
 ```
 
-## Manual alternative: Linux or macOS
-
-Open a terminal in the download folder and run:
+Linux or macOS:
 
 ```sh
 cat Android-TV-for-PS4.pkg.part1 Android-TV-for-PS4.pkg.part2 > Android-TV-for-PS4.pkg
 shasum -a 256 Android-TV-for-PS4.pkg
 ```
 
-On Linux, `sha256sum Android-TV-for-PS4.pkg` is an alternative checksum command.
-
-## Check the result
-
-The reconstructed PKG must have this SHA256:
+The result must be **3,108,306,944 bytes** with this SHA256:
 
 ```text
 5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25
 ```
 
-If the hash differs, do not install it. Check both downloads against the individual hashes in the release's `SHA256SUMS`, redownload a damaged part and join them again. Joining the files does not change or rebuild the package.
+If it doesn't match, don't install it. Check each part against `SHA256SUMS` on the release page, re-download the bad one and join again.
 
-Install **`Android-TV-for-PS4.pkg`** using the [installation guide](INSTALL.md). The `.part1` and `.part2` downloads cannot be installed directly. GitHub's automatically generated **Source code** archives contain the repository, not the installable PKG.
+## Next steps
 
-The release targets **CUH-1102A / Aeolia / firmware 13.52** with GoldHEN and its BinLoader enabled. Read [Compatibility](COMPATIBILITY.md) for the recorded startup and streaming limitations. Fresh installation and Android boot have been confirmed on the stated test console.
+Install the joined **`Android-TV-for-PS4.pkg`**, not the `.part` files. The **Source code** ZIP/TAR on the release page is the repository, not the installer.
+
+Copy the PKG to the top level of an exFAT USB drive and follow the [installation guide](INSTALL.md).

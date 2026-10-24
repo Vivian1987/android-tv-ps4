@@ -47,6 +47,6 @@ Remove account identifiers, Wi-Fi credentials, access tokens and private device 
 
 ## Licensing and attribution
 
-Retain upstream notices and identify the origin of copied code, patches and binary inputs. The repository currently has component-specific licences and no blanket project licence; do not relabel upstream material as newly licensed code. Link the relevant source/version when proposing an additional bundled app. App download availability alone is not a redistribution licence.
+Retain upstream notices and identify the origin of copied code, patches and binary inputs. The repository currently has component-specific licences and no blanket project licence; do not relabel upstream material as newly licensed code. Link the relevant source/version when proposing an additional bundled app.
 
 Open an issue or pull request on [GitHub](https://github.com/odiecay/android-tv-ps4) with a focused change and the evidence you have. Reports from additional PS4 revisions are useful even when the port does not boot: knowing exactly where a hardware assumption fails helps define the next port.

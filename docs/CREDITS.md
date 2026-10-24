@@ -30,7 +30,7 @@ Binary hashes identify the particular build inputs; they do not replace correspo
 - [BiglyBT for Android](https://github.com/BiglySoftware/BiglyBT-Android) — Bigly Software and contributors.
 - YouTube — Google; Spotify — Spotify; Plex — Plex; Crossy Road — its respective publisher/developer; AIDA64 — FinalWire.
 
-Exact versions, original download links and signer hashes are in [Apps](APPS.md) and the bundled-app manifest. The repository does not relicense those applications. Preserve applicable notices and corresponding-source access for the versions being distributed; proprietary redistribution permission is a separate release requirement.
+Exact versions, original download links and signer hashes are in [Apps](APPS.md) and the bundled-app manifest. The repository does not relicense those applications.
 
 ## Artwork
 

@@ -2,78 +2,78 @@
 
 ![Android TV for PS4](branding/repository-banner.svg)
 
-Android TV 13 running on PlayStation 4 hardware, based on **BRTDTV's Android TV x86** build. Install a PS4 PKG, open the launcher, and the console boots Linux and Android from its internal drive. Later launches keep your Android apps and settings.
+Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. Install one PKG, open it from the home screen, and the console boots straight into Android TV from its internal drive. Your apps, accounts and settings are kept between launches.
 
-The launcher installs files on the existing PS4 filesystem. It does not repartition the drive. Booting uses the console's own GoldHEN BinLoader through loopback; a PC, FTP server, router or internet connection is not part of the boot sequence. Android manages its own Wi-Fi and Ethernet once it starts.
+[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Release notes](docs/RELEASE-NOTES.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
 
-[Installation](docs/INSTALL.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Compatibility](docs/COMPATIBILITY.md) · [Setup checklist](docs/RELEASE-CHECKLIST.md) · [Release notes](docs/RELEASE-NOTES.md)
+## Version 1.0
 
-## Release
+- **Android TV 13**, with 32 GiB of Android storage
+- **3.11 GB** download, split into two parts for GitHub
+- Tested on **CUH-1102A (Aeolia), firmware 13.52, with GoldHEN**
 
-**1.0 · Android TV 13 · 32 GiB Android storage**
+The 32 GiB is how much Android can store. It is not the download size, and space on the PS4 drive is only used as Android fills it. Nothing is repartitioned: Android lives in ordinary files on the existing PS4 filesystem.
 
-The package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB figure is Android's writable storage capacity, not the download size. Storage is allocated as it is used.
+Other PS4 models and firmware versions haven't been tested. The boot payload checks for firmware 13.52 and stops on anything else.
 
-[Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Join the download parts](docs/DOWNLOAD.md) · [Package checksum and compatibility](docs/COMPATIBILITY.md) · [Installation guide](docs/INSTALL.md)
+## Quick start
 
-The release download is split into two files to fit GitHub's asset size limit. On Windows, put both parts beside [Join-PKG-Windows.cmd](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/Join-PKG-Windows.cmd) and **double-click the tool**. It creates the original PKG and verifies its checksum. A Linux/macOS script and manual commands are also in the [download guide](docs/DOWNLOAD.md).
+1. Download both `.pkg.part` files and the joining tool from the [release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0). On Windows, double-click **Join-PKG-Windows.cmd**. On Linux or macOS, run `sh join-pkg.sh`. Either tool rebuilds and verifies `Android-TV-for-PS4.pkg` ([details](docs/DOWNLOAD.md)).
+2. Copy the PKG to an exFAT USB drive and install it with GoldHEN's **Package Installer**.
+3. Enable **GoldHEN → Servers → BinLoader** (port 9090).
+4. Open **Android TV for PS4**.
 
-Fresh installation and Android boot have been confirmed on the test console. [Compatibility](docs/COMPATIBILITY.md) covers hardware scope, streaming limits and recovery from startup errors encountered during testing.
+**The first launch takes 5–10 minutes** while Android is installed to the internal drive and set up. Leave the console alone while progress or the Android animation is showing. After that, Android boots in about **2 minutes**.
 
-**Test hardware: CUH-1102A, Aeolia, firmware 13.52, with GoldHEN.** The current payload explicitly checks for firmware 13.52. Other console revisions and firmware versions need their own porting and validation work.
+To launch again later, load GoldHEN, make sure BinLoader is on, and open the app. In Android, **Restart** takes you back to the PS4 system and **Shut down** turns the console off.
 
-## Using it
+Booting needs no PC, network or internet connection. The app hands its payload to GoldHEN on the console itself. Once Android is running, it manages Wi-Fi and Ethernet on its own.
 
-1. Load GoldHEN and enable **Servers → BinLoader** on port **9090**.
-2. Install the PKG using the PS4 package installer.
-3. Open **Android TV for PS4**. The installer copies its bundled files, prepares Linux, and starts Android automatically.
-4. Complete Android setup. Connect Wi-Fi or Ethernet for online services.
+If the launcher reports that BinLoader is unavailable, close the app, turn BinLoader off and on again, and reopen it. More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting).
 
-**Allow 5–10 minutes for the first installation and boot.** The launcher and runtime install and extract Android's files to the console, then prepare its storage, apps and environment. Leave the console on while progress or the Android animation is running; later boots take about **2 minutes** and reuse the setup. See [what appears on screen](docs/INSTALL.md#what-appears-on-screen) for the stages and troubleshooting.
+## What's included
 
-For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is mapped to console power-off. Apps, accounts and settings remain on the internal drive between launches.
+**YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64** come pre-installed, along with Google Play services and the Play Store. Sign in with your own accounts. [Exact app versions](docs/APPS.md).
 
-If startup reports that BinLoader is unavailable: press **PS**, fully close Android TV, toggle **GoldHEN → Servers → BinLoader** off and on, then reopen Android TV. The completed installation is reused. See [installation and recovery](docs/INSTALL.md) for the full flow.
+Working on the test console:
 
-## What is included
+- HDMI picture and sound
+- Wi-Fi, Ethernet and Bluetooth
+- DualShock 4 and Google TV Streamer remote; the PS button goes to Home
+- Google sign-in, YouTube playback (signed in) and Kayo streaming
+- Restart to PS4 mode and power-off from Android
 
-The PKG carries the native installer, Linux loader and kernel, initramfs, compressed Android system, PS4 hardware adaptations and a separate read-only filesystem of bundled apps.
+Known limitations: this isn't a Google-certified device, and there is no HDCP. Some protected streams won't play (7plus is one), and YouTube needs you to sign in. Details are in [Compatibility](docs/COMPATIBILITY.md#known-issues).
 
-The release includes **YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64**. Apps start with fresh data; services may require their own accounts. [App versions, architectures and sources](docs/APPS.md) identify the exact builds. YouTube and Crossy Road use ARM64 translation; the other apps use native x86/x86-64 code or Java. Native Google Play services is included to replace the base ARM-only service.
-
-HDMI video and audio, Wi-Fi, Bluetooth pairing, the controller's Home action, and physical restart/shutdown have been demonstrated during development. Service-specific compatibility varies: this port does not establish Google device certification or HDCP support. In particular, 7plus protected playback has an unresolved HDCP limitation.
-
-## Under the hood
+## How it works
 
 ```mermaid
 flowchart TD
     A[GoldHEN and PS4 launcher] --> B[Install or verify internal files]
-    B --> C[Bundled payload to 127.0.0.1:9090]
-    C --> D[Prepare Linux memory and verify kernel/initramfs]
-    D --> E[Launcher releases display; payload arms handoff]
+    B --> C[Send bundled payload to 127.0.0.1:9090]
+    C --> D[Prepare Linux memory, verify kernel and initramfs]
+    D --> E[Launcher releases the display; payload hands over]
     E --> F[Linux and initramfs]
-    F --> G[Open internal storage; mount system and userdata]
-    G --> H[Apply PS4 graphics, input and connectivity configuration]
-    H --> I[Android init, SurfaceFlinger and TV launcher]
+    F --> G[Open internal storage; mount system and user data]
+    G --> H[Apply PS4 graphics, input and network setup]
+    H --> I[Android init, SurfaceFlinger and the TV launcher]
 ```
 
-Android uses the Linux kernel running directly on the console. Its init and services run inside Linux namespaces, with access to the actual GPU, display, sound and network hardware. The PS4 operating system is replaced for that boot; it returns when the console restarts.
+Android runs on a Linux kernel booted directly on the console, with full access to the GPU, display, audio and network hardware. The PS4 system comes back when the console restarts.
 
-The system image is read-only. A RAM overlay holds the PS4 adaptations, and an ext4 image holds persistent Android data. The [architecture guide](docs/DEVELOPMENT.md) follows the code through the handoff, display ownership, storage mounts, networking, Bluetooth and power control. [Storage](docs/STORAGE.md) explains sparse allocation and actual space requirements.
+The Android system image is read-only. PS4-specific changes are applied in memory at each boot, and your data lives in a separate ext4 image. The [architecture guide](docs/DEVELOPMENT.md) walks through the code, and [Storage](docs/STORAGE.md) explains disk usage.
 
 ## Development
 
-The active implementation is in [`releases/release-1.0/`](releases/release-1.0/). It includes the native launcher, modified kexec loader source, runtime adaptations, tests, artwork and input manifests. The packaged runtime scripts are published with hashes so their behaviour can be inspected directly.
-
-Start with the [build guide](docs/BUILD.md). It distinguishes compiling the launcher and payload from rebuilding the complete Android distribution, and identifies required external binaries. [Contributing](CONTRIBUTING.md) maps areas for further work to their source files and explains how to report a useful console test.
+The source is in [`releases/release-1.0/`](releases/release-1.0/): native launcher, modified kexec loader, boot runtime, tests and artwork. Start with the [build guide](docs/BUILD.md), then [Contributing](CONTRIBUTING.md) for areas that need work and how to report a test.
 
 ## Credits
 
-- **BRTDTV / TD Android TV** — the Android TV x86 distribution this port adapts. [Project channel](https://www.youtube.com/@TDAndroidTVnoPC), [community](https://t.me/+t15cB5esYJUxZjdh).
-- **PS4 Linux contributors** — the PS4 kernel and Linux loader ecosystem. [PS4 Linux loader](https://github.com/ps4-linux/ps4-linux-loader).
-- **GoldHEN** — homebrew environment and local payload receiver. [Project](https://github.com/GoldHEN/GoldHEN).
-- **OpenOrbis**, **Scene-Collective**, and **sleirsgoevy** — PS4 toolchain, payload SDK and libjbc.
-- **Ps3itaTeam** — published Liverpool raster configuration used to correct the Mesa adaptation.
-- **Android-x86, AOSP, Linux, Mesa and the application authors** — the underlying operating system, drivers and apps.
+- **BRTDTV / TD Android TV**: the Android TV x86 distribution this port is built on. [Channel](https://www.youtube.com/@TDAndroidTVnoPC) · [Community](https://t.me/+t15cB5esYJUxZjdh)
+- **PS4 Linux contributors**: the PS4 kernel and [Linux loader](https://github.com/ps4-linux/ps4-linux-loader).
+- **[GoldHEN](https://github.com/GoldHEN/GoldHEN)**: homebrew environment and payload loader.
+- **OpenOrbis**, **Scene-Collective** and **sleirsgoevy**: PS4 toolchain, payload SDK and libjbc.
+- **Ps3itaTeam**: the Liverpool raster configuration used in the graphics fix.
+- **Android-x86, AOSP, Linux, Mesa** and the app developers.
 
-[Component sources and licences](docs/CREDITS.md) · [Artwork and font sources](docs/ASSETS.md). Android TV and PlayStation are their respective owners' trademarks; this is an independent homebrew project.
+[Full credits](docs/CREDITS.md) · [Artwork sources](docs/ASSETS.md). Android TV and PlayStation are trademarks of their respective owners. This is an independent homebrew project and is not affiliated with Google or Sony.

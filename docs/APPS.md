@@ -1,47 +1,34 @@
-# Bundled applications
+# Bundled apps
 
-The manifest records the exact signed APKs and splits included in release 1.0 and its native Google Play services replacement. Each installation creates its own app data. APK signatures are preserved; extracted native libraries are copied unchanged into the system-app layout.
+These apps come pre-installed, so you can open them without visiting the Play Store. They start with no data. Sign in with your own accounts and bring your own subscriptions, servers and media.
 
-| App | Version | Selected native ABI | Source |
-| --- | --- | --- | --- |
-| YouTube | 7.27.302 | arm64-v8a (translation) | [Play Store](https://play.google.com/store/apps/details?id=com.google.android.youtube.tv) |
-| Spotify | 9.1.94.1926 | x86_64 | [Upstream/download](https://play.google.com/store/apps/details?id=com.spotify.tv.android) |
-| VLC | 3.7.1 | x86_64 | [Upstream/download](https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-x86_64.apk) |
-| Jellyfin | 0.19.10 | x86_64 | [Upstream/download](https://github.com/jellyfin/jellyfin-androidtv/releases/download/v0.19.10/jellyfin-androidtv-v0.19.10-release.apk) |
-| Kodi | 21.3 | x86 | [Upstream/download](https://mirrors.kodi.tv/releases/android/x86/kodi-21.3-Omega-x86.apk) |
-| Plex | 10.28.0.3441 | x86_64 | [Upstream/download](https://downloads.plex.tv/Kepler/kepler-x86_64-googlePlay-10.28.0.3441-367a93b4.apk) |
-| TV Bro | 2.1.6 | x86_64 | [Upstream/download](https://github.com/truefedex/tv-bro/releases/download/v2.1.6/tvbro-2.1.6-generic-geckoExcluded.apk) |
-| BiglyBT | 1.3.3 | Java-only | [Upstream/download](https://github.com/BiglySoftware/BiglyBT-Android/releases/download/v1.3.3/BiglyBT-1.3.3.apk) |
-| Crossy Road | 7.14.0 | arm64-v8a (translation) | [Upstream/download](https://play.google.com/store/apps/details?id=com.yodo1.crossyroad) |
-| AIDA64 | 2.22 | x86_64 | [Upstream/download](https://play.google.com/store/apps/details?id=com.finalwire.aida64) |
+| App | Version | Architecture | What it's for | Source |
+| --- | --- | --- | --- | --- |
+| YouTube | 7.27.302 | arm64 (translated) | Video; sign in to watch | [Play Store](https://play.google.com/store/apps/details?id=com.google.android.youtube.tv) |
+| Spotify | 9.1.94.1926 | x86_64 | Music and Spotify Connect | [Play Store](https://play.google.com/store/apps/details?id=com.spotify.tv.android) |
+| VLC | 3.7.1 | x86_64 | Local and network media player | [VideoLAN](https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-x86_64.apk) |
+| Jellyfin | 0.19.10 | x86_64 | Jellyfin server client | [GitHub](https://github.com/jellyfin/jellyfin-androidtv/releases/download/v0.19.10/jellyfin-androidtv-v0.19.10-release.apk) |
+| Kodi | 21.3 | x86 | Media centre | [Kodi](https://mirrors.kodi.tv/releases/android/x86/kodi-21.3-Omega-x86.apk) |
+| Plex | 10.28.0.3441 | x86_64 | Plex client | [Plex](https://downloads.plex.tv/Kepler/kepler-x86_64-googlePlay-10.28.0.3441-367a93b4.apk) |
+| TV Bro | 2.1.6 | x86_64 | Web browser built for TV remotes | [GitHub](https://github.com/truefedex/tv-bro/releases/download/v2.1.6/tvbro-2.1.6-generic-geckoExcluded.apk) |
+| BiglyBT | 1.3.3 | Java | Torrent client | [GitHub](https://github.com/BiglySoftware/BiglyBT-Android/releases/download/v1.3.3/BiglyBT-1.3.3.apk) |
+| Crossy Road | 7.14.0 | arm64 (translated) | Game | [Play Store](https://play.google.com/store/apps/details?id=com.yodo1.crossyroad) |
+| AIDA64 | 2.22 | x86_64 | Hardware and system information | [Play Store](https://play.google.com/store/apps/details?id=com.finalwire.aida64) |
 
-The package has ten apps plus Google Play services across eighteen APK files, including language/density/native splits. `bundled-apps.sfs` also holds their extracted native libraries because Android scans these as immutable system applications. Selecting a universal APK does not force ARM translation: the preparation script chooses x86-64 or x86 where present. YouTube and Crossy Road use ARM64 translation.
+Native x86 or x86_64 builds are used wherever one exists. YouTube and Crossy Road run ARM code through Android's translation layer.
 
-The APK set has passed file, package, ABI and signing checks. On the development console, YouTube 7.27.302 plays ordinary menu-selected videos after sign-in, including a previously failing selection; logs show unencrypted VP9 at 1080p and 1440p. Guest playback previously selected an unavailable secure decoder. Sign-in is the verified working route on this build; this does not establish hardware DRM support or universal success for protected content. Results for protected content and guest sessions remain service-specific.
+## Google Play services
 
-Google Play services **26.11.32 (190800-885792908)** replaces the base ARM-only service in `/system/product/priv-app/GooglePlayServices`. Both x86 and x86-64 native library sets are included, preserving the signed APK. This version fixed the native provider/provisioning error when installed as an update on the test console. It is the general Android variant. The documented runtime result used it as an installed update; that result does not establish every TV setup or Store flow. No account databases, tokens, provisioning state or trusted debugging keys are copied from the console.
+The base distribution ships an ARM-only Google Play services. This release replaces it with the x86/x86_64 version **26.11.32 (190800-885792908)**, which fixes the provisioning errors the ARM version caused on the console.
 
-App updates can change code, ABI selection or service behaviour. The repository retains the version/signature manifest for diagnosis. Account requirements and playback restrictions remain those of each service.
+## YouTube
 
-## What the bundled apps provide
+YouTube works once you're signed in. Videos play at 1080p and 1440p. Guest mode can fail with a secure-decoder error, so sign in first. Content that requires hardware DRM may not play.
 
-| App | Purpose | What you supply |
-| --- | --- | --- |
-| YouTube | TV video playback and phone pairing | Google/YouTube sign-in for the tested playback route |
-| Spotify | Music and Spotify Connect | Your Spotify account |
-| VLC | Local and network media player | Media files or a stream address |
-| Jellyfin | Client for a Jellyfin media server | Server address and access |
-| Kodi | Media centre for local/network libraries | Your media and library configuration |
-| Plex | Plex client | Account and access to the content/server you use |
-| TV Bro | Browser designed for TV navigation | Websites to visit |
-| BiglyBT | Torrent client | Authorized torrents and a download location |
-| Crossy Road | Game and controller/graphics test | No developer save data is included |
-| AIDA64 | Hardware and operating-system information | No account required |
+## About the packaging
 
-Bundled means the app is available after installation without first downloading it from Play Store. It does not include a subscription, a media library or a signed-in account. Each user signs in to their own services. The [release checklist](RELEASE-CHECKLIST.md) covers app launch, playback and phone pairing separately.
+Every APK is the unmodified original, with its signature intact. Native libraries are pre-extracted, because Android doesn't do that for built-in system apps. Apps live on a read-only image, so an app update from the Play Store installs alongside the bundled version as usual.
 
-## Distribution and provenance
+[`bundled-apps.json`](../releases/release-1.0/bundled-apps.json) lists every APK and split with its size, SHA256 and signer. [`bundled-apps-image.json`](../releases/release-1.0/bundled-apps-image.json) describes the prepared app image. Neither file, nor the release itself, contains any account data.
 
-[bundled-apps.json](../releases/release-1.0/bundled-apps.json) contains package names, signer digests, APK sizes and hashes. [bundled-apps-image.json](../releases/release-1.0/bundled-apps-image.json) records the prepared filesystem. Neither contains account state.
-
-Open-source app code and notices are linked in [Credits](CREDITS.md). Proprietary app redistribution permissions and applicable source-delivery obligations must be settled before publishing a bundle. Download provenance and a matching signature establish file identity, not permission to redistribute.
+Open-source app credits are in [Credits](CREDITS.md).

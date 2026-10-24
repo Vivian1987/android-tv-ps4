@@ -25,7 +25,7 @@ SHA256:
 5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25
 ```
 
-The package includes the signed APK set, native x86/x86-64 Google Play services libraries and both Mesa raster corrections. Its friendly device name defaults to **PlayStation 4**; the base compatibility model is preserved.
+The package includes the signed APK set, native x86/x86-64 Google Play services libraries and both Mesa raster corrections. The boot service attempts to set the friendly device name to **PlayStation 4**, but the fresh setup test still showed the base name. Set **Device name** in Android Settings if needed; this was verified separately and preserves the compatibility model.
 
 Package structure, digests and signatures passed validation, and the transferred file matched its SHA256 by full readback. The same package has since completed a fresh installation and reached Android TV successfully, confirmed by the console operator. Allow 5–10 minutes initially and about 2 minutes for subsequent boots. Hardware and service behaviour are described below.
 

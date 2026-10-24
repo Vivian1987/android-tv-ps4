@@ -66,7 +66,7 @@ This is Android userspace on the PS4 Linux kernel. Namespace isolation does not 
 
 The Android command line is bound into its `/proc/cmdline`. A per-install random identifier is generated locally and stored as `device-id`; it is not the console's factory serial number. No developer serial is copied into other installations.
 
-A one-shot Android init service seeds `Settings.Global.device_name` as `PlayStation 4` after boot completion. It changes only an unset/stock name and preserves user-chosen names; Spotify discovery reads this setting. The source is `runtime-source/device-name.sh` and `device-name.rc`.
+A one-shot Android init service attempts to seed `Settings.Global.device_name` as `PlayStation 4` after boot completion. A fresh setup still displayed the base name; the guide includes an explicit Device name check. The reason the default did not persist through that setup is not yet established. It changes only an unset/stock name and preserves user-chosen names; Spotify discovery reads this setting. The source is `runtime-source/device-name.sh` and `device-name.rc`.
 
 The base app-facing model and fingerprint are compatibility inputs inherited from BRTDTV. The friendly device name and build label identify the PS4 port. Android is **13 / API 33** even though the base compatibility fingerprint mentions a newer Google device. Changing `ro.product.model` to `PlayStation 4` caused the YouTube service to reject the device; restoring the base model resolved that rejection in an A/B/A test. This does not establish certification or resolve DRM requirements.
 

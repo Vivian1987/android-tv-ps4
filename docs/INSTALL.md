@@ -70,7 +70,7 @@ If **Kayo 4.6.1** ignores X on a selection screen, use the **Google TV remote's 
 
 ## Accounts, phone pairing and the device name
 
-The default friendly device name is **PlayStation 4**. Apps that read Android's device-name setting, including this Spotify build's discovery service, can use it. A name you choose later in Settings is preserved. The app-facing compatibility model remains the base distribution's model; changing that model previously caused YouTube rejection.
+After setup, check Android's **Device name** setting and name it **PlayStation 4** if the base device name is still shown. Apps that read this setting, including this Spotify build's discovery service, can use it. The boot service attempts to supply the PS4 name; the fresh setup test still showed the base name, so check it explicitly. The app-facing compatibility model remains the base distribution's model; changing that model previously caused YouTube rejection.
 
 Open YouTube and use its QR/phone sign-in flow. After sign-in, select videos through the TV app and check picture and sound. Phone sign-in and controlling playback from a phone are different flows: use YouTube's TV-code/pairing instructions for the latter. This does not imply generic Chromecast support.
 

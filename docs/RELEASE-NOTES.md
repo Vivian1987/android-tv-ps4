@@ -32,7 +32,7 @@ The `.part1` and `.part2` files are consecutive pieces of the original PKG. Join
 
 YouTube **7.27.302** and Crossy Road use ARM64 translation. Native x86/x86-64 builds are selected for other native-code applications; BiglyBT is Java-only. Exact signed APK versions and sources are in [Apps](APPS.md).
 
-The default friendly device name is **PlayStation 4**, including the Android setting read by Spotify discovery. The compatibility model is kept separate so naming the console does not repeat the earlier YouTube compatibility rejection.
+Set Android's **Device name** to **PlayStation 4** after setup if the base name is still shown. Spotify discovery reads that setting. The compatibility model is kept separate so naming the console does not repeat the earlier YouTube compatibility rejection.
 
 ## First use
 

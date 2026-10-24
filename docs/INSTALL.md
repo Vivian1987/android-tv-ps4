@@ -28,7 +28,7 @@ The launcher contains the installation and boot files. FTP is only one way of tr
 | Android animation | Android starts its graphics and framework services. On first boot it also prepares apps and user storage. |
 | Android setup | Choose language, network and account options, then enter the launcher. |
 
-The first start takes longer than later starts. The display can reconnect during the handoff and graphics initialization. Timings depend on the actual console and build; the release walkthrough will supply measured timings rather than a guaranteed countdown.
+The first start takes longer than later starts. The display can reconnect during the handoff and graphics initialization. The [release walkthrough](RELEASE-CHECKLIST.md#1-fresh-installation-and-startup) records timings for this exact package. No measured first-boot duration is published yet. A prolonged blank screen or missing animation should be reported with its elapsed time and last visible stage.
 
 ## If BinLoader startup stops
 
@@ -48,13 +48,25 @@ Android **Restart** is mapped to a physical console restart into PS4 mode. Andro
 
 The previous installation, apps, accounts and pairings are stored in Android's data image. A normal subsequent launch reuses that image. Reinstalling the same storage edition is not a factory reset.
 
-The new bundled-app filesystem adds a shutdown cleanup requirement that must be resolved and console-tested before this candidate is accepted. Current status is recorded in [Compatibility](COMPATIBILITY.md).
+The current candidate includes cleanup for the bundled app and service mounts before physical power operations. Its final power test is tracked in [Compatibility](COMPATIBILITY.md).
 
 ## Connectivity and controllers
 
 Wi-Fi credentials are entered in Android. Ethernet obtains its configuration through Android's network services. PS4-mode networking and the Android connection are separate.
 
-To pair a Bluetooth device, put it into pairing mode and use Android's accessory settings. Accept an authentication prompt if one appears. The Sony controller keylayout maps the PS/Home button to Android Home.
+Open **Settings → Remotes & accessories → Add accessory**. For a **Google TV Streamer 4K Voice Remote**, hold **Back + Home** for about three seconds, then select the remote. For a **DualShock 4**, unplug USB and hold **SHARE + PS** with the controller initially off until the light flashes. Select the controller and accept any authentication prompt. See [Google](https://support.google.com/chromecast/answer/10089168?hl=en) and [Sony](https://www.playstation.com/en-ca/support/hardware/ps4-pair-dualshock-4-wireless-with-pc-or-mac/) for their pairing instructions.
+
+The controller's PS/Home action returns to Android Home. Test wireless operation with USB unplugged. Navigation has worked with both devices during development; voice search, TV power/volume and special buttons are separate capabilities. To use a DualShock 4 in PS4 mode again, connect it by USB and press PS if it does not reconnect.
+
+## Accounts, phone pairing and the device name
+
+The default friendly device name is **PlayStation 4**. Apps that read Android's device-name setting, including this Spotify build's discovery service, can use it. A name you choose later in Settings is preserved. The app-facing compatibility model remains the base distribution's model; changing that model previously caused YouTube rejection.
+
+Open YouTube and use its QR/phone sign-in flow. After sign-in, select videos through the TV app and check picture and sound. Phone sign-in and controlling playback from a phone are different flows: use YouTube's TV-code/pairing instructions for the latter. This does not imply generic Chromecast support.
+
+Open Spotify and use its offered QR/PIN or phone sign-in method. On the same network, open Spotify Connect on your phone and select **PlayStation 4**. Confirm that the console plays the audio and responds to the phone. [Spotify's TV sign-in guide](https://support.spotify.com/article/spotify-on-tv/) and [YouTube's TV sign-in guide](https://support.google.com/youtube/answer/3015415) describe these flows.
+
+YouTube signed-in playback works in development testing; guest playback previously requested an unavailable secure decoder. Neither sign-in nor bundled Google services makes the PS4 a certified Android TV device or supplies hardware HDCP. [App versions and known limits](APPS.md) document the selected builds.
 
 ## Diagnostics
 

@@ -6,13 +6,13 @@ Android TV 13 running on PlayStation 4 hardware, based on **BRTDTV's Android TV 
 
 The launcher installs files on the existing PS4 filesystem. It does not repartition the drive. Booting uses the console's own GoldHEN BinLoader through loopback; a PC, FTP server, router or internet connection is not part of the boot sequence. Android manages its own Wi-Fi and Ethernet once it starts.
 
-[Installation](docs/INSTALL.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Compatibility and testing](docs/COMPATIBILITY.md)
+[Installation](docs/INSTALL.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Compatibility and testing](docs/COMPATIBILITY.md) · [Release checklist](docs/RELEASE-CHECKLIST.md) · [Release notes](docs/RELEASE-NOTES.md)
 
 ## Release
 
 **1.0 · Android TV 13 · 32 GiB Android storage**
 
-The current test package is `Android-TV-for-PS4.pkg`, approximately **2.98 GB**. The 32 GiB figure is Android's writable storage capacity, not the download size. Storage is allocated as it is used.
+The current test package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB figure is Android's writable storage capacity, not the download size. Storage is allocated as it is used.
 
 The package is undergoing console acceptance testing. Public binaries are distributed through the [Releases page](https://github.com/odiecay/android-tv-ps4/releases) when a build is accepted. [Compatibility and testing](docs/COMPATIBILITY.md) records the distinction between demonstrated features and acceptance of the complete package.
 
@@ -25,7 +25,7 @@ The package is undergoing console acceptance testing. Public binaries are distri
 3. Open **Android TV for PS4**. The installer copies its bundled files, prepares Linux, and starts Android automatically.
 4. Complete Android setup. Connect Wi-Fi or Ethernet for online services.
 
-For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is intended to power off the console. The bundled-app candidate's shutdown cleanup is being corrected before release acceptance.
+For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is intended to power off the console. The current candidate includes shutdown cleanup for its bundled app and service mounts; final console acceptance is recorded in the release checklist.
 
 If startup reports that BinLoader is unavailable: press **PS**, fully close Android TV, toggle **GoldHEN → Servers → BinLoader** off and on, then reopen Android TV. The completed installation is reused. See [installation and recovery](docs/INSTALL.md) for the full flow.
 

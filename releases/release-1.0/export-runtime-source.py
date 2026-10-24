@@ -13,7 +13,7 @@ NAMES += ['opt/androidtv-ps4/'+n for n in [
     'init.rc', 'init.sh', 'init.android_x86_64.rc', 'controller-home.sh',
     'resolution.sh', 'system-build.prop', 'vendor-build.prop', 'product-build.prop',
     'hwcomposer.rc', 'bluetooth.rc', 'bluetooth-scheduling.rc',
-    'mediaextractor.policy', 'androidtv-logging.rc', 'bundled-apps.txt']]
+    'mediaextractor.policy', 'androidtv-logging.rc', 'device-name.sh', 'device-name.rc', 'bundled-apps.txt']]
 def main():
     p=argparse.ArgumentParser();p.add_argument('--initramfs',type=Path,required=True)
     p.add_argument('--output',type=Path,default=ROOT/'runtime');a=p.parse_args()

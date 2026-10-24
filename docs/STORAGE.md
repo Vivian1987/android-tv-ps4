@@ -29,21 +29,21 @@ The installed launcher retains its original assets. Copies under `/user/app/ps4-
 
 ## Capacity versus allocated space
 
-The first-boot script uses `truncate -s` and `mke2fs` to create a **32 GiB logical image** without writing 32 GiB of empty blocks. It formats with lazy inode/journal initialization, checks the new filesystem, then commits it with a completion marker. This is why the PKG can be approximately 2.98 GB rather than a 32 GiB download.
+The first-boot script uses `truncate -s` and `mke2fs` to create a **32 GiB logical image** without writing 32 GiB of empty blocks. It formats with lazy inode/journal initialization, checks the new filesystem, then commits it with a completion marker. This is why the PKG can be approximately 3.11 GB rather than a 32 GiB download.
 
 The file grows in physical allocation as Android writes data. It still has a fixed 32 GiB filesystem capacity, and the PS4's physical free space is shared with games and other files. Android's apparent free space inside its image does not reserve that space on the PS4 drive.
 
-## Accounting for the ten-app candidate
+## Accounting for the current candidate
 
-These figures describe the package SHA256 `a65d8c2a1c31f66e3a7a180fe0f7c3ea7806659e933dfee5b31ae6f199190a3e`.
+These figures describe the package SHA256 `5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25`.
 
 | Item | Bytes | GiB |
 | --- | ---: | ---: |
 | Userdata, fully allocated | 34,359,738,368 | 32.000 |
-| Copied system, apps, graphics and boot files | 2,956,135,489 | 2.753 |
-| Installed PKG size used as an estimate | 2,977,038,336 | 2.773 |
-| Combined estimate with full userdata | 40,292,912,193 | 37.526 |
-| Also retaining the download and a 2 GiB margin | 45,417,434,177 | 42.298 |
+| Copied system, apps, graphics and boot files | 3,087,238,389 | 2.875 |
+| Installed PKG size used as an estimate | 3,108,306,944 | 2.895 |
+| Combined estimate with full userdata | 40,555,283,701 | 37.770 |
+| Also retaining the download and a 2 GiB margin | 45,811,074,293 | 42.665 |
 
 Allow approximately **43 GiB** for that full-use scenario. Initial allocation is lower. Filesystem overhead, logs, updates, interrupted copies and development backups consume additional space. The installed PKG estimate is not a measured PS4 allocation figure.
 

@@ -89,6 +89,9 @@ cp "$assets/init.sh" /android/system/etc/init.sh
 cp "$assets/init.rc" /android/system/etc/init/hw/init.rc
 cp "$assets/androidtv-ps4.rc" /android/system/etc/init/androidtv-ps4.rc
 cp "$assets/androidtv-logging.rc" /android/system/etc/init/androidtv-logging.rc
+cp "$assets/device-name.rc" /android/system/etc/init/androidtv-device-name.rc
+cp "$assets/device-name.sh" /android/system/bin/androidtv-device-name.sh
+chmod 644 /android/system/etc/init/androidtv-device-name.rc /android/system/bin/androidtv-device-name.sh
 mkdir -p /android/system/vendor/etc/seccomp_policy
 cp "$assets/mediaextractor.policy" /android/system/vendor/etc/seccomp_policy/mediaextractor.policy
 chmod 644 /android/system/etc/init/androidtv-logging.rc /android/system/vendor/etc/seccomp_policy/mediaextractor.policy

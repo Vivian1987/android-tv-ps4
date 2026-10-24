@@ -1,0 +1,11 @@
+# SettingsProvider is available when Android reports boot completion.
+# This exits after setting the default; it does not overwrite a custom name.
+service androidtv-device-name /system/bin/sh /system/bin/androidtv-device-name.sh
+    class core
+    user system
+    group system
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+    start androidtv-device-name

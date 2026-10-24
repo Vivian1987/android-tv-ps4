@@ -23,6 +23,23 @@ Google Play services **26.11.32 (190800-885792908)** replaces the base ARM-only 
 
 App updates can change code, ABI selection or service behaviour. The repository retains the version/signature manifest for diagnosis. Account requirements and playback restrictions remain those of each service.
 
+## What the bundled apps provide
+
+| App | Purpose | What you supply |
+| --- | --- | --- |
+| YouTube | TV video playback and phone pairing | Google/YouTube sign-in for the tested playback route |
+| Spotify | Music and Spotify Connect | Your Spotify account |
+| VLC | Local and network media player | Media files or a stream address |
+| Jellyfin | Client for a Jellyfin media server | Server address and access |
+| Kodi | Media centre for local/network libraries | Your media and library configuration |
+| Plex | Plex client | Account and access to the content/server you use |
+| TV Bro | Browser designed for TV navigation | Websites to visit |
+| BiglyBT | Torrent client | Authorized torrents and a download location |
+| Crossy Road | Game and controller/graphics test | No developer save data is included |
+| AIDA64 | Hardware and operating-system information | No account required |
+
+Bundled means the app is available after installation without first downloading it from Play Store. It does not include a subscription, a media library or a signed-in account. Each user signs in to their own services. The [release checklist](RELEASE-CHECKLIST.md) covers app launch, playback and phone pairing separately.
+
 ## Distribution and provenance
 
 [bundled-apps.json](../releases/release-1.0/bundled-apps.json) contains package names, signer digests, APK sizes and hashes. [bundled-apps-image.json](../releases/release-1.0/bundled-apps-image.json) records the prepared filesystem. Neither contains account state.

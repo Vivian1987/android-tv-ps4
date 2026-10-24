@@ -17,17 +17,19 @@ Other PS4 models and firmware versions are not validated. The base distribution'
 
 ## Current package
 
-`Android-TV-for-PS4.pkg` — 2,977,038,336 bytes.
+`Android-TV-for-PS4.pkg` — **3,108,306,944 bytes** (approximately 3.11 GB), 32 GiB edition.
 
 SHA256:
 
 ```text
-a65d8c2a1c31f66e3a7a180fe0f7c3ea7806659e933dfee5b31ae6f199190a3e
+5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25
 ```
 
-Package validation and a complete transfer readback passed. The fresh console installation completed. Its first launch failed at local BinLoader connection with errno 61 and zero bytes delivered. Closing the app and toggling BinLoader allowed a retry to deliver the payload and reach Linux preparation; the operator reports startup working.
+This is the golden candidate selected for the final [release walkthrough](RELEASE-CHECKLIST.md). Package validation passed. The signed APK set, both Google Play services library architectures and the persistent graphics corrections are included. The friendly device name defaults to **PlayStation 4**, while the compatibility model is preserved.
 
-**This exact candidate is not accepted for public release.** The source now includes clearer recovery text for the next build. The source correction now unmounts app binds and their filesystem in dependency order. Host tests pass; physical power behaviour requires a new package test.
+**Console acceptance is pending.** The checklist records first installation, Google/YouTube/Spotify sign-in and phone pairing, app playback, networking, Bluetooth controls, physical power and relaunch. A transferred package is not an installed or accepted package.
+
+The preceding console test completed installation and boot after one BinLoader connection-refused recovery. Its live YouTube/Play services fixes informed this build; those observations do not substitute for this exact package's fresh test.
 
 ## Demonstrated during development
 

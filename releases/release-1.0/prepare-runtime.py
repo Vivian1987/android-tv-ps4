@@ -79,7 +79,7 @@ def prepare(base, output, apps_dir):
         fields[6] = len(data)
         entries[name] = (fields, data)
 
-    for name in ['mediaextractor.policy', 'androidtv-logging.rc']:
+    for name in ['mediaextractor.policy', 'androidtv-logging.rc', 'device-name.sh', 'device-name.rc']:
         put(ASSETS+name, (ROOT/'runtime-source'/name).read_bytes())
     # Rebuild console power cleanup together with any new host-side mounts.
     with tempfile.TemporaryDirectory() as work:
@@ -117,6 +117,9 @@ def prepare(base, output, apps_dir):
     assert start.count(needle) == 1
     start = start.replace(needle, needle + '''
 cp "$assets/androidtv-logging.rc" /android/system/etc/init/androidtv-logging.rc
+cp "$assets/device-name.rc" /android/system/etc/init/androidtv-device-name.rc
+cp "$assets/device-name.sh" /android/system/bin/androidtv-device-name.sh
+chmod 644 /android/system/etc/init/androidtv-device-name.rc /android/system/bin/androidtv-device-name.sh
 mkdir -p /android/system/vendor/etc/seccomp_policy
 cp "$assets/mediaextractor.policy" /android/system/vendor/etc/seccomp_policy/mediaextractor.policy
 chmod 644 /android/system/etc/init/androidtv-logging.rc /android/system/vendor/etc/seccomp_policy/mediaextractor.policy
@@ -148,7 +151,7 @@ logger=$!'''
         put(name, start.encode(), 0o100755)
 
     changed = sorted(name for name, (_, data) in entries.items() if before.get(name) != sha(data))
-    allowed = sorted([ASSETS+n for n in ['mediaextractor.policy', 'androidtv-logging.rc', 'bundled-apps.txt', 'android-child.sh',
+    allowed = sorted([ASSETS+n for n in ['mediaextractor.policy', 'androidtv-logging.rc', 'device-name.sh', 'device-name.rc', 'bundled-apps.txt', 'android-child.sh',
                      'system-build.prop', 'vendor-build.prop', 'product-build.prop', 'autoboot.sh']]
                      + ['usr/sbin/androidtv-ps4-start', 'usr/sbin/android-supervisor'])
     # vendor-build.prop has no top-level model override in some base revisions.

@@ -24,7 +24,7 @@ Start a stopwatch when opening the launcher and record elapsed times:
 | Setup or usable launcher | | |
 | Longest blank/no-signal interval | | |
 
-The first-boot guide asks users to allow 5–10 minutes. Record actual timings here alongside the package hash so that guidance can be refined for different consoles and drives.
+The guide asks users to allow 5–10 minutes for first installation and boot, then about 2 minutes for subsequent boots. Record actual timings here alongside the package hash so that guidance can be refined for different consoles and drives.
 
 ## 2. Google account and applications
 

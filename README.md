@@ -27,7 +27,7 @@ The release download is split into two files to fit GitHub's asset size limit. J
 3. Open **Android TV for PS4**. The installer copies its bundled files, prepares Linux, and starts Android automatically.
 4. Complete Android setup. Connect Wi-Fi or Ethernet for online services.
 
-**Allow 5–10 minutes for the first installation and boot.** The launcher and runtime install and extract Android's files to the console, then prepare its storage, apps and environment. Leave the console on while progress or the Android animation is running; later launches reuse the setup. See [what appears on screen](docs/INSTALL.md#what-appears-on-screen) for the stages and troubleshooting.
+**Allow 5–10 minutes for the first installation and boot.** The launcher and runtime install and extract Android's files to the console, then prepare its storage, apps and environment. Leave the console on while progress or the Android animation is running; later boots take about **2 minutes** and reuse the setup. See [what appears on screen](docs/INSTALL.md#what-appears-on-screen) for the stages and troubleshooting.
 
 For subsequent boots, load GoldHEN, enable BinLoader and open the same launcher. Android's **Restart** returns to PS4 mode; **Shut down** is mapped to console power-off. Apps, accounts and settings remain on the internal drive between launches.
 

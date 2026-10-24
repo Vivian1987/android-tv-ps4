@@ -19,9 +19,14 @@ def prepare(inputs,build,output):
     for app in manifest['apps']:
         name=app['directory'];assert re.fullmatch('[a-z0-9_-]+',name)
         abi=next((a for a in ['x86_64','x86','arm64-v8a','armeabi-v7a'] if a in app['abis']),None)
-        isa={'x86_64':'x86_64','x86':'x86','arm64-v8a':'arm64','armeabi-v7a':'arm'}.get(abi)
-        assert not app['requires_translation'] or name=='crossyroad'
+        selected=app['abis'] if app.get('multi_arch') else ([abi] if abi else [])
+        assert not app['requires_translation'] or name in ('crossyroad','youtube')
+        if app.get('role')=='system-service':
+            assert name=='gms' and app['package']=='com.google.android.gms'
+            assert app['system_path']=='system/product/priv-app/GooglePlayServices'
+            assert set(selected)=={'x86','x86_64'}
         native=[]
+        found_abis=set()
         for f in app['files']:
             source=inputs/f['asset'];assert source.stat().st_size==f['bytes'] and digest(source)==f['sha256']
             assert re.fullmatch('[A-Za-z0-9_.-]+\\.apk',f['filename'])
@@ -30,7 +35,10 @@ def prepare(inputs,build,output):
             assert digest(dest)==f['sha256'];expected[dest.relative_to(tree).as_posix()]=f['sha256']
             with zipfile.ZipFile(source) as z:
                 for info in z.infolist():
-                    if not abi or not info.filename.startswith('lib/'+abi+'/') or not info.filename.endswith('.so'):continue
+                    parts=info.filename.split('/')
+                    if len(parts)!=3 or parts[0]!='lib' or parts[1] not in selected or not parts[2].endswith('.so'):continue
+                    native_abi=parts[1]
+                    isa={'x86_64':'x86_64','x86':'x86','arm64-v8a':'arm64','armeabi-v7a':'arm'}[native_abi]
                     lib=Path(info.filename).name
                     assert re.fullmatch('[A-Za-z0-9_.+-]+\\.so',lib),lib
                     data=z.read(info);assert data[:4]==b'\x7fELF'
@@ -38,9 +46,10 @@ def prepare(inputs,build,output):
                     sha=hashlib.sha256(data).hexdigest()
                     if target.exists():assert digest(target)==sha
                     else:target.write_bytes(data);target.chmod(0o644)
-                    expected[target.relative_to(tree).as_posix()]=sha;native.append(lib)
+                    expected[target.relative_to(tree).as_posix()]=sha;native.append(isa+'/'+lib);found_abis.add(native_abi)
         assert not abi or native,app['id']
-        layouts.append({'directory':name,'package':app['package'],'abi':abi,'native_libraries':sorted(set(native))})
+        assert found_abis==set(selected),(app['id'],found_abis,selected)
+        layouts.append({'directory':name,'package':app['package'],'abi':abi,'abis':selected,'native_libraries':sorted(set(native))})
     actual={p.relative_to(tree).as_posix():digest(p) for p in tree.rglob('*') if p.is_file()}
     assert actual==expected,'Unexpected or stale app filesystem files'
     output.parent.mkdir(parents=True,exist_ok=True)

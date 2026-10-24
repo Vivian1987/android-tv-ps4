@@ -7,24 +7,31 @@
       "label": "YouTube",
       "directory": "youtube",
       "package": "com.google.android.youtube.tv",
-      "version": "7.05.301",
-      "version_code": 705301360,
+      "version": "7.27.302",
+      "version_code": 727302330,
       "abis": [
-        "x86"
+        "arm64-v8a"
       ],
-      "requires_translation": false,
+      "requires_translation": true,
       "signer_sha256": "21199d112cece428c82cb0df221da24ff8674c7a982a83a17a970eec43305b4a",
-      "source": "https://www.apkmirror.com/apk/google-inc/youtube-for-android-tv-android-tv/youtube-for-android-tv-7-05-301-release/youtube-for-android-tv-7-05-301-6-android-apk-download/",
+      "source": "https://play.google.com/store/apps/details?id=com.google.android.youtube.tv",
       "files": [
         {
           "asset": "app-youtube-base.apk",
           "filename": "base.apk",
-          "bytes": 152185656,
-          "sha256": "6efe217ef66166a4513150ef97e7f44cd8ca3fe21ec2cff324c5cf23a37be39a",
+          "bytes": 16201289,
+          "sha256": "394a0bd2fc922620200e176d6a5350cfbecebe78aca7b74f02533cd9cef7c8b1",
           "split": null
+        },
+        {
+          "asset": "app-youtube-split_config.arm64_v8a.apk",
+          "filename": "split_config.arm64_v8a.apk",
+          "bytes": 125596306,
+          "sha256": "dc13a7cb4c24a41fd7c989d1fa68a6282b25a4da1e2ec229b5ba3658635432ba",
+          "split": "config.arm64_v8a"
         }
       ],
-      "runtime_test": "App-facing model corrected; native 1080p playback advancing; sign-in retest required"
+      "runtime_test": "Current ARM64 build: user-confirmed signed-in playback; logs confirm unencrypted VP9 at 1080p/1440p. Guest secure-decoder failure remains; fresh packaged boot pending."
     },
     {
       "id": "spotify",
@@ -287,9 +294,38 @@
         }
       ],
       "runtime_test": "pending"
+    },
+    {
+      "id": "gms",
+      "label": "Google Play services",
+      "directory": "gms",
+      "package": "com.google.android.gms",
+      "version": "26.11.32 (190800-885792908)",
+      "version_code": 261132032,
+      "abis": [
+        "x86_64",
+        "x86"
+      ],
+      "multi_arch": true,
+      "requires_translation": false,
+      "role": "system-service",
+      "system_path": "system/product/priv-app/GooglePlayServices",
+      "signer_sha256": "7ce83c1b71f3d572fed04c8d40c5cb10ff75e6d87d9df6fbd53f0468c2905053",
+      "source": "https://www.apkmirror.com/apk/google-inc/google-play-services/google-play-services-26-11-32-release/",
+      "files": [
+        {
+          "asset": "service-gms-base.apk",
+          "filename": "GooglePlayServices.apk",
+          "bytes": 309283256,
+          "sha256": "fe584681463593222f4eacc071d5019563182afbcd4f9a66be28b92cba98c11d",
+          "split": null
+        }
+      ],
+      "runtime_test": "Installed as a data update: native provisioning and user sign-in work. Fresh privileged-system installation and TV setup require console verification."
     }
   ],
   "app_count": 10,
-  "apk_count": 16,
-  "total_bytes": 638993200
+  "apk_count": 18,
+  "total_bytes": 937888395,
+  "system_service_count": 1
 }

@@ -9,7 +9,7 @@ with tempfile.TemporaryDirectory() as tmp:
 #include "android-supervisor.c"
 #undef main
 #include <assert.h>
-static const char *expected[]={"/android/system/app/atv-youtube","/android/system/app/atv-crossyroad","/mnt/android-persistent","/android","/mnt/android-bundled-apps","/mnt/android-lower","/mnt/android-sfs","/mnt/android-share","/mnt/ps4-user"};
+static const char *expected[]={"/android/system/app/atv-youtube","/android/system/app/atv-crossyroad","/android/system/product/priv-app/GooglePlayServices","/mnt/android-persistent","/android","/mnt/android-bundled-apps","/mnt/android-lower","/mnt/android-sfs","/mnt/android-share","/mnt/ps4-user"};
 static int index_,reboots,busy,attempts;
 int __real_open(const char*,int,...);
 int __wrap_open(const char *path,int flags,...){(void)path;(void)flags;return __real_open("/dev/null",O_WRONLY);}
@@ -18,19 +18,20 @@ int __wrap_access(const char *path,int mode){(void)mode;if(strstr(path,"bootstra
 void __wrap_sync(void){}
 int __wrap_usleep(useconds_t n){(void)n;return 0;}
 int __wrap_umount(const char *path){
- assert(index_<9&&!strcmp(path,expected[index_]));
+ assert(index_<10&&!strcmp(path,expected[index_]));
  attempts++;
  if(index_==busy){errno=EBUSY;return -1;}
  index_++;return 0;
 }
-int __wrap_reboot(int how){assert(index_==9);assert(how==RB_AUTOBOOT||how==RB_POWER_OFF);reboots++;errno=EPERM;return -1;}
+int __wrap_reboot(int how){assert(index_==10);assert(how==RB_AUTOBOOT||how==RB_POWER_OFF);reboots++;errno=EPERM;return -1;}
 static void reset(int fail){index_=reboots=attempts=0;busy=fail;}
 int main(void){
- FILE *f=fopen(ATV_BUNDLED_APPS_LIST,"w");assert(f);fputs("youtube\ncrossyroad\n",f);fclose(f);
- reset(-1);perform_power("restart");assert(index_==9&&reboots==1);
- reset(-1);perform_power("poweroff");assert(index_==9&&reboots==1);
+ FILE *f=fopen(ATV_BUNDLED_APPS_LIST,"w");assert(f);fputs("youtube\ncrossyroad\ngms\n",f);fclose(f);
+ reset(-1);perform_power("restart");assert(index_==10&&reboots==1);
+ reset(-1);perform_power("poweroff");assert(index_==10&&reboots==1);
  reset(0);perform_power("poweroff");assert(index_==0&&attempts==10&&!reboots);
- reset(4);perform_power("poweroff");assert(index_==4&&attempts==14&&!reboots);
+ reset(2);perform_power("poweroff");assert(index_==2&&attempts==12&&!reboots);
+ reset(5);perform_power("poweroff");assert(index_==5&&attempts==15&&!reboots);
  f=fopen(ATV_BUNDLED_APPS_LIST,"w");assert(f);fputs("../userdata\n",f);fclose(f);
  reset(-1);perform_power("poweroff");assert(!attempts&&!reboots);
  assert(!action_for_status(42<<8));assert(!action_for_status(SIGTERM));

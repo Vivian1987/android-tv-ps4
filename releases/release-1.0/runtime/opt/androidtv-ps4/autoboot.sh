@@ -98,8 +98,12 @@ chmod 644 /android/system/etc/init/androidtv-logging.rc /android/system/vendor/e
 mkdir -p /mnt/android-bundled-apps
 mount -t squashfs -o ro,loop "$installation/bundled-apps.sfs" /mnt/android-bundled-apps
 while read -r app; do
- mkdir -p "/android/system/app/atv-$app"
- mount --bind "/mnt/android-bundled-apps/$app" "/android/system/app/atv-$app"
+ target="/android/system/app/atv-$app"
+ # Replace the base ARM service in its existing privileged product location.
+ # Hiding that entire directory prevents duplicate packages and stale libraries.
+ [ "$app" != gms ] || target=/android/system/product/priv-app/GooglePlayServices
+ mkdir -p "$target"
+ mount --bind "/mnt/android-bundled-apps/$app" "$target"
 done < "$assets/bundled-apps.txt"
 cp "$assets/bootanimation.zip" /android/system/product/media/bootanimation.zip
 chmod 644 /android/system/product/media/bootanimation.zip

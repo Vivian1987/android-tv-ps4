@@ -47,9 +47,10 @@ These observations concern their recorded development builds. They do not substi
 
 | Item | Evidence / scope |
 | --- | --- |
-| YouTube playback on the ten-app candidate | Fresh network streams play at 1080p and 1440p. Protected selections fail during Widevine provisioning; native x86 YouTube attempts to load an ARM Play services library. Replacement services and protected playback remain under test. |
+| YouTube playback | YouTube 7.27.302 ARM64 and native Play services run on the test console. After sign-in, normal selections and a previously failing video play unencrypted VP9 at 1080p/1440p. Guest playback previously requested a missing secure decoder; hardware-secure playback is not fixed. Fresh combined-package testing is required. |
+| Native Play services | Version 26.11.32 (190800) resolves the ARM JNI/provider mismatch and permits app provisioning when installed as an update. The same signed APK and both native library sets are now packaged in the original privileged product location. Fresh TV setup and Play Store checks remain. |
 | BinLoader connection refused on first launch | Observed on this candidate; close/toggle/reopen recovery worked. [Steps](INSTALL.md#if-binloader-startup-stops). |
-| Bundled-app shutdown cleanup | The new app SquashFS mount is absent from the current supervisor's unmount list. The corrected source passes host cleanup tests; console validation of the rebuilt package is required. |
+| Bundled-app shutdown cleanup | The rebuilt supervisor unmounts application binds and the privileged Play services bind before the overlay, app SquashFS and PS4 filesystem. Host tests cover ordering and busy-mount refusal; console validation is required. |
 | 7plus protected video | Audio with missing video and HDCP error; current Widevine/connector state does not supply the required HDCP path. |
 | 32-bit Mesa | The same Liverpool correction now passes all 40 depth/stencil cases (27 failed before). YouTube's spinner is visually confirmed corrected. Both boot-script copies include the hash-checked correction; a fresh packaged boot remains to be tested. |
 | Kodi first launch | Source correction removes inherited `HOME=/`; writable app data needs acceptance on the packaged runtime. |

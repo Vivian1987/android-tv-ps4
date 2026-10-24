@@ -181,7 +181,7 @@ python3 releases/release-1.0/prepare-apps.py \
   --output build/app-assets/bundled-apps.sfs
 ```
 
-The script preserves signed APKs and prepares native libraries for Android's immutable system-app layout. It generates `bundled-apps-image.json`. It never consumes `/data/data`, accounts, saves or pairings.
+The script preserves signed APKs and prepares native libraries for Android's immutable system-app layout. Multi-architecture Play services includes both x86 and x86-64 libraries. The runtime mounts it over the original privileged product directory before Android scans packages, hiding the old ARM service; shutdown releases that mount before closing the app filesystem. It generates `bundled-apps-image.json`. It never consumes `/data/data`, accounts, saves or pairings.
 
 `prepare-runtime.py` applies the port's current adaptations to the pinned accepted **base** initramfs and base graphics library. That base is identified by `BASE_SHA` in the script; it is not interchangeable with an already-patched final initramfs.
 

@@ -33,7 +33,7 @@ If startup reports that BinLoader is unavailable: press **PS**, fully close Andr
 
 The PKG carries the native installer, Linux loader and kernel, initramfs, compressed Android system, PS4 hardware adaptations and a separate read-only filesystem of bundled apps.
 
-The current candidate includes **YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64**. Apps start with fresh data; services may require their own accounts. [App versions, architectures and sources](docs/APPS.md) identify the exact builds. Crossy Road uses ARM64 translation; native x86/x86-64 builds are selected for the other native-code apps.
+The current candidate includes **YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64**. Apps start with fresh data; services may require their own accounts. [App versions, architectures and sources](docs/APPS.md) identify the exact builds. YouTube and Crossy Road use ARM64 translation; the other apps use native x86/x86-64 code or Java. Native Google Play services is included to replace the base ARM-only service.
 
 HDMI video and audio, Wi-Fi, Bluetooth pairing, the controller's Home action, and physical restart/shutdown have been demonstrated during development. Service-specific compatibility varies: this port does not establish Google device certification or HDCP support. In particular, 7plus protected playback has an unresolved HDCP limitation.
 

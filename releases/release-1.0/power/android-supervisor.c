@@ -59,7 +59,8 @@ static int unmount_bundled_apps(void){
   if(length>=sizeof(name)-1){result=-1;break;}
   for(size_t i=0;i<length;i++)if(!((name[i]>='a'&&name[i]<='z')||(name[i]>='0'&&name[i]<='9')||name[i]=='_'||name[i]=='-')){result=-1;break;}
   if(result)break;
-  snprintf(path,sizeof(path),"/android/system/app/atv-%s",name);
+  if(!strcmp(name,"gms"))snprintf(path,sizeof(path),"/android/system/product/priv-app/GooglePlayServices");
+  else snprintf(path,sizeof(path),"/android/system/app/atv-%s",name);
   if(unmount_path(path)){result=-1;break;}
  }
  if(ferror(list))result=-1;

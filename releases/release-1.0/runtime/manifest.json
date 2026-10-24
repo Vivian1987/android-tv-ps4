@@ -1,10 +1,10 @@
 {
-  "initramfs_sha256": "de5eadea566949788d4881d05fb9115126b8c078efc45fe289da15a4c81e94eb",
+  "initramfs_sha256": "cad349a3d1bc53feddef6e142983fb9c64f93c50dc284ae21fff12facc0d17ff",
   "text_files": {
     "init": "e155d51b1ae46d946ef6912e6a1e3b56484c3ee041b749c080e4ba900f661c7d",
-    "usr/sbin/androidtv-ps4-start": "f114f49087b6f9df1599132396775f852308e0cceebb1ff59115bd53e049bc06",
+    "usr/sbin/androidtv-ps4-start": "0e7ee7bc3be1b383241998945bf70e62db2c14dfe795dabc6f9e5f96fddd633f",
     "opt/androidtv-ps4/android-child.sh": "4a1551aff5ead43e307faf96a8e943eef9234fe5c24f3355d58da253801156b3",
-    "opt/androidtv-ps4/autoboot.sh": "f114f49087b6f9df1599132396775f852308e0cceebb1ff59115bd53e049bc06",
+    "opt/androidtv-ps4/autoboot.sh": "0e7ee7bc3be1b383241998945bf70e62db2c14dfe795dabc6f9e5f96fddd633f",
     "opt/androidtv-ps4/androidtv-ps4.rc": "bd50600a0616cedcb48a2a6189a45fe25a7d14c6ebf52ced33c7524d2e44dd15",
     "opt/androidtv-ps4/bpfloader.rc": "aef3af91463902a43d4c00c6e8ed641f35e66db69ba04f3ee533c6a4246d0670",
     "opt/androidtv-ps4/init.rc": "a6ab53bde38ceb183068e48ccade1c8aafe68c4b14e904c875c2857d608cc672",
@@ -20,10 +20,10 @@
     "opt/androidtv-ps4/bluetooth-scheduling.rc": "06ea81d9afd5f5826a4ca796c268d192f3dd841904a3089c6b6bdcf69446a249",
     "opt/androidtv-ps4/mediaextractor.policy": "cf890f5248c9d1018462cf9c5564ead759d54ad2d1dec79eb377007baae18efb",
     "opt/androidtv-ps4/androidtv-logging.rc": "b6c8f78fe1c51f39bd34e33a9e5c3f1a72749f03fb1e748afe400445cb369542",
-    "opt/androidtv-ps4/bundled-apps.txt": "b7927f3bf834aae94469f4df49e8e2a903c2f6505a217d37f7d217fe23561f92"
+    "opt/androidtv-ps4/bundled-apps.txt": "95dcae5d42efa88c8788603cf4d94cb474b4f3cb48c6357761784657327fba27"
   },
   "binary_helpers": {
-    "usr/sbin/android-supervisor": "66297068291be7a4818b8f8696798731bf57e366678bac5dd8b7b7856628df9c",
+    "usr/sbin/android-supervisor": "096db3b060a9d6ba09cd88708d4d79ffac1ac8bec1267aae07d69d2fd70c385b",
     "usr/sbin/androidtv-display-ready": "156de861dce71a2745b10a0225f2b3cfc09e6c5e9c2eca03542c0aa8e027b34f",
     "opt/androidtv-ps4/composer": "3039510ce6a16777904155f62c21b110d3d02bde0a448af6dec96a814e3a28a2",
     "opt/androidtv-ps4/gralloc-gbm-yv12-stride.so": "6803c4d592e97e6252d0dffd25a6a332db1d5f632cc958f0ec7dd6d89cff9052",

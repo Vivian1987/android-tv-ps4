@@ -10,11 +10,11 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 - **Android TV 13**, with 32 GiB of Android storage
 - **3.11 GB** download, split into two parts for GitHub
-- Tested on **CUH-1102A (Aeolia), firmware 13.52, with GoldHEN**
+- For original "fat" PS4s (**CUH-10xx / CUH-11xx, Aeolia**) on **firmware 13.52 with GoldHEN**. Tested on a CUH-1102A.
 
 The 32 GiB is how much Android can store. It is not the download size, and space on the PS4 drive is only used as Android fills it. Nothing is repartitioned: Android lives in ordinary files on the existing PS4 filesystem.
 
-Other PS4 models and firmware versions haven't been tested. The boot payload checks for firmware 13.52 and stops on anything else.
+On other firmware, the launcher stops with an error before loading anything. Slim and Pro models aren't supported; they use different hardware and need their own porting work.
 
 ## Quick start
 
@@ -62,6 +62,12 @@ flowchart TD
 Android runs on a Linux kernel booted directly on the console, with full access to the GPU, display, audio and network hardware. The PS4 system comes back when the console restarts.
 
 The Android system image is read-only. PS4-specific changes are applied in memory at each boot, and your data lives in a separate ext4 image. The [architecture guide](docs/DEVELOPMENT.md) walks through the code, and [Storage](docs/STORAGE.md) explains disk usage.
+
+## Help wanted: more consoles
+
+Other firmware is the next goal. The Linux loader this is built on already has kernel offsets for 20 firmware versions (5.05 to 13.52). What's needed is building the loader for each version, having the launcher pick the right one, and **testers on those firmwares**. Slim and Pro support would need someone with that hardware and PS4 Linux experience.
+
+If you can help, or want to say which console and firmware you're on, please [open an issue](https://github.com/odiecay/android-tv-ps4/issues).
 
 ## Development
 

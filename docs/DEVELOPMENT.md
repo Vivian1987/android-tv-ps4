@@ -114,3 +114,9 @@ Native delivery/progress is in `launcher-boot.log`. Linux milestones are in `boo
 The runtime currently uses SELinux permissive mode and authenticated TCP ADB. No trusted host keys or user accounts are packaged. These are development choices, not claims of retail-device security or certification.
 
 Changes must be built into a new PKG and tied to its hash. Editing a running Android overlay is useful for diagnosis but disappears at reboot unless encoded into the release inputs. [Contributing](../CONTRIBUTING.md) describes useful test reports and where to make changes.
+
+## Observing a boot without disturbing it
+
+Do not port-check GoldHEN BinLoader with an empty TCP connection, `nc -z`, a scanner or an HTTP request. A connection to the payload receiver is an attempted payload delivery, not a harmless health check. An empty probe during candidate testing produced a receiver error before the launcher attempted delivery. Use FTP for reachability and the kernel-log service for observation; the launcher alone delivers the intended payload during acceptance.
+
+A complete socket write does not establish that GoldHEN executed the payload. The launch status with the matching nonce confirms entry, subsequent stages identify Linux preparation, and stage 7 authorizes display release only after preparation succeeds. Capture the last completed stage and receiver log before retrying.

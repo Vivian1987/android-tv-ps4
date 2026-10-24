@@ -27,7 +27,9 @@ SHA256:
 
 This is the golden candidate selected for the final [release walkthrough](RELEASE-CHECKLIST.md). Package validation passed. The signed APK set, both Google Play services library architectures and the persistent graphics corrections are included. The friendly device name defaults to **PlayStation 4**, while the compatibility model is preserved.
 
-**Console acceptance is pending.** The checklist records first installation, Google/YouTube/Spotify sign-in and phone pairing, app playback, networking, Bluetooth controls, physical power and relaunch. A transferred package is not an installed or accepted package.
+**Console acceptance failed at Linux startup and is under investigation.** The checklist records first installation, Google/YouTube/Spotify sign-in and phone pairing, app playback, networking, Bluetooth controls, physical power and relaunch. A transferred package is not an installed or accepted package.
+
+The current fresh file installation completed. One boot attempt delivered and executed the full payload but failed to allocate the 12,305,408-byte contiguous kernel image buffer (`ENOMEM`, code 12), before Linux handoff. A later attempt delivered the payload but GoldHEN reported execution failure, leaving the launcher waiting for a status report. An earlier empty TCP health probe had also disturbed BinLoader; the next controlled test must use a clean session with no payload-port probing. These failures are not Android playback or device-name failures.
 
 The preceding console test completed installation and boot after one BinLoader connection-refused recovery. Its live YouTube/Play services fixes informed this build; those observations do not substitute for this exact package's fresh test.
 

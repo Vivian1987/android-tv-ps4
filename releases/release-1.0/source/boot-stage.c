@@ -1,0 +1,113 @@
+/* The app stays visible while GoldHEN prepares Linux in ScePartyDaemon.
+ * Only the receiver executes the handoff. This app releases its display when
+ * preparation is verified, then acknowledges that condition to the receiver. */
+#include "ps4-stat-abi.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stddef.h>
+#include <sys/stat.h>
+#include <orbis/libkernel.h>
+#include "payload-send.h"
+#include "bundled-payload.h"
+#include "installer-ui.h"
+#include "launch-progress.h"
+#include "launch-protocol.h"
+#ifndef ROOT
+#define ROOT "/user/app/ps4-android"
+#endif
+extern int ps4_as_root(void (*fn)(void *),void *arg);
+static int logfd=-1,controlfd=-1,resultfd=-1,access_error;
+static struct atv_launch_control control;
+static int regular_file(int fd){struct stat st;return fd>=0&&!fstat(fd,&st)&&S_ISREG(st.st_mode);}
+static void open_channels(void *unused){
+ (void)unused;
+ logfd=open(ROOT "/launcher-boot.log",O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);
+ controlfd=open(ATV_CONTROL_PATH,O_RDWR|O_CREAT|O_NOFOLLOW,0600);
+ resultfd=open(ATV_RESULT_PATH,O_RDWR|O_CREAT|O_NOFOLLOW,0600);
+ if(!regular_file(logfd)||!regular_file(controlfd)||!regular_file(resultfd))goto failed;
+ if(ftruncate(controlfd,0)||ftruncate(resultfd,0))goto failed;
+ if(write(controlfd,&control,sizeof(control))!=(ssize_t)sizeof(control)||fsync(controlfd))goto failed;
+ return;
+failed:access_error=errno?errno:EIO;
+}
+static void marker(const char *s){
+ sceKernelDebugOutText(0,s);
+ if(logfd>=0){ssize_t n=write(logfd,s,strlen(s));if(n>=0)(void)fsync(logfd);}
+}
+static int flag_at(off_t offset){
+ unsigned int flag=1;
+ return pwrite(controlfd,&flag,sizeof(flag),offset)==sizeof(flag)&&!fsync(controlfd)?0:-1;
+}
+static void close_channels(void){
+ if(logfd>=0)close(logfd);if(controlfd>=0)close(controlfd);if(resultfd>=0)close(resultfd);
+ logfd=controlfd=resultfd=-1;
+}
+static int fail(const char *message,int code){
+ char detail[160],log[320];
+ snprintf(detail,sizeof(detail),"Startup stopped (code %d). See launcher-boot.log.",code);
+ snprintf(log,sizeof(log),"%s: %d\n",message,code);marker(log);
+ if(code==ECONNREFUSED){
+  message="BinLoader unavailable. Press PS, fully close this app, then toggle BinLoader off and on.";
+  snprintf(detail,sizeof(detail),"Reopen Android TV to continue. Installation is preserved. (code %d)",code);
+ }
+ if(controlfd>=0)(void)flag_at(offsetof(struct atv_launch_control,cancelled));
+ (void)installer_ui_init();installer_ui_boot_status(message,detail);close_channels();return -1;
+}
+static const char *stage_message(int stage){
+ switch(stage){
+ case 0:return "Waiting for GoldHEN to accept the Android TV payload";
+ case 1:return "Checking console compatibility";
+ case 2:return "Reading the Linux kernel and startup files";
+ case 3:return "Preparing the console for Linux";
+ case 4:return "Preparing Linux memory and startup data";
+ case 5:case 6:return "Verifying Linux is ready to start";
+ default:return "Starting Linux. The display will reconnect during startup.";
+ }
+}
+int atv_launch_with_progress(void){
+ logfd=controlfd=resultfd=-1;access_error=0;
+ memset(&control,0,sizeof(control));control.magic=ATV_LAUNCH_MAGIC;control.version=ATV_LAUNCH_VERSION;
+ control.launcher_pid=(unsigned)getpid();
+ control.nonce=((unsigned long long)sceKernelGetProcessTime()<<16)^(unsigned)getpid();if(!control.nonce)control.nonce=1;
+ /* Open descriptors while privileged, then restore credentials BEFORE delivery. */
+ int root_rc=ps4_as_root(open_channels,NULL);
+ if(root_rc||access_error)return fail("Cannot open Android TV startup controls",root_rc?root_rc:access_error);
+ marker("Android TV: keeping the app visible during GoldHEN loopback startup\n");
+ marker("Destination 127.0.0.1:9090; payload SHA256 " ATV_PAYLOAD_SHA256 "\n");
+ installer_ui_boot_status("Starting Android TV","Preparing to start Linux on this console.");
+ size_t sent=0;int rc=atv_send_payload(atv_bundled_payload,sizeof(atv_bundled_payload),&sent),saved=errno;
+ char line[256];snprintf(line,sizeof(line),"Payload delivery result=%d bytes=%zu/%zu errno=%d. Delivery alone does not confirm Linux boot.\n",rc,sent,sizeof(atv_bundled_payload),rc?saved:0);marker(line);
+ if(rc)return fail(saved==ECONNREFUSED?"Enable GoldHEN > Servers > BinLoader, then open Android TV again.":"Android TV payload could not be sent",saved);
+ unsigned long long started=sceKernelGetProcessTime(),last_draw=0;
+ int last_stage=0,released=0;
+ for(;;){
+  unsigned long long now=sceKernelGetProcessTime();
+  struct atv_launch_status status;
+  ssize_t n=pread(resultfd,&status,sizeof(status),0);
+  if(n==sizeof(status)&&atv_status_valid(&status,control.nonce)){
+   if(status.rc)return fail("Linux preparation reported an error",status.rc);
+   if(status.stage>last_stage){
+    snprintf(line,sizeof(line),"Startup stage=%d elapsed_us=%llu prepare_us=%llu\n",status.stage,now-started,status.elapsed);marker(line);
+    last_stage=status.stage;
+   }
+   if(last_stage==7&&!released){
+    installer_ui_boot_status(stage_message(7),"Linux is ready. Android will prepare its apps on the first start.");
+    rc=installer_ui_close();if(rc)return fail("Could not release the display for Linux",rc);
+    marker("App display released; authorizing the prepared Linux handoff\n");
+    if(flag_at(offsetof(struct atv_launch_control,released)))return fail("Could not acknowledge the Linux handoff",errno?errno:EIO);
+    released=1;
+   }
+  }
+  if(!released&&(last_draw==0||now-last_draw>=1000000)){
+   snprintf(line,sizeof(line),"Starting Android TV  |  %llu seconds",(now-started)/1000000);
+   installer_ui_boot_status(stage_message(last_stage),line);last_draw=now;
+  }
+  /* A timeout is a failure guard, never a condition for starting Linux. */
+  if(now-started>300000000ULL)return fail("Android TV startup did not complete",ETIMEDOUT);
+  sceKernelUsleep(50000);
+ }
+}

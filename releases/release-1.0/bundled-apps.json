@@ -1,0 +1,295 @@
+{
+  "schema": 1,
+  "account_data_included": false,
+  "apps": [
+    {
+      "id": "youtube",
+      "label": "YouTube",
+      "directory": "youtube",
+      "package": "com.google.android.youtube.tv",
+      "version": "7.05.301",
+      "version_code": 705301360,
+      "abis": [
+        "x86"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "21199d112cece428c82cb0df221da24ff8674c7a982a83a17a970eec43305b4a",
+      "source": "https://www.apkmirror.com/apk/google-inc/youtube-for-android-tv-android-tv/youtube-for-android-tv-7-05-301-release/youtube-for-android-tv-7-05-301-6-android-apk-download/",
+      "files": [
+        {
+          "asset": "app-youtube-base.apk",
+          "filename": "base.apk",
+          "bytes": 152185656,
+          "sha256": "6efe217ef66166a4513150ef97e7f44cd8ca3fe21ec2cff324c5cf23a37be39a",
+          "split": null
+        }
+      ],
+      "runtime_test": "App-facing model corrected; native 1080p playback advancing; sign-in retest required"
+    },
+    {
+      "id": "spotify",
+      "label": "Spotify",
+      "directory": "spotify",
+      "package": "com.spotify.tv.android",
+      "version": "9.1.94.1926",
+      "version_code": 147600562,
+      "abis": [
+        "x86_64"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "fd450f5f94b9dba0ae7f6b19e0b512e041ea7fc2cc291b71737b319ba7f4b3d4",
+      "source": "https://play.google.com/store/apps/details?id=com.spotify.tv.android",
+      "files": [
+        {
+          "asset": "app-spotify-base.apk",
+          "filename": "base.apk",
+          "bytes": 18899585,
+          "sha256": "860dd280e9f2fa593d5b1be511741c86a468a72b314a2e46e68df68ec7aaad0b",
+          "split": null
+        },
+        {
+          "asset": "app-spotify-split_config.en.apk",
+          "filename": "split_config.en.apk",
+          "bytes": 98713,
+          "sha256": "805ad0d0c7a2c890f9c6142a62a4de6094536f3de7cb439925c1d9041d0cf7f2",
+          "split": "config.en"
+        },
+        {
+          "asset": "app-spotify-split_config.x86_64.apk",
+          "filename": "split_config.x86_64.apk",
+          "bytes": 27042627,
+          "sha256": "dbdf7875acb43c83f4c90908e2446d05c11589fa8ccdc87fb7288260462700de",
+          "split": "config.x86_64"
+        },
+        {
+          "asset": "app-spotify-split_config.xhdpi.apk",
+          "filename": "split_config.xhdpi.apk",
+          "bytes": 345469,
+          "sha256": "d868e715aa5172ba42a92025dc16ba2e2784a62fa69d28513875a09008ae792f",
+          "split": "config.xhdpi"
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "vlc",
+      "label": "VLC",
+      "directory": "vlc",
+      "package": "org.videolan.vlc",
+      "version": "3.7.1",
+      "version_code": 13070108,
+      "abis": [
+        "x86_64"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "c8768d2cea0c4b622e419b4b4715981946821e4ebc035fb41776cad395a7f68e",
+      "source": "https://get.videolan.org/vlc-android/3.7.1/VLC-Android-3.7.1-x86_64.apk",
+      "files": [
+        {
+          "asset": "app-vlc-base.apk",
+          "filename": "base.apk",
+          "bytes": 49444910,
+          "sha256": "4646633ede40c4784c5584087cffc5c60cc45b16966ae0b36cedd784d7c4a11e",
+          "split": null
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "jellyfin",
+      "label": "Jellyfin",
+      "directory": "jellyfin",
+      "package": "org.jellyfin.androidtv",
+      "version": "0.19.10",
+      "version_code": 191099,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "d881796ed2a67ff6ef9f676828723c6b1fa18e09388962cba4abc4a594a69131",
+      "source": "https://github.com/jellyfin/jellyfin-androidtv/releases/download/v0.19.10/jellyfin-androidtv-v0.19.10-release.apk",
+      "files": [
+        {
+          "asset": "app-jellyfin-base.apk",
+          "filename": "base.apk",
+          "bytes": 21950619,
+          "sha256": "8510a517c99927076082917f41bf306dd7a2546c59d492dd11bde18d6e2e4628",
+          "split": null
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "kodi",
+      "label": "Kodi",
+      "directory": "kodi",
+      "package": "org.xbmc.kodi",
+      "version": "21.3",
+      "version_code": 2103000,
+      "abis": [
+        "x86"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "f517b44b5db5e62a6c1ec55ba47526db7de0d61f6ba26a7987520e293499b8d5",
+      "source": "https://mirrors.kodi.tv/releases/android/x86/kodi-21.3-Omega-x86.apk",
+      "files": [
+        {
+          "asset": "app-kodi-base.apk",
+          "filename": "base.apk",
+          "bytes": 69837353,
+          "sha256": "cf53a43522743f937ec0644991c625da0796d5705fb2081bd005430927fe7755",
+          "split": null
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "plex",
+      "label": "Plex",
+      "directory": "plex",
+      "package": "com.plexapp.android",
+      "version": "10.28.0.3441",
+      "version_code": 968939284,
+      "abis": [
+        "x86_64"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "822cd1246884be960e0f2667eb8afc5f7df08920363c2f16742933bfeb5717c6",
+      "source": "https://downloads.plex.tv/Kepler/kepler-x86_64-googlePlay-10.28.0.3441-367a93b4.apk",
+      "files": [
+        {
+          "asset": "app-plex-base.apk",
+          "filename": "base.apk",
+          "bytes": 72381903,
+          "sha256": "14c30152fce9b3d0338cf84ea6402f713f8c46355b0dc13f51f235b220277ebc",
+          "split": null
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "tvbro",
+      "label": "TV Bro",
+      "directory": "tvbro",
+      "package": "com.phlox.tvwebbrowser",
+      "version": "2.1.6",
+      "version_code": 69,
+      "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "1e5124be7e7fcb7a6462b47a42a8567863c6fccc6fe7708cd278be4f43047c75",
+      "source": "https://github.com/truefedex/tv-bro/releases/download/v2.1.6/tvbro-2.1.6-generic-geckoExcluded.apk",
+      "files": [
+        {
+          "asset": "app-tvbro-base.apk",
+          "filename": "base.apk",
+          "bytes": 6790605,
+          "sha256": "d8634edfe8d94b4fb9a52005d68a090a7f1e85b7f39c2cf01a25dc9dd60942b2",
+          "split": null
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "biglybt",
+      "label": "BiglyBT",
+      "directory": "biglybt",
+      "package": "com.biglybt.android.client",
+      "version": "1.3.3",
+      "version_code": 1030304,
+      "abis": [],
+      "requires_translation": false,
+      "signer_sha256": "8de2b154b9821a6c358660cd7e51de4fe7b96ac8ab695ff28150a0e0dc4d18fa",
+      "source": "https://github.com/BiglySoftware/BiglyBT-Android/releases/download/v1.3.3/BiglyBT-1.3.3.apk",
+      "files": [
+        {
+          "asset": "app-biglybt-base.apk",
+          "filename": "base.apk",
+          "bytes": 9494654,
+          "sha256": "2633afc543da3b95cbc6ddb0faf0555a377dfcbbcf647254e08c1d86c5621e44",
+          "split": null
+        }
+      ],
+      "runtime_test": "pending"
+    },
+    {
+      "id": "crossyroad",
+      "label": "Crossy Road",
+      "directory": "crossyroad",
+      "package": "com.yodo1.crossyroad",
+      "version": "7.14.0",
+      "version_code": 261200,
+      "abis": [
+        "arm64-v8a"
+      ],
+      "requires_translation": true,
+      "signer_sha256": "689428097488139cdb31d2a153eee5ff5e105f8ecb2942df2e342dfcb7e3fe4b",
+      "source": "https://play.google.com/store/apps/details?id=com.yodo1.crossyroad",
+      "files": [
+        {
+          "asset": "app-crossyroad-base.apk",
+          "filename": "base.apk",
+          "bytes": 150298501,
+          "sha256": "6ae3c86053e5c78cebe6bbac117264fe0650f0785a59f3db517afb22917a581c",
+          "split": null
+        },
+        {
+          "asset": "app-crossyroad-split_config.arm64_v8a.apk",
+          "filename": "split_config.arm64_v8a.apk",
+          "bytes": 36095646,
+          "sha256": "935a859863f7e2d1b4117c94ccedc3456f14500a3ae757dca4fb4e16ec7b6c20",
+          "split": "config.arm64_v8a"
+        }
+      ],
+      "runtime_test": "User confirmed rendering fixed with Liverpool raster setting"
+    },
+    {
+      "id": "aida64",
+      "label": "AIDA64",
+      "directory": "aida64",
+      "package": "com.finalwire.aida64",
+      "version": "2.22",
+      "version_code": 222,
+      "abis": [
+        "x86_64"
+      ],
+      "requires_translation": false,
+      "signer_sha256": "06e0b6a9d20aa348e2915795178d63544f056711d3fc182cb60814a1e643e276",
+      "source": "https://play.google.com/store/apps/details?id=com.finalwire.aida64",
+      "files": [
+        {
+          "asset": "app-aida64-base.apk",
+          "filename": "base.apk",
+          "bytes": 23942233,
+          "sha256": "ab8af5cf6956715617a9944f27bd751ac00f5c1901457b8260ddd7bc150b84aa",
+          "split": null
+        },
+        {
+          "asset": "app-aida64-split_config.x86_64.apk",
+          "filename": "split_config.x86_64.apk",
+          "bytes": 103042,
+          "sha256": "828d44194376f0be7f2c1119f2be531e68165d65650101182c5b4129bda53947",
+          "split": "config.x86_64"
+        },
+        {
+          "asset": "app-aida64-split_config.xhdpi.apk",
+          "filename": "split_config.xhdpi.apk",
+          "bytes": 81684,
+          "sha256": "a80aae21e369576de2c43a6ea17e19f1aefa974dc6ae01d4cf90075d657d83da",
+          "split": "config.xhdpi"
+        }
+      ],
+      "runtime_test": "pending"
+    }
+  ],
+  "app_count": 10,
+  "apk_count": 16,
+  "total_bytes": 638993200
+}

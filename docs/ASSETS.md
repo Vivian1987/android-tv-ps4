@@ -1,29 +1,11 @@
-# Assets
+# Artwork and fonts
 
-The selected branding is v6, recorded in `branding/selected.json`:
+The repository banner uses the selected Android TV and PS4 logo composition under `branding/`. The current installer artwork is under `releases/release-1.0/artwork/`.
 
-- `repository-banner.svg`: compact README layout using the same v6 logo assets.
+The four installer previews introduce Android TV, controller input, internal-drive boot and returning to PS4. They use the original Android TV/PlayStation logos, Sony's DualShock 4 and PS4 product photographs, and setup/power-menu screenshots captured from Android on the console.
 
-- `icon-official-assets-v6.png` and `.svg`: installer/package icon.
-- `banner-official-assets-v6.png` and `.svg`: package and repository banner.
-- `identity-official-assets-v6.png` and `.svg`: combined artwork layout.
-- `refine-layout.py`: composition script using the included Android TV and PS4
-  logo images. Its final convenience copy uses a local Pictures path.
-- `official-asset-sources.json`: original logo URLs and recorded hashes.
+`official-asset-sources.json` and `additional-asset-sources.json` identify the original sources. The controller's white background is excluded by an SVG silhouette mask. The screenshots have no visible personal account data.
 
-The current installer source includes `installer-artwork.h` and
-`installer-font.h`, because the native interface requires these generated data
-headers. `Roboto-LICENSE.txt` is retained beside the font data.
+`build-slides.py` generates the 1280×720 preview PNGs. These are artwork, not captures of the complete native progress UI. `build-release.py` converts them to raw BGRA files and places them outside the launcher ELF so artwork does not inflate the executable retained during boot preparation.
 
-Android TV and PlayStation branding belongs to its respective owners. The
-source URL records identify provenance; they are not a licence grant. Existing
-third-party licence notices remain applicable. The repository has no overall project licence.
-
-
-## v0.15 previews
-
-`releases/v015/artwork/` contains the installer slides and their generator.
-The controller slide uses Sony's DualShock 4 product image; its original URL
-and hash are recorded in that directory's `official-asset-sources.json`.
-`android-first-run.png` shows the Android setup screen from development.
-The rendered slides are artwork, not captures of the running progress UI.
+The native text renderer uses the included Roboto font atlas and `Roboto-LICENSE.txt`. Android TV and PlayStation branding belongs to its respective owners. Provenance records are not a licence grant or an indication of affiliation.

@@ -1,0 +1,38 @@
+#ifndef ATV_BOOT_VALIDATION_H
+#define ATV_BOOT_VALIDATION_H
+/* The assembly transition maps 0..4 GiB and relocates the compressed kernel
+ * to 96 MiB. Keep every input outside that kernel's initialization workspace.
+ * Linux can use high RAM afterwards; these are transition constraints only. */
+#define ATV_KERNEL_DEST 0x06000000ULL
+/* Orbis low RAM ends before the ACPI reservations at 0x7efe8000.
+ * Restrict allocation itself, rather than accepting arbitrary addresses and
+ * discovering a collision only after all four buffers have been copied. */
+static int atv_allocation_window(const struct setup_header *h, u64 *low, u64 *high)
+{
+    *low = (ATV_KERNEL_DEST + h->init_size + 0x3fff) & ~0x3fffULL;
+    *high = (u64)h->initrd_addr_max + 1;
+    if (*high > 0x7efe8000ULL) *high = 0x7efe8000ULL;
+    return h->init_size && *low < *high;
+}
+static int atv_valid_header(const struct setup_header *h, size_t bytes)
+{
+    u64 setup = ((u64)h->setup_sects + 1) * 512;
+    u64 payload = (u64)h->syssize * 16;
+    return h->boot_flag == 0xaa55 && h->header == 0x53726448 &&
+        h->version >= 0x20c && h->setup_sects && (h->xloadflags & 1) &&
+        h->relocatable_kernel && h->kernel_alignment &&
+        !(h->kernel_alignment & (h->kernel_alignment - 1)) &&
+        ATV_KERNEL_DEST % h->kernel_alignment == 0 && payload > 512 &&
+        setup <= bytes && payload <= bytes - setup &&
+        h->init_size >= payload && h->init_size <= 0x10000000 &&
+        h->cmdline_size > 0 && h->cmdline_size < 4096 &&
+        offsetof(struct setup_header, header) + ((h->jump >> 8) & 255) <=
+            sizeof(struct boot_params) - offsetof(struct boot_params, hdr);
+}
+static int atv_valid_range(u64 address, u64 bytes, u64 workspace)
+{
+    return bytes && address >= 0x100000 && address < 0x100000000ULL &&
+        bytes <= 0x100000000ULL - address &&
+        (address + bytes <= ATV_KERNEL_DEST || address >= ATV_KERNEL_DEST + workspace);
+}
+#endif

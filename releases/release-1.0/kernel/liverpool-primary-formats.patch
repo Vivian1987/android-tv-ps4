@@ -1,0 +1,75 @@
+diff --git a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
+index 2973ca867..28835d237 100644
+--- a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
+@@ -26,6 +26,7 @@
+ #include <drm/drm_modeset_helper.h>
+ #include <drm/drm_modeset_helper_vtables.h>
+ #include <drm/drm_vblank.h>
++#include <drm/drm_plane_helper.h>
+ 
+ #include "amdgpu.h"
+ #include "amdgpu_pm.h"
+@@ -2653,16 +2654,61 @@ static const struct drm_plane_helper_funcs dce_v8_0_drm_primary_plane_helper_fun
+ 	.panic_flush = dce_v8_0_panic_flush,
+ };
+ 
++/* Liverpool supports both channel orders in dce_v8_0_crtc_do_set_base().
++ * drm_crtc_init() advertises only XRGB/ARGB, which makes the modern framebuffer
++ * verifier reject Android's XBGR buffers before reaching that hardware code.
++ * Give this PS4 its own accurate primary-plane formats; retain validation.
++ */
++static const uint32_t liverpool_primary_formats[] = {
++	DRM_FORMAT_XRGB8888, DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_XBGR8888, DRM_FORMAT_ABGR8888,
++};
++
++static const struct drm_plane_funcs liverpool_primary_funcs = {
++	DRM_PLANE_NON_ATOMIC_FUNCS,
++};
++
++static int liverpool_crtc_init(struct drm_device *dev, struct drm_crtc *crtc,
++			       const struct drm_crtc_funcs *funcs)
++{
++	struct drm_plane *primary;
++	int ret;
++
++	primary = __drm_universal_plane_alloc(dev, sizeof(*primary), 0, 0,
++					      &liverpool_primary_funcs,
++					      liverpool_primary_formats,
++					      ARRAY_SIZE(liverpool_primary_formats),
++					      NULL, DRM_PLANE_TYPE_PRIMARY, NULL);
++	if (IS_ERR(primary))
++		return PTR_ERR(primary);
++	ret = drm_crtc_init_with_planes(dev, crtc, primary, NULL, funcs, NULL);
++	if (ret) {
++		drm_plane_cleanup(primary);
++		kfree(primary);
++	}
++	return ret;
++}
++
+ static int dce_v8_0_crtc_init(struct amdgpu_device *adev, int index)
+ {
+ 	struct amdgpu_crtc *amdgpu_crtc;
++	int ret;
+ 
+ 	amdgpu_crtc = kzalloc(sizeof(struct amdgpu_crtc) +
+ 			      (AMDGPUFB_CONN_LIMIT * sizeof(struct drm_connector *)), GFP_KERNEL);
+ 	if (amdgpu_crtc == NULL)
+ 		return -ENOMEM;
+ 
+-	drm_crtc_init(adev_to_drm(adev), &amdgpu_crtc->base, &dce_v8_0_crtc_funcs);
++	if (adev->asic_type == CHIP_LIVERPOOL)
++		ret = liverpool_crtc_init(adev_to_drm(adev), &amdgpu_crtc->base,
++					 &dce_v8_0_crtc_funcs);
++	else
++		ret = drm_crtc_init(adev_to_drm(adev), &amdgpu_crtc->base,
++				    &dce_v8_0_crtc_funcs);
++	if (ret) {
++		kfree(amdgpu_crtc);
++		return ret;
++	}
+ 
+ 	drm_mode_crtc_set_gamma_size(&amdgpu_crtc->base, 256);
+ 	amdgpu_crtc->crtc_id = index;

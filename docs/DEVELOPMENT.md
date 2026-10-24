@@ -1,150 +1,114 @@
-# Developer notes
+# Architecture
 
-This port adapts BRTDTV's Android TV 13 for x86 PCs to the PS4. The PS4 app
-installs the files and starts the Linux payload. Linux then mounts Android,
-applies the PS4-specific changes and starts Android's init process.
+Android TV for PS4 has three execution environments: the native Orbis installer, the GoldHEN payload receiver, and Linux running Android. The launcher is an installer and boot controller. Linux takes over the hardware; Android runs on that kernel in its own namespaces.
 
-These notes describe the v0.15 implementation. The [build guide](BUILD.md)
-lists the tools and external inputs needed to produce the package. The boot
-scripts discussed below are supplied inside the initramfs; their standalone
-sources are not currently included in this public checkout.
+The source links below describe the 1.0 implementation. [`runtime/`](../releases/release-1.0/runtime/) contains text exported from the packaged initramfs and a hash manifest. [`runtime-source/`](../releases/release-1.0/runtime-source/) and `prepare-runtime.py` describe changes applied to the accepted base runtime. [Build](BUILD.md) identifies the external binaries and the boundaries of reproducibility.
 
-## Keeping Android on the existing drive
+## 1. Native installation
 
-Android lives in files on the PS4's existing internal filesystem. The native
-installer copies the compressed system to `/user/app/ps4-android` and the boot
-files to `/data/linux/boot`. Linux opens the existing encrypted storage and
-mounts its UFS2 filesystem. It does not create an Android partition.
+[`install-prebuilt.c`](../releases/release-1.0/source/install-prebuilt.c) opens `/app0/assets` while it still has the app's normal filesystem view. It then obtains privileged filesystem access for installation and restores its previous credentials before boot delivery.
 
-`system.sfs` contains the read-only `system.img`. Linux mounts both, then adds
-a writable overlay in RAM. The boot script applies the PS4 graphics libraries,
-Android configuration and controller changes through that overlay. The base
-system stays intact; those changes are applied again on each boot.
+The compiled storage edition is 32 GiB. The app checks the installed edition before writes. It copies the compressed system, graphics library, translation archive, read-only app filesystem and boot files. It commits a `ready` marker only after those operations succeed.
 
-Apps and settings need to survive a reboot, so they use a separate ext4 image,
-`data.img`. Android's `/data` and `/metadata` directories are bound to directories
-inside that image. This separates persistent user data from the system changes
-applied at boot.
+The `PS4ANDROID13-SPARSE-V015` string is an on-disk layout marker retained for compatibility. It is not the public application version. `ready` means the Orbis-side file installation completed; `data-ready` means Linux created and checked the userdata image. These are separate states.
 
-The first release starts at 32 GiB. `data-gib.txt` selects the capacity, and
-first boot uses `truncate` and `mke2fs` to create a sparse ext4 image. Physical
-drive space is used as data is written. The selected capacity still limits the
-filesystem; sparse allocation does not make it unlimited.
+[`image-copy.c`](../releases/release-1.0/source/image-copy.c) verifies an existing file prefix before appending. A complete or partial mismatched copy is preserved and rejected. Completed copies are synchronized and renamed. Boot files and the graphics replacement use staged names and retain old copies. The launcher refuses unknown editions or conflicting recovery state instead of formatting user data.
 
-For a larger build, the capacity file, `EDITION_GIB` compiler definition,
-package name and manifest values need to agree. Changing those values does
-not resize an existing installation. The installer checks the edition before
-writing and rejects a mismatch. See [Storage](STORAGE.md) for the settings,
-mount layout and disk-space calculation.
+The `stat` ABI shim in [`ps4-stat-abi.h`](../releases/release-1.0/source/ps4-stat-abi.h) supplies the target layout and compile-time offset checks. It must precede SDK headers: a host/SDK layout mismatch previously made file-size checks read the wrong field.
 
-## Separating installation from boot
+## 2. Local payload delivery and handoff
 
-The [native installer](../releases/v015/source/install-prebuilt.c) opens its
-bundled assets before obtaining privileged filesystem access. It copies the
-system, graphics library and boot files, then records a completion marker.
-Only after that does it send `linux.elf` to BinLoader at `127.0.0.1:9090`.
-The payload is supplied by the installed app; no PC sends it during launch.
+[`boot-stage.c`](../releases/release-1.0/source/boot-stage.c) sends the bundled flat payload to **127.0.0.1:9090**. GoldHEN executes it in its receiver context. The launcher does not execute the kernel loader in its own process, and no external host supplies the payload.
 
-On subsequent launches, the marker selects the boot path. The app checks the
-system file's size and prepares the boot files before sending the payload.
-Linux checks its separate `data-ready` marker and mounts the existing data
-image instead of creating another one.
+The receiver is [`boot-payload.c`](../releases/release-1.0/source/boot-payload.c). It requires firmware `13.520.001`, reads the kernel and XZ initramfs from `/data/linux/boot`, requests a 2048 MiB graphics reservation, and prepares Linux using the modified kexec loader.
 
-These markers cover different stages: the native installer can finish before
-Linux has created Android's storage. Treating them separately lets the boot
-script detect an unfinished data-image creation without assuming that an
-existing file is disposable.
+Preparation and handoff are separate operations:
 
-## Recovering an interrupted install
+1. The launcher creates a control record with a fresh nonce and sends the payload.
+2. The receiver prepares Linux memory and publishes progress tied to that nonce.
+3. A QUERY verifies the prepared state and the kernel/initramfs CRC32 values.
+4. At stage 7, the launcher closes VideoOut and frees its display allocation.
+5. Only after successful display release does it acknowledge `released` in the control record.
+6. The receiver validates that acknowledgement, issues ARM, queries the armed state, and triggers the Orbis shutdown-to-Linux handoff.
 
-A system copy is written to `system.sfs.part`. On retry, the
-[copy routine](../releases/v015/source/image-copy.c) compares the entire existing
-prefix with the package source before appending any bytes. If they differ, it
-stops and leaves the file alone. A completed copy is synchronized and renamed
-to its final name.
+A timer never authorizes boot. Timeouts stop preparation. A cancelled record, stale nonce, incomplete status, checksum mismatch or failed display close cannot authorize ARM. A successful socket write proves delivery only; it does not prove Linux booted.
 
-Boot files are staged individually. Existing versions can be retained as
-`.before-sparse-v015` backups, and the launcher waits for all four boot files
-to match before starting Linux. Conflicting backups stop the operation rather
-than being silently overwritten.
+The slideshow is stored as separate raw pixel assets rather than a large embedded C array. The native app is about 851 KB and uses its existing VideoOut buffers. Artwork descriptors are closed before Linux preparation; the app stays visible until the verified handoff condition. This preserves feedback without retaining the previous large graphics allocation strategy.
 
-Data-image creation is more conservative. If first boot finds `data.img` or
-`data.img.part` without a completion marker, it stops for recovery. It does
-not format that file again. Same-capacity v0.14 installations are accepted by
-the v0.15 native installer; unknown installation markers are rejected.
+Source: [`launch-protocol.h`](../releases/release-1.0/source/launch-protocol.h), [`display-release.h`](../releases/release-1.0/source/display-release.h), and [`loader-source/`](../releases/release-1.0/loader-source/).
 
-When changing this code, keep the distinction between resuming a verified
-system copy and recovering user data. The existing host tests cover copy
-validation, edition checks and boot-file recovery. They are under
-[`releases/v015/tests`](../releases/v015/tests/).
+## 3. Linux opens the internal installation
 
-## Targeting PS4 hardware
+The initramfs [`init`](../releases/release-1.0/runtime/init) creates the basic Linux mounts and starts [`androidtv-ps4-start`](../releases/release-1.0/runtime/usr/sbin/androidtv-ps4-start).
 
-This build targets Aeolia hardware. The supplied `autoboot.sh` requires
-`aeolia` in the kernel log before opening the internal disk, and expects the
-PS4 storage device at `/dev/sda27`. The tested console is CUH-1102A on firmware
-13.52.
+This implementation checks for Aeolia and expects the internal user-storage block device at `/dev/sda27`. It uses the console-specific key supplied in the boot environment to open a dm-crypt mapping, then mounts the existing UFS2 filesystem. That key is not a release-package asset.
 
-Adding another hardware revision means checking the kernel support and disk
-layout first, then graphics and networking on that console. Update the check
-only once those assumptions have been established, and rebuild the initramfs
-that goes into the package. Removing the Aeolia check alone does not add
-hardware support.
+The installation directory appears as `/mnt/ps4-user/app/ps4-android` in Linux. A fresh start creates `data.img.part` with `truncate`, formats that file as ext4 with lazy initialization, checks it, and commits `data.img` plus `data-ready`. An existing uncommitted data image stops for recovery; it is not silently reformatted.
 
-The Android adaptation also happens in the boot scripts. They install the
-selected graphics and composer libraries into the RAM overlay and verify the
-graphics-library hashes before launching Android. Network interfaces are
-attached to Android's network namespace, where Android handles its own DHCP.
-The controller adjustment changes `BUTTON_MODE` to `HOME` in the matching Sony
-keylayout files so that Android receives a Home action.
+Mounts:
 
-These are useful places to start when extending the port: identify whether a
-change belongs in the kernel, the boot environment or Android's configuration,
-then include that change in the corresponding package input.
+| Path | Backing storage / purpose |
+| --- | --- |
+| `/mnt/ps4-user` | Decrypted existing PS4 UFS2 user filesystem. |
+| `/mnt/android-sfs` | Read-only SquashFS `system.sfs`. |
+| `/mnt/android-lower` | Read-only ext4 `system.img` inside the SquashFS. |
+| `/android` | OverlayFS combining that system with a RAM upper/work directory. |
+| `/mnt/android-persistent` | Writable ext4 `data.img`. |
+| `/mnt/android-bundled-apps` | Read-only `bundled-apps.sfs`. |
 
-## Getting restart requests out of Android
+The boot script installs the PS4 adaptations into the RAM overlay on each start. Persistent `/data` and `/metadata` are bind-mounted from directories inside `data.img`. The compressed system and bundled applications stay on disk. [Storage](STORAGE.md) covers capacity and duplication in the installed PKG.
 
-Android init runs as PID 1 inside its own process namespace. Its restart
-request ends that namespace; the host needs to handle the physical console.
+## 4. Android namespaces and hardware access
 
-The [Android supervisor](../releases/v015/power/android-supervisor.c) stays
-outside Android's namespace and waits for init. It maps the namespace's restart
-and power-off signals to host actions. An ordinary exit or crash does not
-trigger a console power operation.
+[`android-child.sh`](../releases/release-1.0/runtime/opt/androidtv-ps4/android-child.sh) prepares Android's proc/sys/dev mounts, binderfs devices, persistent directories and runtime tmpfs mounts. The supervisor creates PID, mount, IPC, UTS and network namespaces; Android init becomes PID 1 inside them and runs through `chroot`.
 
-Before a power operation, it checks the PS4 boot markers, lets boot logging
-finish, synchronizes storage and unmounts the Android and PS4 filesystems.
-If an unmount fails, it refuses the power operation. Keep that shutdown order
-in mind when adding mounts or background processes that hold files open.
+This is Android userspace on the PS4 Linux kernel. Namespace isolation does not emulate the CPU or GPU. Native x86 and x86-64 apps use the console CPU directly; selected ARM apps use the separately supplied native bridge.
 
-The [power-control notes](../releases/v015/power/README.md) include the build
-command and namespace tests. Those tests exercise the signal handling without
-rebooting the development machine.
+The Android command line is bound into its `/proc/cmdline`. A per-install random identifier is generated locally and stored as `device-id`; it is not the console's factory serial number. No developer serial is copied into other installations.
 
-## A filesystem detail worth preserving
+The base app-facing model and fingerprint are compatibility inputs inherited from BRTDTV. The friendly device name and build label identify the PS4 port. Android is **13 / API 33** even though the base compatibility fingerprint mentions a newer Google device. Changing `ro.product.model` to `PlayStation 4` caused the YouTube service to reject the device; restoring the base model resolved that rejection in an A/B/A test. This does not establish certification or resolve DRM requirements.
 
-The PS4 installer uses a small
-[`stat` compatibility header](../releases/v015/source/ps4-stat-abi.h).
-The SDK's type layout can put `st_size` at the wrong offset for the PS4 ABI,
-causing a size check to read the block count instead. The header sets the
-expected type and checks the structure offsets at compile time.
+## 5. Graphics, video and the boot animation
 
-It must be included before the SDK headers. If the toolchain changes, check
-those assertions against the target ABI before removing the workaround.
+The display path comprises the PS4 amdgpu kernel driver, Mesa/radeonsi, GBM/gralloc and the drmfb Android hardware composer. SurfaceFlinger renders Android through that stack.
 
-## Building a change into the release
+The relevant adaptations address different failures:
 
-The [package builder](../releases/v015/build-release.py) compiles the native
-installer and packages the supplied kernel, initramfs, Android system and other
-assets. It records helper-object and asset hashes in `release.json`, validates
-the package and writes `SHA256SUMS`.
+- **Primary-plane formats:** [`liverpool-primary-formats.patch`](../patches/liverpool-primary-formats.patch) advertises the Liverpool-supported XRGB/ARGB and XBGR/ABGR formats so Android buffers pass DRM validation.
+- **Framebuffer identity:** the composer allocation-key change keys cached framebuffers by allocation identity instead of a recyclable imported-handle pointer. This addresses stale surfaces being presented as new buffers.
+- **Format transitions:** a failed page flip clears the composer's modeset state so a framebuffer-format change can be retried through a modeset.
+- **YV12 layout:** the supplied gralloc adaptation corrects video-plane stride/layout. Its binary is hash-pinned; complete reproducible graphics builds remain an external-input boundary.
+- **Raster configuration:** [`patch-mesa-raster.py`](../releases/release-1.0/runtime-source/patch-mesa-raster.py) changes the pinned 64-bit Mesa Liverpool raster configuration from `0x00000002` to `0x2a00161a`. In the development probe, 27 of 40 depth/stencil cases failed before this correction and none failed after it. Browser icons and Crossy Road rendering were then visually checked. This is an explicit binary adaptation, not a source-built Mesa claim.
+- **Mode filtering:** [`display-modes.c`](../releases/release-1.0/source/display-modes.c) filters interlaced, doublescan and over-60-Hz connector modes inside the composer before Android starts presenting frames.
 
-Changing a boot script requires rebuilding the initramfs input. Changing
-installer artwork requires regenerating its header and rebuilding the native
-app. Neither changes an already-built PKG. Test the resulting package, not
-just files copied into a running development installation.
+[`display-ready.c`](../releases/release-1.0/source/display-ready.c) observes scanout and immediately drops any implicitly acquired DRM master. When Android replaces the boot framebuffer, it stops console logging to the display. It does not inject frames or take display ownership. The boot animation gives feedback while Android prepares its applications.
 
-Package validation, host tests and console testing answer different questions.
-Keep the package hash with the test result so someone can tell which build was
-actually used. The README records the release status; these notes explain the
-implementation behind it.
+GPU rendering, video decoding and protected-media output are separate capabilities. Working OpenGL or a successful Kayo stream does not prove every codec, app or HDCP requirement works. The media-extractor seccomp extension permits `memfd_create` and `ftruncate` for the Android 13 buffer path on this kernel; it does not disable the media sandbox.
+
+## 6. Ethernet, Wi-Fi and Bluetooth
+
+The Linux host brings up the physical Ethernet interface and creates an `atv0` macvlan with a locally administered address derived from the physical MAC. It moves that interface into Android's network namespace and renames it `eth0`. Android owns DHCP and connection policy. The host does not require a management IP.
+
+The real wireless PHY is moved into Android's namespace as `wlan0`. The small `AtvConnectivity` system app retains a Wi-Fi-specific network request so Ethernet's higher score does not withdraw all Wi-Fi demand. It does not contain a password, bind other applications to Wi-Fi or replace Android's default route policy.
+
+Bluetooth uses a different namespace arrangement because HCI sockets are available in the initial network namespace. The vendor Bluetooth HAL joins a retained handle to that namespace before dropping to its Bluetooth identity. Wi-Fi and Ethernet stay in Android's namespace.
+
+Two device-specific fixes accompany that arrangement: a bounded foreground real-time scheduling budget and an SD8797-only adapter that masks unsupported LE event bits in HCI command `0x2001`. The adapter is loaded only when the Marvell SDIO identifier matches. It does not fake successful HCI replies. See [`bluetooth.rc`](../releases/release-1.0/source/bluetooth.rc) and [`bluetooth-sd8797.c`](../releases/release-1.0/source/bluetooth-sd8797.c).
+
+The controller keylayout changes Sony `BUTTON_MODE` mappings to Android `HOME`. A paired Bluetooth controller still uses Android's input stack.
+
+## 7. Applications and power control
+
+`prepare-apps.py` verifies the selected signed APKs, preserves splits and extracts the appropriate native libraries into the normal system-app layout. Android does not perform the same library extraction for immutable system apps as it does for a user APK install. The resulting read-only app filesystem is mounted into `/system/app/atv-*`; account data is created independently in each console's `/data`.
+
+The Linux supervisor remains outside Android's PID namespace and waits for Android init. A namespace restart reports SIGHUP; namespace power-off reports SIGINT. The supervisor maps those outcomes to a physical console operation, synchronizes and unmounts storage, and refuses power operations if cleanup fails. An ordinary crash is not treated as a power request.
+
+The added bundled-app mount must participate in that cleanup before the PS4 filesystem is unmounted. The first ten-app candidate omitted those unmounts. The corrected supervisor removes app binds first, then the system overlay and app filesystem before internal storage. Host tests check that busy mounts block physical power. [Compatibility](COMPATIBILITY.md) separates that source fix from the candidate on the console. Physical restart/shutdown acceptance must be repeated with the full packaged app filesystem.
+
+## Diagnostics and development boundaries
+
+Native delivery/progress is in `launcher-boot.log`. Linux milestones are in `boot-progress.log`, `boot.log` and `kernel.log`; Android service transitions are in `android-stages.log`. Android also has bounded rotating logcat output under `/data/misc/logd`.
+
+The runtime currently uses SELinux permissive mode and authenticated TCP ADB. No trusted host keys or user accounts are packaged. These are development choices, not claims of retail-device security or certification.
+
+Changes must be built into a new PKG and tied to its hash. Editing a running Android overlay is useful for diagnosis but disappears at reboot unless encoded into the release inputs. [Contributing](../CONTRIBUTING.md) describes useful test reports and where to make changes.

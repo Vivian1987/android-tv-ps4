@@ -1,0 +1,33 @@
+{
+  "initramfs_sha256": "7f0865237e0fcce6e87e990c9ede58cf125f3910375ac176e17f60269e418bed",
+  "text_files": {
+    "init": "e155d51b1ae46d946ef6912e6a1e3b56484c3ee041b749c080e4ba900f661c7d",
+    "usr/sbin/androidtv-ps4-start": "83a3ba0a2fe33cbd196ab0f7eb041565f0753d0899e3ffa1a942f3548383cd80",
+    "opt/androidtv-ps4/android-child.sh": "4a1551aff5ead43e307faf96a8e943eef9234fe5c24f3355d58da253801156b3",
+    "opt/androidtv-ps4/autoboot.sh": "83a3ba0a2fe33cbd196ab0f7eb041565f0753d0899e3ffa1a942f3548383cd80",
+    "opt/androidtv-ps4/androidtv-ps4.rc": "bd50600a0616cedcb48a2a6189a45fe25a7d14c6ebf52ced33c7524d2e44dd15",
+    "opt/androidtv-ps4/bpfloader.rc": "aef3af91463902a43d4c00c6e8ed641f35e66db69ba04f3ee533c6a4246d0670",
+    "opt/androidtv-ps4/init.rc": "a6ab53bde38ceb183068e48ccade1c8aafe68c4b14e904c875c2857d608cc672",
+    "opt/androidtv-ps4/init.sh": "b6b3b5fff89dde712709add69aad9467aed90d718a63690ee1d13d0e3f228304",
+    "opt/androidtv-ps4/init.android_x86_64.rc": "37c0f92298e88b1753ab99edc77acac4b179586b84026af696804841363ecd50",
+    "opt/androidtv-ps4/controller-home.sh": "a2e456287f3eb7074798f07173cf3f102f4b6839a298c408fac179305e8f343c",
+    "opt/androidtv-ps4/resolution.sh": "b0a98f25a6a2b16057fec23a6ee51a2c14c58b9551332bbfb4a116d829cc0495",
+    "opt/androidtv-ps4/system-build.prop": "2438e5af90510bd73e345f242763fe51225e075e136f0b6ea733e682c427e551",
+    "opt/androidtv-ps4/vendor-build.prop": "96341bc246c880d77303c1d4d2c0a1dec69e0021a7203f0b06eaf2b31ed4686d",
+    "opt/androidtv-ps4/product-build.prop": "383d3b0ffd30a11afb61ce9f45860933a53dd3270bc24442cd9e4f93ddcfc79a",
+    "opt/androidtv-ps4/hwcomposer.rc": "28b53235f32a9e89f82bc70345ea03f53be2f449631c288eff8bc5c3068dd5e9",
+    "opt/androidtv-ps4/bluetooth.rc": "569efe9b97b32716b030ac9d44ceba9adcd3aa0ec8783a9aff2973cc1197fcf3",
+    "opt/androidtv-ps4/bluetooth-scheduling.rc": "06ea81d9afd5f5826a4ca796c268d192f3dd841904a3089c6b6bdcf69446a249",
+    "opt/androidtv-ps4/mediaextractor.policy": "cf890f5248c9d1018462cf9c5564ead759d54ad2d1dec79eb377007baae18efb",
+    "opt/androidtv-ps4/androidtv-logging.rc": "b6c8f78fe1c51f39bd34e33a9e5c3f1a72749f03fb1e748afe400445cb369542",
+    "opt/androidtv-ps4/bundled-apps.txt": "b7927f3bf834aae94469f4df49e8e2a903c2f6505a217d37f7d217fe23561f92"
+  },
+  "binary_helpers": {
+    "usr/sbin/android-supervisor": "66297068291be7a4818b8f8696798731bf57e366678bac5dd8b7b7856628df9c",
+    "usr/sbin/androidtv-display-ready": "156de861dce71a2745b10a0225f2b3cfc09e6c5e9c2eca03542c0aa8e027b34f",
+    "opt/androidtv-ps4/composer": "3039510ce6a16777904155f62c21b110d3d02bde0a448af6dec96a814e3a28a2",
+    "opt/androidtv-ps4/gralloc-gbm-yv12-stride.so": "6803c4d592e97e6252d0dffd25a6a332db1d5f632cc958f0ec7dd6d89cff9052",
+    "opt/androidtv-ps4/binder-devices": "d0d03af6c0abc406787633c18f867b6f4c86056d6e796d5b808c93a01e206e0a",
+    "opt/androidtv-ps4/AtvConnectivity.apk": "65ee91c6d5a7a6c48f2256c8e57fe8281d34f325ac7654d70d158fe2cecdce2b"
+  }
+}

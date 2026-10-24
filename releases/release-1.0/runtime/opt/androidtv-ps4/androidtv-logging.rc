@@ -1,0 +1,10 @@
+# Keep a bounded local boot/setup history in private Android userdata.
+# Four rotated files plus the active file: approximately 10 MiB maximum.
+# Android init starts/restarts logcatd after persistent properties are ready.
+on early-init
+    setprop logd.logpersistd.size 4
+    setprop logd.logpersistd.rotate_kbytes 2048
+    setprop logd.logpersistd.buffer all
+
+on post-fs-data
+    setprop logd.logpersistd logcatd

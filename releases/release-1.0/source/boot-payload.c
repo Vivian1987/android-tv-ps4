@@ -1,0 +1,113 @@
+/* GoldHEN payload runner, retained from the externally verified Linux boot.
+ * Bundled in the PKG and delivered over loopback, not executed by the app. */
+#include "kernel.h"
+#include "module.h"
+#include "file.h"
+#undef errno
+#include "local-payload-image.h"
+#include "kexec-1352-image.h"
+#include "boot-inputs.h"
+#include "boot-control.h"
+#include "launch-protocol.h"
+#include "display-release.h"
+#define FN(name,type) ((type)((char*)memory+PAYLOAD_##name))
+#define VAR(name,type) (*(type*)((char*)memory+PAYLOAD_##name))
+struct result { unsigned int magic; int stage,rc,cancel_rc; unsigned long long elapsed,nonce; struct atv_boot_report report; };
+static struct result out;
+/* Same notification ABI as OpenOrbis's OrbisNotificationRequest. Kept local
+ * because this freestanding runner does not link the native app's SDK libc. */
+struct startup_notification { int type,req_id,priority,msg_id,target_id,user_id,unk1,unk2,app_id,error_num,unk3; unsigned char use_icon; char message[1024],icon[1024],extra[1024]; };
+_Static_assert(sizeof(struct startup_notification)==3120,"notification ABI");
+static void notice_failure(void){
+ int (*notify)(int,void*,size_t,int)=0;
+ if(!out.rc||getFunctionAddressByName(libKernelHandle,"sceKernelSendNotificationRequest",&notify)||!notify)return;
+ struct startup_notification note={0};note.target_id=-1;
+ const char *message=out.rc==12?"Android TV could not reserve Linux startup memory. Startup stopped; your installation is preserved.":"Android TV startup stopped. See the saved payload result and launcher boot log.";
+ unsigned i=0;while(message[i]&&i<sizeof(note.message)-1){note.message[i]=message[i];i++;}
+ notify(0,&note,sizeof(note),0);
+}
+static int save(void){int f=open(ATV_RESULT_PATH,O_WRONLY|O_TRUNC,0600);if(f<0)return -1;int ok=write(f,&out,sizeof(out))==sizeof(out);close(f);return ok?0:-1;}
+static int control_fd=-1;
+static int read_control(struct atv_launch_control *c){
+ return lseek(control_fd,0,0)==0&&read(control_fd,c,sizeof(*c))==sizeof(*c)?0:-1;
+}
+static unsigned long long clock_us(void){return sceKernelGetProcessTime();}
+static int (*mapmem)(void*,size_t,int,int,int,off_t,void**);
+static int (*unmapmem)(void*,size_t);
+static void copybytes(void*d,const void*s,size_t n){for(size_t i=0;i<n;i++)((unsigned char*)d)[i]=((const unsigned char*)s)[i];}
+static int image(const char*path,void**data,size_t n){
+ int f=open(path,O_RDONLY,0);if(f<0)return -1;
+ if(lseek(f,0,2)!=(off_t)n||lseek(f,0,0)<0){close(f);return -2;}
+ int r=mapmem(0,(n+16383)&~(size_t)16383,3,0x1002,-1,0,data);if(r){close(f);return r;}
+ size_t pos=0;while(pos<n){ssize_t got=read(f,(char*)*data+pos,n-pos);if(got<=0){close(f);return -3;}pos+=got;}
+ close(f);return 0;
+}
+int _main(void){
+ initKernel();struct atv_launch_control control;
+ control_fd=open(ATV_CONTROL_PATH,O_RDONLY,0);
+ if(control_fd<0)return -110;
+ if(read_control(&control)||!atv_control_valid(&control,control.nonce)||control.released||control.cancelled){close(control_fd);return -111;}
+ out.magic=ATV_LAUNCH_MAGIC;out.nonce=control.nonce;out.stage=1;
+ if(save()){close(control_fd);return -114;}
+ SceFwInfo fw={0};fw.unk1=sizeof(fw);
+ if(!sceKernelGetSystemSwVersion||sceKernelGetSystemSwVersion(&fw)){out.rc=-100;save();return -1;}
+ const char expected[]="13.520.001";for(unsigned i=0;i<sizeof(expected);i++)if(fw.version_string[i]!=expected[i]){out.rc=-101;save();close(control_fd);return -1;}
+ out.rc=getFunctionAddressByName(libKernelHandle,"sceKernelMmap",&mapmem);
+ out.rc|=getFunctionAddressByName(libKernelHandle,"sceKernelMunmap",&unmapmem);
+ if(out.rc||!mapmem||!unmapmem){save();close(control_fd);return -1;}
+ size_t first=(sizeof(local_payload_image)+16383)&~(size_t)16383;
+ size_t bytes=first+((sizeof(kexec_1352_image)+16383)&~(size_t)16383);
+ void *memory=0,*kernel=0,*initrd=0;
+ out.rc=mapmem(0,bytes,7,0x1002,-1,0,&memory);if(out.rc){save();close(control_fd);return -1;}
+ copybytes(memory,local_payload_image,sizeof(local_payload_image));
+ copybytes((char*)memory+first,kexec_1352_image,sizeof(kexec_1352_image));
+ unsigned short fwver=FN(get_firmware,unsigned short(*)(void))();
+ unsigned short norm=FN(normalize_fw_ver,unsigned short(*)(unsigned short))(fwver);
+ if(norm!=1352){out.rc=-102;goto done;}
+ VAR(g_fw,void*)=FN(find_offsets_by_fw,void*(*)(unsigned short))(norm);
+ VAR(g_kexec_s,char*)=(char*)memory+first;VAR(g_kexec_e,char*)=(char*)memory+first+sizeof(kexec_1352_image);
+ int sb=FN(get_sb_id,int(*)(void))();if(sb<0||!VAR(g_fw,void*)){out.rc=-103;goto done;}
+ out.stage=2;
+ if(save()){out.rc=-114;goto done;}
+ /* The small foreground app has already released its file-backed artwork.
+  * Prepare Linux now; ARM still requires an explicit display release below. */
+ out.rc=image("/data/linux/boot/bzImage",&kernel,ATV_KERNEL_BYTES);if(out.rc)goto done;
+ out.rc=image("/data/linux/boot/initramfs.cpio.xz",&initrd,ATV_INITRD_BYTES);if(out.rc)goto done;
+ char args[1024]={0};int fd=open("/data/linux/boot/bootargs.txt",O_RDONLY,0);
+ if(fd<0){out.rc=-104;goto done;}ssize_t got=read(fd,args,sizeof(args)-1);close(fd);
+ if(got<=0){out.rc=-105;goto done;}
+ for(ssize_t i=0;i<got;i++)if(args[i]=='\n'||args[i]=='\r')args[i]=0;
+ size_t used=0;while(args[used])used++;const char tag[]=" androidtv.boot_id=release-100";
+ if(used+sizeof(tag)>sizeof(args)){out.rc=-108;goto done;}copybytes(args+used,tag,sizeof(tag));
+ out.stage=3;save();VAR(errno,int)=0;
+ FN(kexec,void(*)(void*,void*))((char*)memory+PAYLOAD_kernel_main,0);
+ out.rc=VAR(errno,int);if(out.rc)goto done;
+ out.stage=4;save();unsigned long long start=sceKernelGetProcessTime();
+ int packed=FN(pack_kexec_args,int(*)(int,unsigned short,int))(2048,fwver,sb);
+ out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(kernel,ATV_KERNEL_BYTES,initrd,ATV_INITRD_BYTES,args,packed);
+ out.elapsed=sceKernelGetProcessTime()-start;out.stage=5;save();
+ if(out.rc)goto done;
+ out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_QUERY,&out.report,sizeof(out.report),0,0);
+ out.stage=6;save();
+ if(!out.rc&&(out.report.magic!=ATV_BOOT_REPORT_MAGIC||out.report.state!=1||out.report.image_crc32!=ATV_KERNEL_CRC32||out.report.initrd_crc32!=ATV_INITRD_CRC32))out.rc=-106;
+ if(out.rc){out.cancel_rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_CANCEL,0,0,0,0);goto done;}
+ int event=FN(evf_open,int(*)(char*))("SceSysCoreReboot");
+ if(event<0){out.rc=event;out.cancel_rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_CANCEL,0,0,0,0);goto done;}
+ out.stage=7;save();
+ out.rc=atv_wait_display_release(out.nonce,read_control,clock_us,sceKernelUsleep);
+ if(out.rc){out.cancel_rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_CANCEL,0,0,0,0);goto done;}
+ out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_ARM,0,0,0,0);
+ out.stage=8;save();
+ if(out.rc){out.cancel_rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_CANCEL,0,0,0,0);goto done;}
+ out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_QUERY,&out.report,sizeof(out.report),0,0);
+ out.stage=9;save();
+ if(out.rc||out.report.state!=2){out.rc=-107;goto done;}
+ out.rc=FN(evf_cancel,int(*)(int,unsigned long long,unsigned long long))(event,0x4000,0);
+ out.stage=10;save();if(out.rc<0)goto done;
+ out.rc=FN(kill,int(*)(int,int))(1,30);
+ out.stage=11;save();
+ done:save();notice_failure();
+ if(kernel)unmapmem(kernel,(ATV_KERNEL_BYTES+16383)&~(size_t)16383);
+ if(initrd)unmapmem(initrd,(ATV_INITRD_BYTES+16383)&~(size_t)16383);
+ unmapmem(memory,bytes);close(control_fd);return out.rc;
+}

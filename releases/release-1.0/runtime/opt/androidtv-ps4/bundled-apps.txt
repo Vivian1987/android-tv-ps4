@@ -1,0 +1,10 @@
+youtube
+spotify
+vlc
+jellyfin
+kodi
+plex
+tvbro
+biglybt
+crossyroad
+aida64

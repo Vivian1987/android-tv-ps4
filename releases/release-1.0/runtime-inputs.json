@@ -1,0 +1,22 @@
+{
+  "base_release": "retained-start",
+  "base_initramfs_sha256": "b191d815dbbb322b4cedba7ffee89f10a25a8d3e66d2601fb4151bd9d3d52ecb",
+  "initramfs_sha256": "7f0865237e0fcce6e87e990c9ede58cf125f3910375ac176e17f60269e418bed",
+  "initramfs_bytes": 9522012,
+  "expanded_sha256": "af92144861b377b4109449eb9b30cb5f6285189ca35346c1f6543979afb8aecb",
+  "expanded_bytes": 27107580,
+  "changed_entries": [
+    "usr/sbin/android-supervisor"
+  ],
+  "kernel_composer_gralloc_bluetooth_unchanged": true,
+  "mesa_sha256": "ca0b4228ede6a6763568e6cafd4efc472f7d31eaae7622b03ad8d3dd3c7e545f",
+  "bundled_apps_sha256": "c5eb443ada0acb5e9eab149e680c4d9fb638cf47c42f6e980e438e9cb0b18761",
+  "bundled_app_bytes": 624353280,
+  "bundled_app_count": 10,
+  "app_storage": "Bundled read-only app filesystem, signed APKs and prepared native libraries",
+  "userdata_included": false,
+  "console_boot_tested": false,
+  "parent_initramfs_sha256": "f8cf011fc4848cf761ab0a8621469e17dec4c1e209587e9e47bcda924e9f63d4",
+  "power_supervisor_sha256": "66297068291be7a4818b8f8696798731bf57e366678bac5dd8b7b7856628df9c",
+  "power_supervisor_source_sha256": "885624005964d07d9202f8a46f891e8cdd4300e3bd23a1b94a78d438c773a1c5"
+}

@@ -1,0 +1,41 @@
+#!/bin/sh
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+/bin/busybox --install -s /bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+mkdir -p /dev/pts /dev/shm /run /tmp
+mount -t devpts devpts /dev/pts
+mount -t tmpfs tmpfs /run
+mount -t tmpfs tmpfs /tmp
+exec </dev/console >/dev/console 2>&1
+hostname androidtv-ps4
+echo 'PS4 Android TV: standalone installer'
+echo 'Android storage will be prepared on the internal drive.'
+echo 7 > /proc/sys/kernel/printk
+mdev -s
+quota_module=/lib/modules/$(uname -r)/extra/xt_quota2.ko
+if [ -f "$quota_module" ]; then
+    insmod "$quota_module" || echo 'Android quota2 module failed to load'
+fi
+ip link set lo up
+mkdir -p /run/androidtv-ps4
+uname -a > /run/androidtv-ps4/uname.txt
+cat /proc/cmdline > /run/androidtv-ps4/cmdline.txt
+cat /proc/meminfo > /run/androidtv-ps4/meminfo.txt
+cat /proc/partitions > /run/androidtv-ps4/partitions.txt
+ip addr > /run/androidtv-ps4/network.txt
+dmesg > /run/androidtv-ps4/dmesg.txt
+for d in /sys/bus/pci/devices/*; do
+    echo "$d $(cat "$d/vendor") $(cat "$d/device") $(cat "$d/class")"
+done > /run/androidtv-ps4/pci.txt
+echo 'Reports are in /run/androidtv-ps4. Reboot returns to the PS4 operating system.'
+if [ -x /usr/sbin/androidtv-ps4-start ]; then
+    echo '[Android TV] Linux payload running; Android will start automatically.'
+    (/usr/sbin/androidtv-ps4-start 2>&1 | tee /run/androidtv-ps4/one-shot.log) &
+    while :; do sleep 3600; done
+fi
+while :; do
+    echo "Android startup unavailable. Restart the console to return to PS4."
+    sleep 1
+done

@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/sony-jaguar-devs/ps4-linux.git",
+  "commit": "be8199c3c1617239c2b798663e86bc0dd22d2bdb",
+  "config_sha256": "ec7f1879989ff18087926aa65eedafe8e25541f81d5998dc4fe9f2415f394478",
+  "package_kernel_sha256": "c02e5baed5768e1eedd0e585eccf2a7db1970aada0f04b43f2879213b5e46bf3",
+  "localversion": "-androidtv-ps4-aeolia",
+  "source_diff_audit": "All tracked upstream files compared; only dce_v8_0.c differs",
+  "source_patch_sha256": "dd82402a3b055ee950b04ade4dce1d8471a8795b8b9c0fef9d691bbab531bf9e"
+}

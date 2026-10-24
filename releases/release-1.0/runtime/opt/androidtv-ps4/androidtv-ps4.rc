@@ -1,0 +1,17 @@
+on early-init
+    setprop ro.vndk.version 33
+    setprop sys.use_memfd true
+    export AMD_DEBUG notiling
+
+# Verbose milestones until Android takes ownership of display output.
+on early-init
+    write /dev/kmsg "<6>[Android TV] Android early-init"
+on post-fs-data
+    write /dev/kmsg "<6>[Android TV] App storage ready; starting Android services"
+on zygote-start
+    write /dev/kmsg "<6>[Android TV] Starting Android application runtime"
+on property:init.svc.surfaceflinger=running
+    write /dev/kmsg "<6>[Android TV] Graphics service started; waiting for its first display frame"
+on property:sys.boot_completed=1
+    write /proc/sys/kernel/printk 1
+    write /dev/kmsg "<6>[Android TV] Boot complete"

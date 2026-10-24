@@ -16,7 +16,9 @@ The package is `Android-TV-for-PS4.pkg`, approximately **3.11 GB**. The 32 GiB f
 
 [Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Join the download parts](docs/DOWNLOAD.md) · [Package checksum and compatibility](docs/COMPATIBILITY.md) · [Installation guide](docs/INSTALL.md)
 
-The release download is split into two files to fit GitHub's asset size limit. Join them into the original PKG and verify its checksum before installing. The latest test of this exact package installed successfully but stopped before Linux boot; the recorded startup failures are described in [Compatibility](docs/COMPATIBILITY.md).
+The release download is split into two files to fit GitHub's asset size limit. On Windows, put both parts beside [Join-PKG-Windows.cmd](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/Join-PKG-Windows.cmd) and **double-click the tool**. It creates the original PKG and verifies its checksum. A Linux/macOS script and manual commands are also in the [download guide](docs/DOWNLOAD.md).
+
+Fresh installation and Android boot have been confirmed on the test console. [Compatibility](docs/COMPATIBILITY.md) covers hardware scope, streaming limits and recovery from startup errors encountered during testing.
 
 **Test hardware: CUH-1102A, Aeolia, firmware 13.52, with GoldHEN.** The current payload explicitly checks for firmware 13.52. Other console revisions and firmware versions need their own porting and validation work.
 

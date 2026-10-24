@@ -46,7 +46,7 @@ You do not need to reinstall a completed installation. The launcher checks the e
 
 Error `61` means the launcher could not connect to BinLoader; no payload bytes were delivered. Avoid probing port 9090 with a scanner or an empty TCP connection, which can disturb the receiver.
 
-Error `12` during Linux preparation means the loader could not allocate a required contiguous memory buffer. The latest recorded failure involved the 12,305,408-byte kernel image buffer. Installation had completed, but Linux had not started. Preserve `launcher-boot.log` and report the failure; repeatedly reopening the app is not a confirmed remedy.
+Error `12` during Linux preparation means the loader could not allocate a required contiguous memory buffer. The recorded allocation failure during testing involved the 12,305,408-byte kernel image buffer. Installation had completed, but Linux had not started. Preserve `launcher-boot.log` and report the failure; repeatedly reopening the app is not a confirmed remedy.
 
 A payload-received banner confirms delivery, not execution. If the launcher remains waiting, the GoldHEN log and payload status identify whether the runner actually started. See [known startup issues](COMPATIBILITY.md#known-issues-and-limits).
 
@@ -65,6 +65,8 @@ Wi-Fi credentials are entered in Android. Ethernet obtains its configuration thr
 Open **Settings → Remotes & accessories → Add accessory**. For a **Google TV Streamer 4K Voice Remote**, hold **Back + Home** for about three seconds, then select the remote. For a **DualShock 4**, unplug USB and hold **SHARE + PS** with the controller initially off until the light flashes. Select the controller and accept any authentication prompt. See [Google](https://support.google.com/chromecast/answer/10089168?hl=en) and [Sony](https://www.playstation.com/en-ca/support/hardware/ps4-pair-dualshock-4-wireless-with-pc-or-mac/) for their pairing instructions.
 
 The controller's PS/Home action returns to Android Home. Test wireless operation with USB unplugged. Navigation has worked with both devices during development; voice search, TV power/volume and special buttons are separate capabilities. To use a DualShock 4 in PS4 mode again, connect it by USB and press PS if it does not reconnect.
+
+If **Kayo 4.6.1** ignores X on a selection screen, use the **Google TV remote's centre/select button**; it advanced the screen in testing. The controller uses Android's standard gamepad mapping, and some app screens handle it differently from a TV remote. A global remap is not included because it would also change game controls.
 
 ## Accounts, phone pairing and the device name
 

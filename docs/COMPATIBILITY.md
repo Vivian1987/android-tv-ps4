@@ -27,7 +27,7 @@ SHA256:
 
 The package includes the signed APK set, native x86/x86-64 Google Play services libraries and both Mesa raster corrections. Its friendly device name defaults to **PlayStation 4**; the base compatibility model is preserved.
 
-Package structure, digests and signatures passed validation, and the transferred file matched its SHA256 by full readback. Those checks establish package integrity; hardware and service behaviour are described below.
+Package structure, digests and signatures passed validation, and the transferred file matched its SHA256 by full readback. The same package has since completed a fresh installation and reached Android TV successfully, confirmed by the console operator. Allow 5–10 minutes initially and about 2 minutes for subsequent boots. Hardware and service behaviour are described below.
 
 ## Hardware observations
 
@@ -49,13 +49,14 @@ These observations describe the tested hardware and app paths. They do not estab
 
 | Item | Behaviour and scope |
 | --- | --- |
-| Linux startup memory allocation | The latest recorded boot attempt on this package failed to allocate the 12,305,408-byte contiguous kernel buffer after three attempts (`ENOMEM`, code 12). File installation completed, but Linux had not started. The allocation failure's underlying cause is not established. |
-| GoldHEN payload execution | A subsequent retry delivered the full payload, but GoldHEN reported “failed to launch payload, error: 1.” The launcher can remain waiting for a startup report even though execution failed. A received-payload banner is not proof of Linux startup. |
+| Linux startup memory allocation | An earlier boot attempt during testing failed to allocate the 12,305,408-byte contiguous kernel buffer after three attempts (`ENOMEM`, code 12). That attempt completed file installation but did not start Linux. A later fresh install and boot succeeded; the earlier allocation failure's underlying cause is not established. |
+| GoldHEN payload execution | A retry following that failed attempt delivered the full payload, but GoldHEN reported “failed to launch payload, error: 1.” The launcher can remain waiting for a startup report even though execution failed. A received-payload banner is not proof of Linux startup. |
 | BinLoader connection refused | Error 61 means no connection was established and no payload bytes were sent. Closing the app and toggling BinLoader has recovered this condition. Empty TCP health probes also disturbed the receiver during testing; do not scan/probe its payload port. [Recovery](INSTALL.md#if-binloader-startup-stops). |
 | YouTube | Version 7.27.302 ARM64 with native Play services plays signed-in selections, including a previously failing video, as unencrypted VP9 at 1080p/1440p. Guest playback previously requested a missing secure decoder. Hardware-secure playback is not fixed by sign-in. |
 | Native Play services | Version 26.11.32 (190800) resolves the ARM JNI/provider mismatch and permits provisioning when installed as an update. The packaged APK replaces the original service in its privileged product location. That update test does not establish every first-run TV setup or Store flow. |
 | Power cleanup | The supervisor releases app/service binds before the overlay, app filesystem and PS4 filesystem. Host tests cover dependency order and refusal to power off with busy mounts. Earlier physical power tests used an earlier runtime. |
 | 7plus protected video | Audio with missing video and an HDCP error; the current connector/DRM path does not supply the required HDCP protection. |
+| Kayo controller selection | On a screen in Kayo 4.6.1, DualShock 4 X did not advance, while the Google TV Streamer remote's select button did. Use a TV remote for that screen. X uses Android's standard gamepad A mapping with a Select fallback; no global game-control remapping is applied in this package. |
 | Graphics | The 32-bit Liverpool correction passed all 40 depth/stencil cases, compared with 27 failures before correction; the YouTube spinner was visually confirmed corrected. Both 32-bit and 64-bit corrections are encoded in the boot inputs. |
 | Kodi first launch | The runtime removes the inherited Linux `HOME=/` so Kodi can choose Android app storage. |
 | Android shell application | Earlier logs contain repeated `setgroups` failures involving an invalid supplementary GID. ADB shell access still worked; the cause is unresolved. |

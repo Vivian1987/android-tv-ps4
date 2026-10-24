@@ -6,6 +6,18 @@
 
 Android TV 13 boots directly on PlayStation 4 hardware through a PS4 home-screen launcher. The package installs its system and startup files on the internal drive. Later launches reuse your Android apps, accounts and settings.
 
+## Download to installation
+
+1. Download **Android-TV-for-PS4.pkg.part1**, **Android-TV-for-PS4.pkg.part2** and **Join-PKG-Windows.cmd** from the [release assets](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) into the same folder.
+2. On Windows, **double-click Join-PKG-Windows.cmd**. It joins the two parts and checks the SHA256. Wait for **READY: Android-TV-for-PS4.pkg**. No extra software is required.
+3. Copy the completed **Android-TV-for-PS4.pkg** to the top level of an **exFAT USB drive**. Connect it to the PS4, load GoldHEN and install the PKG through the **Package Installer**.
+4. Enable **GoldHEN → Servers → BinLoader** on **9090** and open **Android TV for PS4**.
+5. Allow **5–10 minutes** for the first installation and boot. Complete Android setup when it appears. Subsequent boots take about **2 minutes**.
+
+On Linux/macOS, download **join-pkg.sh** beside the two parts and run `sh join-pkg.sh`. It performs the same joining and verification. [Full instructions and manual commands](DOWNLOAD.md).
+
+The `.part1` and `.part2` files are consecutive pieces of the original PKG. Joining restores it byte for byte; it does not modify or rebuild it. Install the joined `.pkg`, not the individual parts. GitHub's **Source code** ZIP/TAR downloads contain the repository, not the installer.
+
 ## Package and requirements
 
 - `Android-TV-for-PS4.pkg`, approximately **3.11 GB**.
@@ -34,7 +46,9 @@ Android **Restart** returns to PS4 mode; load GoldHEN again before opening Andro
 
 Signed-in YouTube playback has worked with the current app and native services on the development console. Guest playback previously selected an unavailable secure decoder. 7plus protected playback has an unresolved HDCP limitation. This port does not establish Google certification, hardware-secure DRM or compatibility with every streaming service.
 
-Startup issues include BinLoader connection refusal and a recorded failure to reserve the contiguous Linux kernel buffer. A later retry also failed to execute in GoldHEN after delivery. [Troubleshooting](INSTALL.md#if-binloader-startup-stops) distinguishes these errors; a completed Android installation is retained.
+Kayo 4.6.1 ignored DualShock 4 X on one selection screen; the Google TV Streamer remote's centre/select button advanced it. Use the remote for that screen. Standard gamepad mappings are preserved for games.
+
+Fresh installation and Android boot have been confirmed on the test console. Earlier testing encountered BinLoader connection refusal, a kernel-buffer allocation error and a payload execution failure. [Troubleshooting](INSTALL.md#if-binloader-startup-stops) explains these errors and recovery; a completed installation is retained.
 
 The runtime uses SELinux permissive mode and authenticated network ADB. Developer access requires authorization; developer accounts and trusted debugging keys are not bundled. This is a homebrew OS for the stated hardware, with service-specific limits documented in [Compatibility](COMPATIBILITY.md).
 

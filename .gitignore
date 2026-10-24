@@ -4,6 +4,8 @@
 !/.gitignore
 !/README.md
 !/CONTRIBUTING.md
+!/tools/Join-PKG-Windows.cmd
+!/tools/join-pkg.sh
 !/docs/*.md
 !/branding/repository-banner.svg
 !/branding/*-official-assets-v6.svg

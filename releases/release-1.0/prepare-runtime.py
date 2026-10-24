@@ -110,6 +110,9 @@ def prepare(base, output, apps_dir):
     mesa_patch = runpy.run_path(str(ROOT/'runtime-source/patch-mesa-raster.py'))
     assert start.count(mesa_patch['BASE_SHA']) == 1
     start = start.replace(mesa_patch['BASE_SHA'],mesa_patch['PATCHED_SHA'])
+    mesa32_marker = "echo 'ca0b4228ede6a6763568e6cafd4efc472f7d31eaae7622b03ad8d3dd3c7e545f  /android/system/vendor/lib64/dri/libgallium_dri.so' | sha256sum -c -"
+    assert start.count(mesa32_marker) == 1
+    start = start.replace(mesa32_marker, mesa32_marker + '\n# The native x86 YouTube/Kodi processes load the 32-bit Mesa driver.\n# Apply the same Liverpool raster correction to the exact pinned base library.\n# OverlayFS copies up this file; the distributed Android system stays untouched.\nmesa32=/android/system/vendor/lib/dri/libgallium_dri.so\nmesa32_sha=$(sha256sum "$mesa32" | cut -d \' \' -f 1)\ncase "$mesa32_sha" in\n eb4db495721ec36dfa4d0cdb6378c845bd756c77748fae9aed14eacaf2389f1e)\n  printf \'\\032\\026\\000\\052\' | dd of="$mesa32" bs=1 seek=23111413 conv=notrunc 2>/dev/null\n  ;;\n fbac4a587e486de0e4f6f6b02dbe3c9495371735ca3c35e5e3cfbcc753d85c2c) ;;\n *) stage \'Unsupported 32-bit graphics library\'; exit 1 ;;\nesac\necho \'fbac4a587e486de0e4f6f6b02dbe3c9495371735ca3c35e5e3cfbcc753d85c2c  /android/system/vendor/lib/dri/libgallium_dri.so\' | sha256sum -c -')
     needle = 'cp "$assets/androidtv-ps4.rc" /android/system/etc/init/androidtv-ps4.rc'
     assert start.count(needle) == 1
     start = start.replace(needle, needle + '''
@@ -143,7 +146,7 @@ logger=$!'''
     changed = sorted(name for name, (_, data) in entries.items() if before.get(name) != sha(data))
     allowed = sorted([ASSETS+n for n in ['mediaextractor.policy', 'androidtv-logging.rc', 'bundled-apps.txt', 'android-child.sh',
                      'system-build.prop', 'vendor-build.prop', 'product-build.prop', 'autoboot.sh']]
-                     + ['usr/sbin/androidtv-ps4-start'])
+                     + ['usr/sbin/androidtv-ps4-start', 'usr/sbin/android-supervisor'])
     # vendor-build.prop has no top-level model override in some base revisions.
     assert set(changed) <= set(allowed), changed
     assert not (set(before)-set(entries))

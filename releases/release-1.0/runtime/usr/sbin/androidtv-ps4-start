@@ -132,6 +132,19 @@ cp "$assets/binder-devices" /run/androidtv-ps4/binder-devices
 cp "$assets/xt_quota2.ko" /run/androidtv-ps4/xt_quota2.ko
 cp /mnt/android-share/libgallium-baseline.so /android/system/vendor/lib64/dri/libgallium_dri.so
 echo 'ca0b4228ede6a6763568e6cafd4efc472f7d31eaae7622b03ad8d3dd3c7e545f  /android/system/vendor/lib64/dri/libgallium_dri.so' | sha256sum -c -
+# The native x86 YouTube/Kodi processes load the 32-bit Mesa driver.
+# Apply the same Liverpool raster correction to the exact pinned base library.
+# OverlayFS copies up this file; the distributed Android system stays untouched.
+mesa32=/android/system/vendor/lib/dri/libgallium_dri.so
+mesa32_sha=$(sha256sum "$mesa32" | cut -d ' ' -f 1)
+case "$mesa32_sha" in
+ eb4db495721ec36dfa4d0cdb6378c845bd756c77748fae9aed14eacaf2389f1e)
+  printf '\032\026\000\052' | dd of="$mesa32" bs=1 seek=23111413 conv=notrunc 2>/dev/null
+  ;;
+ fbac4a587e486de0e4f6f6b02dbe3c9495371735ca3c35e5e3cfbcc753d85c2c) ;;
+ *) stage 'Unsupported 32-bit graphics library'; exit 1 ;;
+esac
+echo 'fbac4a587e486de0e4f6f6b02dbe3c9495371735ca3c35e5e3cfbcc753d85c2c  /android/system/vendor/lib/dri/libgallium_dri.so' | sha256sum -c -
 sh "$assets/controller-home.sh"
 echo '6803c4d592e97e6252d0dffd25a6a332db1d5f632cc958f0ec7dd6d89cff9052  /android/system/vendor/lib64/hw/gralloc.gbm.so' | sha256sum -c -
 stage 'Launching Android init with verified graphics baseline (standard-v1)'

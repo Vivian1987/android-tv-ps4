@@ -40,7 +40,7 @@ Working on the test console:
 - HDMI picture and sound
 - Wi-Fi, Ethernet and Bluetooth
 - DualShock 4 and Google TV Streamer remote; the PS button goes to Home
-- Google sign-in, YouTube playback (signed in) and Kayo streaming
+- Google sign-in, YouTube (signed in), Spotify, Kodi and Kayo
 - Restart to PS4 mode and power-off from Android
 
 Known limitations: this isn't a Google-certified device, and there is no HDCP. Some protected streams won't play (7plus is one), and YouTube needs you to sign in. Details are in [Compatibility](docs/COMPATIBILITY.md#known-issues).

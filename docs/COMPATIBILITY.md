@@ -31,6 +31,7 @@ On the test console:
 - Fresh installation, Android setup, Google sign-in and relaunching from the internal drive
 - HDMI video and audio
 - YouTube 7.27.302, signed in, at 1080p and 1440p
+- Spotify and Kodi playback
 - Kayo sign-in and streaming
 - Wi-Fi and Ethernet
 - Bluetooth pairing and navigation with a DualShock 4 and a Google TV Streamer 4K remote

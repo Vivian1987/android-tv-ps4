@@ -15,7 +15,7 @@ More consoles and a single download. Thanks to everyone who commented and opened
 - **Boots without Ethernet hardware.** A console with no Ethernet interface used to stop the Linux start; now it continues without it.
 - **Single-file download** from Google Drive. No more joining parts.
 - **Clearer errors.** Unsupported firmware, low memory (error 12) and boot-file problems now say what happened and what to do. If the previous Linux start didn't finish, the launcher shows the last step it reached.
-- **More reliable video.** Some video could freeze after a few seconds while the sound kept playing, for example in YouTube and the NBA app. The graphics allocator now lays out video frames the way the PS4's GPU driver needs, so playback keeps going.
+- **More reliable video.** Some video could freeze after a few seconds while the sound kept playing, for example in YouTube and the NBA app. The graphics allocator now lays out video frames the way the PS4's GPU driver needs, so playback keeps going. The same fix also makes Spotify's music videos play.
 - **The controller works like a TV remote in every app.** X selects and Circle goes back everywhere. In 1.0, a few apps only listened to a TV remote on some screens, so the controller did nothing there, for example Kayo's sign-in button and going back in the NBA app.
 - **Screensaver instead of sleep.** When idle, Android now shows a screensaver and keeps running. Android's sleep mode froze PS4 Linux, so the console needed a hard restart. A small stick dead zone also stops a resting DualShock 4 from keeping the screen awake.
 - **Device name defaults to "PlayStation 4"**, so Spotify Connect and casting list the console by name.

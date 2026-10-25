@@ -49,7 +49,7 @@ More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting).
 
 Confirmed on the test console (fat CUH-1102A, firmware 13.52):
 
-- HDMI picture and sound, and video playback in YouTube, Kodi, Kayo and the NBA app
+- HDMI picture and sound, and video playback in YouTube, Kodi, Kayo, the NBA app and Spotify's music videos
 - Wi-Fi, Ethernet and Bluetooth
 - DualShock 4 and Google TV Streamer remote. The PS button goes Home, X selects and Circle goes back.
 - Google sign-in, YouTube (signed in), and Spotify including Spotify Connect, where the console shows up as "PlayStation 4"

@@ -6,7 +6,7 @@ path lets contributors edit the published runtime snapshot without an older,
 unpublished base archive. Outputs go to a new directory; source assets survive.
 """
 from pathlib import Path
-import argparse,hashlib,json,lzma,os,runpy,subprocess,tempfile
+import argparse,gzip,hashlib,io,json,lzma,os,runpy,subprocess,tarfile,tempfile
 ROOT=Path(__file__).resolve().parent
 
 def digest(data):return hashlib.sha256(data).hexdigest()
@@ -45,7 +45,19 @@ def main():
     if additions and not a.additions:raise SystemExit('--additions is required for runtime-additions.json')
     inode=max(f[0] for f,_ in entries.values())+1
     dir_fields=entries['lib/firmware'][0];file_fields=entries['lib/firmware/regulatory.db'][0]
+    drive=io.BytesIO()
+    with tarfile.open(fileobj=drive,mode='w',format=tarfile.USTAR_FORMAT) as tar:
+        for name,item in sorted(additions.items()):
+            if item.get('location')!='drive':continue
+            data=(a.additions/name).read_bytes()
+            if digest(data)!=item['sha256']:raise SystemExit('Addition does not match runtime-additions.json: '+name)
+            # Drive files never ship in the initramfs, including from an older parent.
+            entries.pop(name,None)
+            info=tarfile.TarInfo(name);info.size=len(data);info.mode=0o644;info.mtime=0
+            tar.addfile(info,io.BytesIO(data))
+    wifi=gzip.compress(drive.getvalue(),mtime=0)
     for name,item in sorted(additions.items()):
+        if item.get('location')=='drive':continue
         data=(a.additions/name).read_bytes()
         if digest(data)!=item['sha256']:raise SystemExit('Addition does not match runtime-additions.json: '+name)
         parts=name.split('/')
@@ -60,9 +72,10 @@ def main():
     if len(compressed)>16*1024*1024:raise ValueError('Unexpected initramfs growth; review boot memory budget')
     for asset in a.assets.iterdir():
         if not asset.is_file():raise ValueError('Unexpected asset directory')
-        if asset.name!='initramfs.cpio.xz':os.link(asset,a.output/asset.name)
+        if asset.name not in ('initramfs.cpio.xz','mt7668-wifi.tar.gz'):os.link(asset,a.output/asset.name)
     (a.output/'initramfs.cpio.xz').write_bytes(compressed)
-    manifest.update(parent_initramfs_sha256=parent_sha,initramfs_sha256=digest(compressed),initramfs_bytes=len(compressed),expanded_sha256=digest(raw),expanded_bytes=len(raw),changed_entries=[n for n,(_,data) in entries.items() if before.get(n)!=digest(data)],power_supervisor_sha256=digest(power),power_supervisor_source_sha256=digest(source.read_bytes()),console_boot_tested=False)
+    (a.output/'mt7668-wifi.tar.gz').write_bytes(wifi)
+    manifest.update(parent_initramfs_sha256=parent_sha,initramfs_sha256=digest(compressed),initramfs_bytes=len(compressed),expanded_sha256=digest(raw),expanded_bytes=len(raw),changed_entries=[n for n,(_,data) in entries.items() if before.get(n)!=digest(data)],power_supervisor_sha256=digest(power),power_supervisor_source_sha256=digest(source.read_bytes()),mt7668_wifi_sha256=digest(wifi),mt7668_wifi_bytes=len(wifi),console_boot_tested=False)
     (ROOT/'runtime-inputs.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(json.dumps(manifest,indent=2))
 if __name__=='__main__':main()

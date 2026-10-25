@@ -8,6 +8,43 @@ stage() {
  # A new Android framebuffer ends all console writes from this script.
  if [ ! -f /run/androidtv-ps4/display-ready ]; then printf '%s\n' "$message"; fi
 }
+# Hardware report for people who send logs back: which console, kernel, chips
+# and drivers this start saw. Rewritten at each checkpoint so it is never stale.
+hardware_report() {
+ {
+  echo "Android TV for PS4 hardware report (uptime $(cut -d' ' -f1 /proc/uptime)s)"
+  sb=$(dmesg | grep -ioE 'aeolia|belize 2|belize|baikal' | head -1)
+  echo "Southbridge: ${sb:-unknown}"
+  echo "Kernel: $(cat /proc/version)"
+  echo "Command line: $(cat /proc/cmdline)"
+  echo "CPU: $(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2-)"
+  grep -E 'MemTotal|MemAvailable' /proc/meminfo
+  echo "Storage partition: ${userpart:-not found}"
+  echo; echo "PCI devices (vendor:device class driver):"
+  for d in /sys/bus/pci/devices/*; do
+   drv=$(basename "$(readlink "$d/driver" 2>/dev/null)" 2>/dev/null)
+   echo " ${d##*/} $(cat "$d/vendor"):$(cat "$d/device") $(cat "$d/class") ${drv:-none}"
+  done
+  echo; echo "SDIO devices (Wi-Fi/Bluetooth chips):"
+  for d in /sys/bus/sdio/devices/*; do
+   [ -r "$d/vendor" ] || continue
+   drv=$(basename "$(readlink "$d/driver" 2>/dev/null)" 2>/dev/null)
+   echo " ${d##*/} $(cat "$d/vendor"):$(cat "$d/device") ${drv:-none}"
+  done
+  echo; echo "USB devices:"
+  for d in /sys/bus/usb/devices/*; do
+   [ -r "$d/idVendor" ] && echo " ${d##*/} $(cat "$d/idVendor"):$(cat "$d/idProduct") $(cat "$d/product" 2>/dev/null)"
+  done
+  echo; echo "Network interfaces:"
+  for n in /sys/class/net/*; do
+   drv=$(basename "$(readlink "$n/device/driver" 2>/dev/null)" 2>/dev/null)
+   echo " ${n##*/} ${drv:-virtual} $(cat "$n/operstate" 2>/dev/null)"
+  done
+  echo; echo "Bluetooth: $(ls /sys/class/bluetooth 2>/dev/null | tr '\n' ' ')"
+  echo "Loaded modules:"; cut -d' ' -f1 /proc/modules 2>/dev/null | sed 's/^/ /'
+  echo; echo "Driver and setup decisions:"; grep -E 'found|driver|GPU|Southbridge|Hardware' /run/androidtv-ps4/progress.log 2>/dev/null || true
+ } > /run/androidtv-ps4/hardware.txt 2>&1 || true
+}
 # A start that fails before Android launches explains itself, copies its
 # reports to a USB stick if one is plugged in (the internal drive may be what
 # failed) and unmounts cleanly, so holding the power button is then safe.
@@ -51,6 +88,7 @@ stop_safely() {
 }
 on_exit() {
  status=$?
+ hardware_report
  if [ -n "$installation" ] && [ -d "$installation" ]; then save_logs "$status"; fi
  if [ "$status" -ne 0 ]; then
   stage "SETUP FAILED (status $status); data preserved"
@@ -85,16 +123,6 @@ stage "Southbridge: ${southbridge:-unknown}"
 # One line describing this console's hardware, for test reports.
 sdio=$(for d in /sys/bus/sdio/devices/*; do [ -r "$d/vendor" ] && printf '%s:%s ' "$(cat "$d/vendor")" "$(cat "$d/device")"; done 2>/dev/null || true)
 stage "Hardware: storage=$userpart sdio=[${sdio% }] net=[$(ls /sys/class/net 2>/dev/null | tr '\n' ' ' | sed 's/ $//')]"
-# Later Slim and Pro models (CUH-7215/7216, Belize and Baikal) use a MediaTek
-# MT7668 for Wi-Fi. Its driver only loads when that chip is present.
-mt7668=
-case " $sdio " in
- *' 0x037a:0x7608 '*)
-  stage 'MediaTek MT7668 Wi-Fi found; loading its driver'
-  if insmod /lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko; then mt7668=1
-  else stage 'MT7668 Wi-Fi driver failed to load; continuing without Wi-Fi'; fi
-  ;;
-esac
 # Baikal's Ethernet controller (104d:90d8) is not a Yukon. It uses linux-psx's
 # polled MTS driver, built for the Baikal kernel, which names it psx0.
 for device in /sys/bus/pci/devices/*; do
@@ -108,6 +136,17 @@ cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 
 mount -t ufs -o ufstype=ufs2,noatime /dev/mapper/ps4-android-user /mnt/ps4-user
 fi
 installation=/mnt/ps4-user/app/ps4-android
+# Later Slim and Pro models (CUH-7215/7216, Belize and Baikal) use a MediaTek
+# MT7668 for Wi-Fi. Its driver only loads when that chip is present. Driver
+# and firmware live on the drive, not in this initramfs, to keep boot memory low.
+mt7668=
+case " $sdio " in
+ *' 0x037a:0x7608 '*)
+  stage 'MediaTek MT7668 Wi-Fi found; loading its driver'
+  if tar -xzf "$installation/mt7668-wifi.tar.gz" -C / && insmod /lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko; then mt7668=1
+  else stage 'MT7668 Wi-Fi driver failed to load; continuing without Wi-Fi'; fi
+  ;;
+esac
 # Rotate only the previous local boot reports.
 for report in boot.log kernel.log android-boot.log android-stages.log; do
  [ ! -f "$installation/$report" ] || mv "$installation/$report" "$installation/$report.previous"
@@ -117,6 +156,7 @@ save_logs() {
  cp /run/androidtv-ps4/one-shot.log "$installation/boot.log" 2>/dev/null || true
  dmesg > "$installation/kernel.log" 2>/dev/null || true
  cp /run/androidtv-ps4/progress.log "$installation/boot-progress.log" 2>/dev/null || true
+ cp /run/androidtv-ps4/hardware.txt "$installation/hardware.txt" 2>/dev/null || true
  cp /run/androidtv-ps4/display-ready "$installation/display-ready.log" 2>/dev/null || true
  cp /run/androidtv-ps4/display-watch.log "$installation/display-watch.log" 2>/dev/null || true
  sync
@@ -283,6 +323,7 @@ touch /run/androidtv-ps4/allow-console-power
 touch /run/androidtv-ps4/host-netns
 mount --bind /proc/self/ns/net /run/androidtv-ps4/host-netns
 # From here a failure leaves Android running; no clean-up stops it.
+hardware_report
 touch /run/androidtv-ps4/android-launched
 /usr/sbin/android-supervisor -- /bin/sh /run/androidtv-ps4/android-child.sh </dev/null >/run/androidtv-ps4/android.log 2>&1 &
 echo $! > /run/androidtv-ps4/android-supervisor.pid

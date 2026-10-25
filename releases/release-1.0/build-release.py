@@ -14,9 +14,10 @@ app_image=json.loads((root/'bundled-apps-image.json').read_text())
 assert digest(root/'bundled-apps.json')==runtime_inputs['bundled_apps_sha256']==app_image['manifest_sha256']
 assert digest(a.assets/'initramfs.cpio.xz')==runtime_inputs['initramfs_sha256']
 assert digest(a.assets/'libgallium-baseline.so')==runtime_inputs['mesa_sha256']
+assert digest(a.assets/'mt7668-wifi.tar.gz')==runtime_inputs['mt7668_wifi_sha256']
 assert digest(a.assets/'bundled-apps.sfs')==app_image['sha256']
 assert (a.assets/'bundled-apps.sfs').stat().st_size==app_image['bytes']==runtime_inputs['bundled_app_bytes']
-expected_assets={'data-gib.txt','bzImage','bzImage-baikal','initramfs.cpio.xz','bootargs.txt','vram.txt','linux.elf','system.sfs','libgallium-baseline.so','ndk-translation.tar.gz','bundled-apps.sfs'}
+expected_assets={'data-gib.txt','bzImage','bzImage-baikal','mt7668-wifi.tar.gz','initramfs.cpio.xz','bootargs.txt','vram.txt','linux.elf','system.sfs','libgallium-baseline.so','ndk-translation.tar.gz','bundled-apps.sfs'}
 assert {x.name for x in a.assets.iterdir()}==expected_assets,'Unexpected package assets'
 metadata_hashes={name:digest(root/name) for name in ['image-metadata.h','bundled-apps.h','bundled-apps.json','bundled-apps-image.json','runtime-inputs.json']}
 assert (a.assets/'data-gib.txt').read_text()=='32\n'

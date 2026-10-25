@@ -50,7 +50,7 @@ static int commit_file(const char *from,const char *to){
  return rename(from,to);
 }
 #include <bundled-apps.h>
-#define BASE_ASSET_COUNT 10
+#define BASE_ASSET_COUNT 11
 #define ASSET_COUNT (BASE_ASSET_COUNT+BUNDLED_APP_COUNT)
 static int files[ASSET_COUNT];
 #ifdef RAW_IMAGES
@@ -64,7 +64,7 @@ static int files[ASSET_COUNT];
 #define SYSTEM_OPERATION "Extracting the bundled Android system image"
 #define DATA_OPERATION "Extracting your preformatted data.img from its supplied ZIP"
 #endif
-static const char *names[BASE_ASSET_COUNT]={DATA_ASSET,"bzImage","initramfs.cpio.xz","bootargs.txt","vram.txt","linux.elf",SYSTEM_ASSET,"libgallium-baseline.so","ndk-translation.tar.gz","bzImage-baikal"};
+static const char *names[BASE_ASSET_COUNT]={DATA_ASSET,"bzImage","initramfs.cpio.xz","bootargs.txt","vram.txt","linux.elf",SYSTEM_ASSET,"libgallium-baseline.so","ndk-translation.tar.gz","bzImage-baikal","mt7668-wifi.tar.gz"};
 /* Boot files copied to BOOT_ROOT: both kernels, the shared initramfs and the
  * boot arguments. The payload picks the kernel for the console's southbridge. */
 static const int boot_assets[]={1,2,3,4,9};
@@ -96,6 +96,15 @@ static int install_translation(void){
  if(path_stat(target,&st)==0){if(file_equal(files[8],target))return 0;errno=EIO;return -1;}
  if(errno!=ENOENT)return -1;
  if(copy_file(files[8],stage)||rename(stage,target)||sync_directory(ROOT))return -1;
+ return 0;
+}
+/* MT7668 Wi-Fi driver and firmware for later Slim and Pro models. Linux unpacks it
+ * after unlocking the drive, which keeps the boot initramfs at its 1.0 size. */
+static int install_wifi(void){
+ const char *target=ROOT "/mt7668-wifi.tar.gz";
+ const char *stage=ROOT "/mt7668-wifi.tar.gz.part";
+ if(file_equal(files[10],target))return 0;
+ if(copy_file(files[10],stage)||rename(stage,target)||sync_directory(ROOT))return -1;
  return 0;
 }
 static int install_graphics(void){
@@ -247,6 +256,7 @@ static void install_or_boot(void *unused){
   if(install_translation()){failure("Cannot install app compatibility files; Android data preserved");return;}
   if(install_bundled_apps()){failure("Cannot install bundled apps; Android data preserved");return;}
   if(install_graphics()){failure("Cannot update graphics files; Android data preserved");return;}
+  if(install_wifi()){failure("Cannot install Wi-Fi files; Android data preserved");return;}
   if(install_boot()){boot_failure("Boot files need recovery; Android data preserved");return;}
   show_previous_failure();
   notice("Booting Android TV from the internal HDD");
@@ -271,6 +281,7 @@ static void install_or_boot(void *unused){
  if(install_graphics()){failure("Cannot install graphics library");return;}
  if(install_translation()){failure("Cannot install app compatibility files; Android data preserved");return;}
  if(install_bundled_apps()){failure("Cannot install bundled apps; Android data preserved");return;}
+ if(install_wifi()){failure("Cannot install Wi-Fi files; Android data preserved");return;}
   if(install_boot()){boot_failure("Cannot finish boot setup; image files preserved");return;}
  int ready=open(READY ".next",O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);
  if(ready<0){failure("Cannot record completion");return;}

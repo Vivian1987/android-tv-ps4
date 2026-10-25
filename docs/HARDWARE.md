@@ -8,18 +8,22 @@ Only one console has been tested so far: a fat **CUH-1102A (Aeolia) on 13.52**. 
 
 ## Which model do I have?
 
+The southbridge is the chip that connects the drive, USB, Wi-Fi and Ethernet. Sony used four over the PS4's life, and most Slim and Pro model numbers shipped with more than one, depending on the motherboard. This table follows the board list on [PSDevWiki](https://web.archive.org/web/20260616145704/https://www.psdevwiki.com/ps4/Southbridge).
+
 | Model numbers | Type | Southbridge |
 | --- | --- | --- |
 | CUH-10xx, CUH-11xx | Original ("fat") | Aeolia |
 | CUH-12xx | Late fat | Belize |
-| CUH-2xxx | Slim | Belize or Baikal, depending on the motherboard |
-| CUH-7xxx | Pro | Belize or Baikal, depending on the motherboard |
+| CUH-20xx | Slim | Belize or Baikal |
+| CUH-21xx, CUH-22xx | Slim | Belize 2 or Baikal |
+| CUH-70xx | Pro | Belize |
+| CUH-71xx, CUH-72xx | Pro | Belize 2 or Baikal |
 
-Model-to-southbridge details vary by board revision and aren't fully documented, so treat this table as a guide. The southbridge is the chip that connects the drive, USB, Wi-Fi and Ethernet. The model number alone doesn't always tell you which one you have. The launcher writes it to `launcher-boot.log`, and Linux writes it to `boot-progress.log` (`Southbridge: ...`).
+The model number alone can't tell Belize 2 from Baikal. The launcher writes the southbridge to `launcher-boot.log`, and Linux writes it to `boot-progress.log` (`Southbridge: ...`). GoldHEN 2.2.3 and later also shows it.
 
 ## Support by model
 
-| | Fat, Aeolia | Fat CUH-12xx, Belize | Slim, Belize | Slim, Baikal | Pro, Belize | Pro, Baikal |
+| | Fat, Aeolia | Fat CUH-12xx, Belize | Slim, Belize or Belize 2 | Slim, Baikal | Pro, Belize or Belize 2 | Pro, Baikal |
 | --- | --- | --- | --- | --- | --- | --- |
 | Starting Linux (all GoldHEN firmware) | ✅ | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
 | GPU and graphics fixes | ✅ Liverpool | 🟢 Liverpool | 🟢 Liverpool | 🟢 Liverpool | 🟢 Gladius | 🟢 Gladius |
@@ -46,15 +50,17 @@ The GPU firmware is read from the console's own system software by the Linux loa
 
 The Wi-Fi and Bluetooth chip sits on the southbridge's SDIO bus. The boot log's `Hardware:` line lists the SDIO IDs, which identify the chip.
 
-| Chip | SDIO ID | Consoles | What Android TV for PS4 includes |
+| Chip | SDIO IDs | Seen in | What Android TV for PS4 includes |
 | --- | --- | --- | --- |
-| Marvell 88W8797 | `02df:9129` | Fat CUH-10xx/11xx | Kernel driver, firmware and a Bluetooth fix. Tested. |
-| Marvell 88W8897 | `02df:912d` (Wi-Fi), `02df:912e` (Bluetooth) | Fat CUH-12xx, many Slims | Kernel driver plus `mrvl/sd8897_uapsta.bin` from linux-firmware. Reported working on a Baikal Slim in another PS4 Linux project. |
-| MediaTek MT7668 | `037a:7608` | Later Pros (CUH-7215/7216), some Slims | Wi-Fi driver loaded only when this chip is present, its firmware, and the MT7668 Bluetooth firmware. |
+| Marvell 88W8797 | `02df:9129` Wi-Fi, `02df:912a` Bluetooth | Fat CUH-10xx/11xx | Kernel driver, firmware and a Bluetooth fix. Tested. |
+| Marvell 88W8897 | `02df:912d` Wi-Fi, `02df:912e` Bluetooth | Fat CUH-12xx, some Slims (e.g. a Baikal CUH-2002A) | Kernel driver plus `mrvl/sd8897_uapsta.bin` from linux-firmware. Reported working on a Baikal Slim in another PS4 Linux project. |
+| MediaTek MT7668 | `037a:7608` Wi-Fi, `037a:7668` Bluetooth | Many later Slims and Pros (e.g. CUH-2208B, CUH-7216B) | Wi-Fi driver loaded only when this chip is present, its firmware, and the MT7668 Bluetooth firmware. |
+
+Which chip a given Slim or Pro has varies by board, so the boot log's `Hardware:` line is the reliable way to tell.
 
 ### Ethernet
 
-Aeolia and Belize consoles use a Marvell Yukon-compatible controller (`sky2` driver). Baikal consoles use a different controller, which has its own experimental driver in the Baikal port.
+Aeolia and Belize consoles use a Marvell Yukon-compatible controller (`sky2` driver), confirmed on a Belize CUH-2208B. Baikal's Ethernet is a different controller entirely, not a Yukon. The only driver known to work on it, `psx_mts_net` from linux-psx, has been tested on two Baikal Slims and is still experimental.
 
 ### Internal drive
 

@@ -1,9 +1,11 @@
 {
   "repository": "https://github.com/sony-jaguar-devs/ps4-linux.git",
   "commit": "be8199c3c1617239c2b798663e86bc0dd22d2bdb",
-  "config_sha256": "ec7f1879989ff18087926aa65eedafe8e25541f81d5998dc4fe9f2415f394478",
-  "package_kernel_sha256": "c02e5baed5768e1eedd0e585eccf2a7db1970aada0f04b43f2879213b5e46bf3",
+  "config_sha256": "0ec705e85fd1ef2b6884ccd3eabd1f8f40ff363fd39068288f80a8e0a603ac84",
+  "package_kernel_sha256": "5d016125089af1908e56d6c8aebc3038e677516acad7c8f18ba6feb3743f2abc",
   "localversion": "-androidtv-ps4-aeolia",
   "source_diff_audit": "All tracked upstream files compared; only dce_v8_0.c differs",
-  "source_patch_sha256": "dd82402a3b055ee950b04ade4dce1d8471a8795b8b9c0fef9d691bbab531bf9e"
+  "source_patch_sha256": "dd82402a3b055ee950b04ade4dce1d8471a8795b8b9c0fef9d691bbab531bf9e",
+  "config_changes_1_1": "CONFIG_QUOTA=y and CONFIG_QUOTACTL=y (ext4 project quotas for Android app storage folders); the Baikal kernel has the same two changes",
+  "baikal_kernel_sha256": "2013815bb85e9572d25604cea1f859d40447299c7108ebd1316c138f7e8eac2c"
 }

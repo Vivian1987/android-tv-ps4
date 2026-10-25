@@ -15,6 +15,9 @@ hardware_report() {
   echo "Android TV for PS4 hardware report (uptime $(cut -d' ' -f1 /proc/uptime)s)"
   sb=$(dmesg | grep -ioE 'aeolia|belize 2|belize|baikal' | head -1)
   echo "Southbridge: ${sb:-unknown}"
+  # Only the Baikal kernel registers the baikal_pcie driver.
+  if [ -d /sys/bus/pci/drivers/baikal_pcie ]; then echo "Kernel image: bzImage-baikal (Baikal kernel)"
+  else echo "Kernel image: bzImage (standard kernel)"; fi
   echo "Kernel: $(cat /proc/version)"
   echo "Command line: $(cat /proc/cmdline)"
   echo "CPU: $(grep -m1 'model name' /proc/cpuinfo | cut -d: -f2-)"
@@ -40,9 +43,11 @@ hardware_report() {
    drv=$(basename "$(readlink "$n/device/driver" 2>/dev/null)" 2>/dev/null)
    echo " ${n##*/} ${drv:-virtual} $(cat "$n/operstate" 2>/dev/null)"
   done
+  echo " (Wi-Fi is moved into Android once it starts, so wlan0 may not be listed here.)"
+  for p in /sys/class/ieee80211/*; do [ -e "$p" ] && echo " Wi-Fi radio ${p##*/}: $(basename "$(readlink "$p/device/driver" 2>/dev/null)" 2>/dev/null)"; done
   echo; echo "Bluetooth: $(ls /sys/class/bluetooth 2>/dev/null | tr '\n' ' ')"
   echo "Loaded modules:"; cut -d' ' -f1 /proc/modules 2>/dev/null | sed 's/^/ /'
-  echo; echo "Driver and setup decisions:"; grep -E 'found|driver|GPU|Southbridge|Hardware' /run/androidtv-ps4/progress.log 2>/dev/null || true
+  echo; echo "Driver and setup decisions:"; grep -E 'found|driver|GPU|Southbridge|Hardware|Wi-Fi|Ethernet|failed' /run/androidtv-ps4/progress.log 2>/dev/null || true
  } > /run/androidtv-ps4/hardware.txt 2>&1 || true
 }
 # A start that fails before Android launches explains itself, copies its

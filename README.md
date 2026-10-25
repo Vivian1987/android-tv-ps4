@@ -65,6 +65,7 @@ These are the known weak spots in 1.1. Reports on any of them help the next rele
 - **Slim, Pro and Baikal are untested.** The support is built in, but no one has reported on it yet. Baikal is the most experimental, and its USB support is the biggest unknown. See [Hardware support](docs/HARDWARE.md).
 - **Firmware other than 13.52 is untested.** The loader has offsets for 20 versions, but only 13.52 has been run.
 - **MT7668 Wi-Fi** (many later Slims and Pros) is included but has never been run on real hardware.
+- **Video is decoded on the CPU.** Drawing is GPU-accelerated (OpenGL ES 3.2 and Vulkan 1.1 through Mesa), but the GPU's hardware video decoder isn't used yet, so very high-bitrate 4K may struggle. Hooking it up through VA-API is the biggest playback upgrade available, and help from anyone who knows Mesa would be very welcome.
 - **No HDCP,** so some protected streams won't play, and YouTube needs you to sign in.
 - **First setup can jump back to the start,** usually once. Keep going and it finishes. 1.1 removed one cause; the other isn't known yet.
 - **The handover to Linux** usually takes 30 seconds to a minute, longer on the first launch after installing or updating.

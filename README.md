@@ -28,7 +28,7 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 **The first launch takes 5–10 minutes** while Android installs to the internal drive and sets itself up. Leave the console alone while progress or the Android animation is showing. After that, Android boots in about **2 minutes**.
 
-To launch again later, load GoldHEN, make sure BinLoader is on, and open the app. In Android, **Restart** takes you back to the PS4 system and **Shut down** turns the console off. Booting needs no PC or network.
+To launch again later, load GoldHEN, make sure BinLoader is on, and open the app. The handover to Linux can take up to 2 minutes, so give it time. In Android, **Restart** takes you back to the PS4 system and **Shut down** turns the console off. Booting needs no PC or network.
 
 **Updating from 1.0:** delete Android TV for PS4 from the PS4 home screen first, then install the 1.1 PKG and open it. Your Android apps, accounts and settings are stored separately in `/user/app/ps4-android`, so deleting the app doesn't remove them.
 

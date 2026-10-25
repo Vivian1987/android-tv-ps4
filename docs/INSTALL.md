@@ -36,6 +36,8 @@ Booting doesn't need a PC, network or internet connection. The launcher sends it
 
 Load GoldHEN, make sure BinLoader is on, and open **Android TV for PS4**. Your apps, accounts, Wi-Fi and Bluetooth pairings are all kept.
 
+After the app opens, the handover to Linux usually takes about 30 seconds but can take up to 2 minutes, especially straight after the PS4 has been restarted. Leave it running; an error message means something went wrong, a wait doesn't.
+
 In Android, **Restart** returns the console to the PS4 system, where GoldHEN needs to be loaded again. **Shut down** powers the console off. Android unmounts its storage cleanly before either one.
 
 Reinstalling the same PKG keeps your existing Android data. It doesn't reset anything.

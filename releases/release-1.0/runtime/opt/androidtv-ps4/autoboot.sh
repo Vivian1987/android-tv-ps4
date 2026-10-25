@@ -235,7 +235,8 @@ chmod 755 /android/system/app/AtvConnectivity
 chmod 644 /android/system/app/AtvConnectivity/AtvConnectivity.apk
 # New installations are named "PlayStation 4"; Build.MODEL stays as it is.
 cp "$assets/AtvDeviceNameOverlay.apk" /android/system/product/overlay/AtvDeviceNameOverlay.apk
-chmod 644 /android/system/product/overlay/AtvDeviceNameOverlay.apk
+cp "$assets/AtvScreensaverOverlay.apk" /android/system/product/overlay/AtvScreensaverOverlay.apk
+chmod 644 /android/system/product/overlay/AtvDeviceNameOverlay.apk /android/system/product/overlay/AtvScreensaverOverlay.apk
 cp "$assets/bpfloader.rc" /android/system/etc/init/bpfloader.rc
 cp "$assets/resolution.sh" /android/system/vendor/brtdtv/resolution.sh
 cp "$assets/gralloc-gbm-yv12-stride.so" /android/system/vendor/lib64/hw/gralloc.gbm.so

@@ -12,7 +12,8 @@ struct atv_boot_report {
     unsigned long long params_pa, cmdline_pa, hook_address, hook_target;
     unsigned int image_crc32, initrd_crc32, firmware_bytes, e820_entries;
     /* Memory diagnostics, filled in even when preparation fails. old_method:
-     * 0 not checked, 1 the pre-1.1 single kernel block was free, 2 it was not. */
+     * 0 not checked, 1 the old single kernel block was free, 2 it was not
+     * free without waiting. */
     unsigned int kernel_pieces, initrd_pieces, smallest_piece, old_method;
 };
 _Static_assert(sizeof(struct atv_boot_report) == 104, "boot report ABI");

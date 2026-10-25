@@ -96,8 +96,8 @@ static int fail(const char *message,int code){return fail_with_detail(message,NU
 static void log_memory(void){
  struct atv_boot_report r;char line[256];
  if(pread(resultfd,&r,sizeof(r),sizeof(struct atv_launch_status))!=(ssize_t)sizeof(r)||!r.old_method)return;
- snprintf(line,sizeof(line),"Memory: kernel in %u pieces, initramfs in %u pieces, smallest %u KB. Single-block method used before 1.1 update: %s\n",
-  r.kernel_pieces,r.initrd_pieces,r.smallest_piece/1024,r.old_method==1?"would have worked":"would have failed (error 12)");
+ snprintf(line,sizeof(line),"Memory: kernel in %u pieces, initramfs in %u pieces, smallest %u KB. Old single-block method: %s\n",
+  r.kernel_pieces,r.initrd_pieces,r.smallest_piece/1024,r.old_method==1?"block free, would have worked":"no free block, would have waited and likely failed (code 12)");
  marker(line);
 }
 static const char *southbridge_name(int sb){

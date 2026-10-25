@@ -82,11 +82,12 @@ void kernel_free_all_contig(void)
             kernel_free_contig(boot_allocations[slot].alias, 0);
 }
 
-/* Whether one block of `size` is free in [low, high) right now; the block is
- * released immediately. */
+/* Whether one block of `size` is free in [low, high) right now, without
+ * waiting for Orbis to reclaim memory (a miss with M_WAITOK stalls for about
+ * 15 seconds); the block is released immediately. */
 int kernel_probe_contig(size_t size, vm_paddr_t low, vm_paddr_t high)
 {
-    vm_offset_t raw = kern.kmem_alloc_contig(*kern.kernel_map, size, M_WAITOK,
+    vm_offset_t raw = kern.kmem_alloc_contig(*kern.kernel_map, size, M_NOWAIT,
             low, high, 0x4000, 0, VM_MEMATTR_DEFAULT);
     if (!raw) return 0;
     kern.kmem_free(*kern.kernel_map, raw, size);

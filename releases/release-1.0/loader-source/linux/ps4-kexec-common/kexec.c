@@ -163,6 +163,8 @@ static int stage(copyin_t copyin, const u8 *user, size_t bytes, u64 dst,
         copies[copy_count].src = DM_TO_ID(piece);
         copies[copy_count].dst = dst + done;
         copies[copy_count].len = got;
+        kern.printf("ATV %s piece %u: %zu bytes at %llx\n", what,
+                    copy_count - first, got, copies[copy_count].src);
         copy_count++;
         done += got;
     }
@@ -250,7 +252,7 @@ int sys_kexec(void *td, struct sys_kexec_args *uap)
             allocation_high);
     prepared.old_method = probe ? 1 : 2;
     kern.printf("ATV old method check: one %zu-byte block %s\n", uap->image_size,
-                probe ? "was available" : "was NOT available (old loader: error 12)");
+                probe ? "was free" : "was not free (the old loader had to wait and often failed with code 12)");
     kern.printf("ATV layout: kernel %llx, initramfs %llx, end %llx; staging %llx..%llx and %llx..%llx\n",
                 ATV_KERNEL_DEST, initrd_dst, dest_end, stage_low[0], stage_high[0],
                 stage_low[1], stage_high[1]);

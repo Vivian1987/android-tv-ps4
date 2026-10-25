@@ -145,6 +145,7 @@ static int resolve_symbols(void)
     return 1;
 }
 
+#define	M_NOWAIT 0x0001
 #define	M_WAITOK 0x0002
 #define	M_ZERO   0x0100
 

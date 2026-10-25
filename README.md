@@ -4,7 +4,9 @@
 
 Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. Install one PKG, open it from the home screen, and the console boots straight into Android TV from its internal drive. Your apps, accounts and settings are kept between launches.
 
-[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [Roadmap](docs/ROADMAP.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
+Questions, testing, or just want to follow along? Join the **[Telegram group](https://t.me/+LfLbi-jwludkZDJi)**.
+
+[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [Roadmap](docs/ROADMAP.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Telegram](https://t.me/+LfLbi-jwludkZDJi)
 
 ## What's new in 1.1
 
@@ -12,6 +14,7 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 - **No console model is blocked.** Slim, Pro and Baikal support is built in but untested. See [Hardware support](docs/HARDWARE.md).
 - **Fixes you'll notice:** video no longer freezes, the controller works like a TV remote in every app, a screensaver replaces the sleep mode that froze the console, and it shows up as "PlayStation 4" for Spotify Connect.
 - **One 3.12 GB PKG** from Google Drive, and failed starts explain themselves and save their logs to a USB stick.
+- **No more "restart your PS4" after installing (26 Oct update).** Linux used to need two unbroken blocks of memory that a busy PS4 often couldn't find (code 12). It now loads in small pieces and puts them together at handover, and starts straight away. [How it works](docs/RELEASE-NOTES.md#11)
 
 [Everything in 1.1](docs/RELEASE-NOTES.md)
 
@@ -33,7 +36,7 @@ Android gets 32 GiB of storage. That isn't the download size: PS4 drive space is
 ## If it doesn't work
 
 - **"BinLoader unavailable" (error 61):** close the app, turn BinLoader off and on again, and reopen it.
-- **"Restart your PS4, then open Android TV again" (code 12):** the PS4 ran short of free memory, usually on the first launch after installing or updating. Restart, load GoldHEN and open the app before doing anything else. Restarting straight after installing the PKG avoids it.
+- **"Restart your PS4, then open Android TV again" (code 12):** the PS4 couldn't find memory for Linux. This should be rare since the 26 Oct update; if you downloaded 1.1 before then, delete the app from the home screen (your Android data is kept), download the PKG again and reinstall. If it still happens, restart, load GoldHEN, open the app, and send us `launcher-boot.log`.
 
 For anything else, please report it, because failed starts are how other consoles get fixed:
 
@@ -41,7 +44,7 @@ For anything else, please report it, because failed starts are how other console
 2. **If it stopped in the launcher**, copy the logs from `/user/app/ps4-android` with GoldHEN's FTP server.
 3. Open a **[console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml)** with your model, firmware and how far it got, and drag the logs (or a ZIP of the report folder) into the **Logs** box.
 
-More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting).
+More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting). Stuck? Ask in the [Telegram group](https://t.me/+LfLbi-jwludkZDJi).
 
 ## What works
 
@@ -61,7 +64,7 @@ Known limitations: this isn't a Google-certified device and there's no HDCP, so 
 
 These are the known weak spots in 1.1. Reports on any of them help the next release, and the [roadmap](docs/ROADMAP.md) has what's known about fixing each one.
 
-- **The first launch after installing often needs a restart.** It stops with "Restart your PS4, then open Android TV again" (code 12). Copying a 3 GB PKG fragments the PS4's memory, and Linux needs two unbroken blocks of about 10–12 MB. A restart fixes it, though occasionally it takes two, a bit like running the exploit. The proper fix is reserving that memory before the copying starts, planned for the next release. Would you rather it restarted automatically? [Tell us](https://github.com/odiecay/android-tv-ps4/discussions).
+- **Code 12 after installing, fixed in the 26 Oct update.** The first 1.1 build needed two unbroken blocks of memory of about 10–12 MB, which a fresh install or a busy console often didn't have, and some consoles couldn't get them even after restarting. It now loads Linux in small pieces and puts them together at handover. Tested on a fat PS4; if you still see code 12, please send `launcher-boot.log`, which now says how the memory went.
 - **Slim, Pro and Baikal are untested.** The support is built in, but no one has reported on it yet. Baikal is the most experimental, and its USB support is the biggest unknown. See [Hardware support](docs/HARDWARE.md).
 - **Firmware other than 13.52 is untested.** The loader has offsets for 20 versions, but only 13.52 has been run.
 - **MT7668 Wi-Fi** (many later Slims and Pros) is included but has never been run on real hardware.
@@ -84,7 +87,7 @@ These are the known weak spots in 1.1. Reports on any of them help the next rele
 
 ## Help wanted: other consoles
 
-Every console can now try, but only a fat 13.52 console has been tested. If you have a different model or firmware, please give it a go and [send a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Anyone with PS4 Linux experience on Slim, Pro or Baikal hardware is especially welcome; [Hardware support](docs/HARDWARE.md) lists what's built and what still needs testing. To coordinate with other testers, or start a Discord or Telegram group, head to [this discussion](https://github.com/odiecay/android-tv-ps4/discussions/7).
+Every console can now try, but only a fat 13.52 console has been tested. If you have a different model or firmware, please give it a go and [send a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Anyone with PS4 Linux experience on Slim, Pro or Baikal hardware is especially welcome; [Hardware support](docs/HARDWARE.md) lists what's built and what still needs testing. To chat with other testers and follow test builds, join the [Telegram group](https://t.me/+LfLbi-jwludkZDJi); for longer write-ups, there's [this discussion](https://github.com/odiecay/android-tv-ps4/discussions/7).
 
 ## How it works
 

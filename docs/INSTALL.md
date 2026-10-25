@@ -30,7 +30,7 @@ No USB drive needed:
 2. On a computer or phone on the same network, connect with any FTP app (FileZilla on a computer, for example) to that IP address on port 2121. No username or password is needed.
 3. Upload `Android-TV-for-PS4-1.1.pkg` into `/data/pkg/`.
 4. Open GoldHEN's **Package Installer**. The PKG is listed there; install it.
-5. **Restart the PS4** before the first launch, then load GoldHEN and open the app. A 3 GB transfer and install leave the PS4's memory fragmented, and restarting first avoids the "Restart your PS4" (code 12) stop on the first launch.
+5. Turn on BinLoader and open the app. You don't need to restart first; since the 26 Oct update the launcher copes with the memory a big transfer leaves behind.
 
 After installing, you can delete the PKG from `/data/pkg/` over FTP to free about 3 GB.
 
@@ -62,7 +62,7 @@ Delete **Android TV for PS4** from the PS4 home screen, then install the 1.1 PKG
 
 On the first 1.1 start, Linux upgrades Android's storage once so apps can get their storage folders: the screen shows **"Adding project quota support to Android storage (one time)"** for a second or two. The storage image is checked before and after, nothing is reformatted, and if the upgrade can't be done, Android starts as before. The result is saved in `quota-upgrade.log`.
 
-If the first launch after updating stops with "Restart your PS4, then open Android TV again", restart, load GoldHEN and open the app again.
+If the PS4 says the package is already installed, delete Android TV for PS4 from the home screen first. Your Android data is kept.
 
 After this upgrade, the 1.0 kernel can't open Android's storage, so going back to 1.0 isn't supported. 1.1 keeps its boot files in `/user/app/ps4-android/boot` instead of `/data/linux/boot`; the old 1.0 copies in `/data/linux/boot` are no longer used (see [Removing Android](#removing-android)).
 
@@ -95,7 +95,7 @@ On the controller, the PS button goes to Android Home. To use the DualShock 4 on
 
 You don't need to reinstall, because a completed installation is reused. Don't test port 9090 with a port scanner or `nc`: an empty connection can disrupt BinLoader.
 
-**"Restart your PS4, then open Android TV again" (code 12).** The PS4 didn't have enough free memory in one piece to load Linux. Restart the console, load GoldHEN and open the app before doing anything else. Nothing was changed, and your installation is kept.
+**"Restart your PS4, then open Android TV again" (code 12).** The PS4 didn't have enough free memory to load Linux. Since the 26 Oct update the loader needs only small pieces of memory, so this should be rare; if you downloaded 1.1 before then, download it again and reinstall (delete the app first, your Android data is kept). If it still happens, restart, load GoldHEN and open the app before doing anything else, and send us `launcher-boot.log`: its `Memory:` line shows how the loader got on. Nothing was changed, and your installation is kept.
 
 Why it happens: to start Linux, the loader needs two unbroken blocks of memory, about 12 MB for the kernel and 10 MB for the startup files. Heavy disk activity breaks the PS4's free memory into small pieces, and the blocks may no longer fit. That activity comes from installing a 3 GB PKG (over FTP or from USB), the launcher's first install of Android, and the one-time file check on the first launch after an update. A restart clears it; occasionally it takes a second restart, because even a freshly started PS4 has little room in that memory range. Normal launches, without installing or updating first, rarely hit it.
 

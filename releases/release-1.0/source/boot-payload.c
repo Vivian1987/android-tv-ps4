@@ -96,7 +96,10 @@ int _main(void){
  out.stage=4;save();unsigned long long start=sceKernelGetProcessTime();
  int packed=FN(pack_kexec_args,int(*)(int,unsigned short,int))(2048,fwver,sb);
  out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(kernel,kernel_bytes,initrd,ATV_INITRD_BYTES,args,packed);
- out.elapsed=sceKernelGetProcessTime()-start;out.stage=5;save();
+ out.elapsed=sceKernelGetProcessTime()-start;
+ /* The loader fills its memory diagnostics even when preparation fails. */
+ if(out.rc)(void)FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_QUERY,&out.report,sizeof(out.report),0,0);
+ out.stage=5;save();
  if(out.rc)goto done;
  out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_QUERY,&out.report,sizeof(out.report),0,0);
  out.stage=6;save();

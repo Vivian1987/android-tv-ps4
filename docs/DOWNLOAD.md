@@ -2,10 +2,10 @@
 
 The 1.1 PKG is a single 3.12 GB file on Google Drive. GitHub doesn't accept files over 2 GiB, so the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) links to it instead of attaching the PKG.
 
-It must be **3,123,052,544 bytes** with this SHA256:
+It must be **3,123,380,224 bytes** with this SHA256:
 
 ```text
-57cfbaffa8b5e5a894bebfa15b4e61745cefe6a6ab25847d62916c4d88b30ff5
+9f2fded56ae998624d169fb41ada606b399489c739d5aefdc3ddde3c5b5d42d0
 ```
 
 Google Drive shows a "can't scan this file for viruses" page for large files. That's normal; choose **Download anyway**. If Drive says the download quota has been exceeded, too many people downloaded it today. Try again later.

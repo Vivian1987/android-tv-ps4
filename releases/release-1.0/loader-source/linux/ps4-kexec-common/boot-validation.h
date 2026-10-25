@@ -5,14 +5,20 @@
  * Linux can use high RAM afterwards; these are transition constraints only. */
 #define ATV_KERNEL_DEST 0x06000000ULL
 /* Orbis low RAM ends before the ACPI reservations at 0x7efe8000.
- * Restrict allocation itself, rather than accepting arbitrary addresses and
- * discovering a collision only after all four buffers have been copied. */
-static int atv_allocation_window(const struct setup_header *h, u64 *low, u64 *high)
+ * Once the stub has gathered the staged pieces, the kernel's protected-mode
+ * code sits at ATV_KERNEL_DEST with init_size bytes of workspace and the
+ * initramfs follows on the next 2 MiB boundary. Every staging buffer must
+ * stay clear of [ATV_KERNEL_DEST, dest_end) so the gather never overwrites
+ * a piece it has yet to read. */
+#define ATV_STAGE_FLOOR 0x01000000ULL
+static int atv_boot_layout(const struct setup_header *h, u64 initrd_bytes,
+                           u64 *initrd_dst, u64 *dest_end, u64 *high)
 {
-    *low = (ATV_KERNEL_DEST + h->init_size + 0x3fff) & ~0x3fffULL;
+    *initrd_dst = (ATV_KERNEL_DEST + h->init_size + 0x1fffff) & ~0x1fffffULL;
+    *dest_end = *initrd_dst + initrd_bytes;
     *high = (u64)h->initrd_addr_max + 1;
     if (*high > 0x7efe8000ULL) *high = 0x7efe8000ULL;
-    return h->init_size && *low < *high;
+    return h->init_size && *dest_end + 0x400000 <= *high;
 }
 static int atv_valid_header(const struct setup_header *h, size_t bytes)
 {

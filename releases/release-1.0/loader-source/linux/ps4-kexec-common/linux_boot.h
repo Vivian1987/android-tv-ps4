@@ -80,8 +80,15 @@ OFIELD(0x1f1, struct setup_header hdr);
 OFIELD(0x2d0, struct e820entry e820_map[E820MAX]);
 OSTRUCT_END
 
-void set_nix_info(void *linux_image, struct boot_params *bp, void *initramfs,
-                  size_t initramfs_size, char *cmd_line, int v);
+/* One piece of the gather copy the transition stub performs after Orbis is
+ * gone: physical source, physical destination, length. A zero length ends
+ * the list. */
+struct atv_copy { u64 src, dst, len; };
+#define ATV_MAX_COPIES 192
+
+void set_nix_info(void *linux_image, struct boot_params *bp, u64 initramfs_pa,
+                  size_t initramfs_size, char *cmd_line, int v,
+                  const struct atv_copy *copies, unsigned copy_count);
 void prepare_boot_params(struct boot_params *bp, u8 *linux_image);
 int hook_icc_query_nowait(u8 *icc_msg);
 

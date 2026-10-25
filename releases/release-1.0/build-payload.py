@@ -7,8 +7,9 @@ for n in ['build','probe-build','probe-linker']:p.add_argument('--'+n,type=Path,
 a=p.parse_args();b=a.build.resolve();probe=a.probe_build.resolve();root=Path(__file__).resolve().parent
 def run(args):subprocess.run([str(x) for x in args],check=True)
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
-# The console-confirmed 1.1 handoff loader.
-expected='86ab8e60e8633975f928931527beb571c4f1f421b8700141b0a50d2f566ffa38'
+# The handoff loader pinned in build-kexec.py (piece staging, pending its
+# console boot test; 86ab8e60 was the console-confirmed 1.1 loader).
+expected='e85a1053c7211cb742c6f7fa2f5b636e696b8812d20f5ebd9ceeabb7bd6091c7'
 assert sha(b/'kexec/kexec.bin')==expected,'Do not substitute the failed native handoff loader'
 flags=['-Os','-ffreestanding','-fno-builtin','-fno-stack-protector','-fno-asynchronous-unwind-tables','-mno-red-zone','-mno-sse','-mno-sse2','-mno-mmx','-msoft-float','-masm=intel','-march=btver2','-fPIE','-Wall','-Wextra']
 run(['gcc',*flags,'-I',probe,'-I',b,'-I',root/'loader-source/linux/ps4-kexec-common','-c',root/'source/boot-payload.c','-o',b/'boot-payload.o'])

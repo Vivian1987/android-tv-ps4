@@ -4,12 +4,10 @@ Known work after 1.1, with what's already known about each item. Nothing here ha
 
 ## Starting reliably
 
-**Reserve Linux's memory before the heavy copying.** The loader needs two unbroken blocks of physical memory, about 12 MB for the kernel and 10 MB for the startup files. It looks for them only between 138 MB and 2 GB, where the PS4 also keeps its file cache. Installing a 3 GB PKG, the launcher's first install and the one-time file check after an update all scatter that cache, so the first launch afterwards often stops with code 12. Logs from a fat PS4 show the kernel block sometimes only succeeding on its third and last try, even straight after a restart. Ideas, roughly in order of payoff:
+**Linux's memory at startup: done in the 26 Oct update.** The loader used to need two unbroken blocks of physical memory, about 12 MB for the kernel and 10 MB for the startup files, and a busy or freshly installed console often had none that large (code 12). It now stages both in pieces of 2 MB down to 64 KB, outside the area Linux will occupy, and the handover stub copies them into place once Orbis has shut down (`loader-source/linux/ps4-kexec-common/kexec.c`, `linux_thunk.S`). Each launch logs the piece counts and whether the old single-block method would have worked. Still worth doing:
 
-- Allocate the kernel's staging copy from memory above 4 GB, which the file cache doesn't crowd. An earlier attempt hung because it asked to wait for memory (`M_WAITOK`); asking without waiting and falling back to the current range avoids that. The staging copy is moved into place at handover, so it doesn't need to be low (see `loader-source/linux/ps4-kexec-common/contiguous-allocation.h` and `kexec.c`).
-- Copy and check the big files without filling the file cache, so our own install doesn't fragment memory.
-- Retry automatically after a short wait before showing the restart screen.
-- Prepare Linux before the install copy rather than after it.
+- Copy and check the big files without filling the file cache, so our own install leaves memory tidier.
+- Confirm the fix on a Pro and a Slim from their `launcher-boot.log`.
 
 **Automatic restart or not.** When memory is short, the launcher currently asks the user to restart. Whether it should restart the console by itself is an open question for users; answers are welcome in Discussions.
 

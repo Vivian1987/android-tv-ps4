@@ -5,7 +5,7 @@ Thanks for wanting to help. This started as one person tinkering with one PS4, a
 ## Ways to help
 
 - **Test it on your console** and send a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Slim, Pro and Baikal reports are the most valuable right now. The form explains how to get the logs.
-- **Talk it through** in [Discussions](https://github.com/odiecay/android-tv-ps4/discussions): ideas, questions, what you're working on.
+- **Talk it through** in the [Telegram group](https://t.me/+LfLbi-jwludkZDJi) for quick chat and test builds, or [Discussions](https://github.com/odiecay/android-tv-ps4/discussions) for ideas and longer write-ups.
 - **Fix docs or add your console** to [Hardware support](docs/HARDWARE.md#tested-consoles).
 - **Work on the code.** The [roadmap](docs/ROADMAP.md) lists known work with what's already figured out, and the sections below get you started.
 

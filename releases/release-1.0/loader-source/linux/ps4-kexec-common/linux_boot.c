@@ -43,7 +43,7 @@ struct desc_struct {
     u16 limit: 4, avl: 1, l: 1, d: 1, g: 1, base2: 8;
 } __attribute__((packed));
 
-typedef void (*jmp_to_linux_t)(uintptr_t linux_startup, uintptr_t bootargs,
+typedef void (*jmp_to_linux_t)(uintptr_t copy_list, uintptr_t bootargs,
                                uintptr_t new_cr3, uintptr_t gdt_ptr);
 extern uint8_t *jmp_to_linux;
 extern size_t jmp_to_linux_size;
@@ -51,22 +51,29 @@ extern size_t jmp_to_linux_size;
 // FreeBSD DMAP addresses
 struct linux_boot_info {
     void *linux_image;
-    void *initramfs;
+    u64 initramfs_pa;
     size_t initramfs_size;
     struct boot_params *bp;
     char *cmd_line;
+    struct atv_copy copies[ATV_MAX_COPIES + 1];
+    unsigned copy_count;
 };
 static struct linux_boot_info nix_info;
 
-void set_nix_info(void *linux_image, struct boot_params *bp, void *initramfs,
-                  size_t initramfs_size, char *cmd_line, int v)
+void set_nix_info(void *linux_image, struct boot_params *bp, u64 initramfs_pa,
+                  size_t initramfs_size, char *cmd_line, int v,
+                  const struct atv_copy *copies, unsigned copy_count)
 {
     nix_info.linux_image = linux_image;
     nix_info.bp = bp;
-    nix_info.initramfs = initramfs;
+    nix_info.initramfs_pa = initramfs_pa;
     nix_info.initramfs_size = initramfs_size;
     nix_info.cmd_line = cmd_line;
     vram_mb = v;
+    if (copy_count > ATV_MAX_COPIES) copy_count = ATV_MAX_COPIES;
+    memcpy(nix_info.copies, copies, copy_count * sizeof(*copies));
+    memset(&nix_info.copies[copy_count], 0, sizeof(*copies));
+    nix_info.copy_count = copy_count;
 }
 
 static volatile int halted_cpus = 0;
@@ -333,9 +340,9 @@ static void cpu_quiesce_gate(void *arg)
 
     struct setup_header *shdr = &bp_lo->hdr;
     shdr->cmd_line_ptr = lowmem_pos;
-    shdr->ramdisk_image = DM_TO_ID(nix_info.initramfs) & 0xffffffff;
+    shdr->ramdisk_image = nix_info.initramfs_pa & 0xffffffff;
     shdr->ramdisk_size = nix_info.initramfs_size & 0xffffffff;
-    bp_lo->ext_ramdisk_image = DM_TO_ID(nix_info.initramfs) >> 32;
+    bp_lo->ext_ramdisk_image = nix_info.initramfs_pa >> 32;
     bp_lo->ext_ramdisk_size = nix_info.initramfs_size >> 32;
     shdr->hardware_subarch = X86_SUBARCH_PS4;
     // This needs to be nonzero for the initramfs to work
@@ -344,6 +351,13 @@ static void cpu_quiesce_gate(void *arg)
     strlcpy((char *)DM_TO_ID(shdr->cmd_line_ptr), nix_info.cmd_line,
         nix_info.bp->hdr.cmdline_size);
     lowmem_pos += strlen(nix_info.cmd_line) + 1;
+
+    // The gather list the stub follows once it is on its own page tables.
+    lowmem_pos = (lowmem_pos + 0xf) & ~0xfULL;
+    struct atv_copy *copies_lo = (struct atv_copy *)PA_TO_DM(lowmem_pos);
+    memcpy(copies_lo, nix_info.copies,
+           (nix_info.copy_count + 1) * sizeof(struct atv_copy));
+    lowmem_pos += (nix_info.copy_count + 1) * sizeof(struct atv_copy);
 
     uart_write_str("kexec: Cleaning up hardware...\n");
 
@@ -436,7 +450,7 @@ static void cpu_quiesce_gate(void *arg)
     uart_write_str("kexec: About to relocate and jump to kernel\n");
 
     ((jmp_to_linux_t)thunk_copy)(
-            DM_TO_ID(nix_info.linux_image),
+            DM_TO_ID(copies_lo),
             DM_TO_ID(bp_lo),
             DM_TO_ID(pml4_base),
             (uintptr_t)&gdt_ptr

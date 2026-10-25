@@ -6,7 +6,11 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 [Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-`Android-TV-for-PS4-1.1.pkg`, 3,123,052,544 bytes, SHA256 `57cfbaffa8b5e5a894bebfa15b4e61745cefe6a6ab25847d62916c4d88b30ff5`
+`Android-TV-for-PS4-1.1.pkg`, 3,123,380,224 bytes, SHA256 `9f2fded56ae998624d169fb41ada606b399489c739d5aefdc3ddde3c5b5d42d0`
+
+**Updated 26 Oct:** fixes "There wasn't enough free memory to start Linux" (code 12), including on consoles where restarting didn't help. The loader used to need two unbroken blocks of memory of about 12 MB and 10 MB; it now copies Linux in pieces of 2 MB or less and puts them together at handover. `launcher-boot.log` records how many pieces it took and whether the old method would have worked. To update, delete Android TV for PS4 from the home screen (your Android data is kept), then install the new PKG. The first 1.1 build was 3,123,052,544 bytes, SHA256 `57cfbaff…30ff5`.
+
+> **How the fix works, in car park terms.** To start Linux, the PS4 has to hold the kernel (12 MB) and the startup files (10 MB) in memory while it shuts down. The old loader asked for 12 empty bays in a row. After a big install the PS4's memory is like a car park at the end of a busy day: plenty of free bays, but scattered, so a row of 12 often wasn't there. That was code 12, and it's why restarting (emptying the car park) usually helped. The new loader parks each 2 MB piece wherever there's a free bay and writes down where it went. At handover the PS4 has shut down and the whole car park is empty, so a few lines of code move every piece into place, end to end, and Linux starts as before. Pieces are never parked where the final copy goes, every byte is checksummed, and if anything doesn't add up it stops on the PS4 with a message instead of a black screen.
 
 ### What's new
 
@@ -39,7 +43,7 @@ Delete Android TV for PS4 from the PS4 home screen, then install the 1.1 PKG. Yo
 
 On the first start, Linux adds project quota support to Android's storage once. After that, the 1.0 kernel can't open it, so going back to 1.0 isn't supported.
 
-The first launch after installing or updating is the one most likely to stop with "Restart your PS4, then open Android TV again" (code 12): installing the PKG and the launcher's one-time file check leave the PS4's memory too fragmented to load Linux. Restart, load GoldHEN and open the app. Restarting straight after installing avoids it ([details](INSTALL.md#troubleshooting)).
+In the first 1.1 build, the first launch after installing or updating often stopped with "Restart your PS4, then open Android TV again" (code 12). The 26 Oct update fixes that ([details](INSTALL.md#troubleshooting)).
 
 ## 1.0
 

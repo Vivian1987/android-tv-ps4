@@ -1,6 +1,7 @@
 /* The app stays visible while GoldHEN prepares Linux in ScePartyDaemon.
  * Only the receiver executes the handoff. This app releases its display when
  * preparation is verified, then acknowledges that condition to the receiver. */
+#include "../loader-source/linux/ps4-kexec-common/boot-control.h"
 #include "ps4-stat-abi.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -90,6 +91,15 @@ static int fail_with_detail(const char *message,const char *explanation,int code
 }
 static int fail(const char *message,int code){return fail_with_detail(message,NULL,code);}
 /* get_sb_id returns the raw ID (0x10300 on a CUH-1102A); the family is the top byte. */
+/* The runner's result file is the launch status followed by the loader's
+ * boot report; log its memory diagnostics once they are filled in. */
+static void log_memory(void){
+ struct atv_boot_report r;char line[256];
+ if(pread(resultfd,&r,sizeof(r),sizeof(struct atv_launch_status))!=(ssize_t)sizeof(r)||!r.old_method)return;
+ snprintf(line,sizeof(line),"Memory: kernel in %u pieces, initramfs in %u pieces, smallest %u KB. Single-block method used before 1.1 update: %s\n",
+  r.kernel_pieces,r.initrd_pieces,r.smallest_piece/1024,r.old_method==1?"would have worked":"would have failed (error 12)");
+ marker(line);
+}
 static const char *southbridge_name(int sb){
  switch(sb>>16){case 1:return "Aeolia";case 2:return "Belize";case 3:return "Baikal";case 4:return "Belize 2";default:return "unknown";}
 }
@@ -124,13 +134,14 @@ int atv_launch_with_progress(void){
  char line[256];snprintf(line,sizeof(line),"Payload delivery result=%d bytes=%zu/%zu errno=%d. Delivery alone does not confirm Linux boot.\n",rc,sent,sizeof(atv_bundled_payload),rc?saved:0);marker(line);
  if(rc)return fail(saved==ECONNREFUSED?"Enable GoldHEN > Servers > BinLoader, then open Android TV again.":"Android TV payload could not be sent",saved);
  unsigned long long started=sceKernelGetProcessTime(),last_draw=0;
- int last_stage=0,released=0,console_logged=0;
+ int last_stage=0,released=0,console_logged=0,memory_logged=0;
  for(;;){
   unsigned long long now=sceKernelGetProcessTime();
   struct atv_launch_status status;
   ssize_t n=pread(resultfd,&status,sizeof(status),0);
   if(n==sizeof(status)&&atv_status_valid(&status,control.nonce)){
    if(status.rc==ATV_RC_UNSUPPORTED_FIRMWARE)return unsupported_firmware(&status);
+   if(status.stage>=5&&!memory_logged){log_memory();memory_logged=1;}
    if(status.rc)return fail("Linux preparation reported an error",status.rc);
    if(status.stage>=2&&!console_logged){
     snprintf(line,sizeof(line),"Console firmware=%u base=%u southbridge=%s (0x%x)\n",status.firmware,status.firmware_base,southbridge_name(status.southbridge),(unsigned)status.southbridge);marker(line);

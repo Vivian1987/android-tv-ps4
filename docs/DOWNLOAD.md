@@ -1,14 +1,14 @@
 # Downloading Android TV for PS4 1.1
 
-The 1.1 PKG is a single 3.11 GB file hosted on the Internet Archive. GitHub doesn't accept files over 2 GiB, so the GitHub release page links here instead of attaching the PKG.
+The 1.1 PKG is a single 3.12 GB file on Google Drive. GitHub doesn't accept files over 2 GiB, so the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) links to it instead of attaching the PKG.
 
-**[Android-TV-for-PS4-1.1.pkg](https://archive.org/download/android-tv-for-ps4-1.1/Android-TV-for-PS4-1.1.pkg)** · [Internet Archive page](https://archive.org/details/android-tv-for-ps4-1.1)
-
-It must be **3,108,634,624 bytes** with this SHA256:
+It must be **3,122,855,936 bytes** with this SHA256:
 
 ```text
-bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e
+c0f27a665fe1046a64baaf1cef568ae454c23194837bb5dcaac04202362b123d
 ```
+
+Google Drive shows a "can't scan this file for viruses" page for large files. That's normal; choose **Download anyway**. If Drive says the download quota has been exceeded, too many people downloaded it today. Try again later.
 
 ## Checking the download
 
@@ -31,8 +31,6 @@ shasum -a 256 Android-TV-for-PS4-1.1.pkg
 ```
 
 If it doesn't match, don't install it. Delete it and download it again.
-
-The Internet Archive page also offers a torrent, which can be faster and resumes cleanly if the connection drops.
 
 ## Next steps
 

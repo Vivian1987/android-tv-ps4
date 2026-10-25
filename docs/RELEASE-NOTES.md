@@ -6,20 +6,27 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 [Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-`Android-TV-for-PS4-1.1.pkg`, 3,108,634,624 bytes, SHA256 `bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e`
+`Android-TV-for-PS4-1.1.pkg`, 3,122,855,936 bytes, SHA256 `c0f27a665fe1046a64baaf1cef568ae454c23194837bb5dcaac04202362b123d`
 
 ### What's new
 
 - **Every firmware the Linux loader supports.** The package now contains a kexec build for each firmware [ps4-linux-loader](https://github.com/ps4-linux/ps4-linux-loader) has kernel offsets for (5.05 to 13.52, [full list](COMPATIBILITY.md#firmware)), and picks the right one at launch. 1.0 only ran on 13.52.
 - **No console model is blocked.** 1.0 stopped on anything but the Aeolia southbridge, both in the launcher and in the Linux start script. 1.1 records the southbridge in the log and carries on. Slim, Pro and Belize/Baikal fat models are untested; reports are very welcome.
 - **Boots without Ethernet hardware.** A console with no Ethernet interface used to stop the Linux start; now it continues without it.
-- **Single-file download** from the Internet Archive. No more joining parts.
+- **Single-file download** from Google Drive. No more joining parts.
 - **Clearer errors.** Unsupported firmware, low memory (error 12) and boot-file problems now say what happened and what to do. If the previous Linux start didn't finish, the launcher shows the last step it reached.
+- **Video no longer freezes.** Video would stop after a few seconds while the sound kept playing (YouTube, NBA and others). The graphics allocator now lays out video frames the way the PS4's GPU driver needs.
+- **Circle is Back and X is Select in every app.** This fixes buttons that did nothing in some apps, such as Kayo's sign-in and going back in the NBA app.
+- **Screensaver instead of sleep.** Android's sleep froze PS4 Linux, so the console now shows a screensaver and stays awake. A small stick dead zone stops a resting DualShock 4 from keeping the screen on.
+- **Device name defaults to "PlayStation 4"**, so Spotify Connect and casting list the console by name.
+- **Slim, Pro and Baikal hardware support.** Wi-Fi and Bluetooth firmware for the Marvell 88W8897 and MediaTek MT7668, a separate kernel for Baikal consoles with their Ethernet driver, and a graphics fix for the Pro's GPU. None of it has been tested on those consoles yet; see [Hardware support](HARDWARE.md).
+- **Failed starts explain themselves.** If Linux can't start Android, it says why, makes it safe to power off, and copies its reports to a USB stick as soon as one is plugged in. Every start also saves a hardware report (`hardware.txt`) listing the console's chips and the drivers that loaded.
+- **Updating no longer fails with errno 17** when an older backup of the boot files is present.
 - **Own boot folder.** Boot files now live in `/user/app/ps4-android/boot` instead of `/data/linux/boot`, so 1.1 can't collide with another PS4 Linux setup. That is the likely cause of the errno 13 install error reported on 1.0.
 
 ### Tested
 
-Fresh install and boot to Android TV on a CUH-1102A on 13.52 with this exact package. Everything else is waiting on [test reports](COMPATIBILITY.md#reporting-a-result).
+On a CUH-1102A on 13.52: video, controller, screensaver and the bundled apps. Everything else is waiting on [test reports](COMPATIBILITY.md#reporting-a-result).
 
 ### Updating
 

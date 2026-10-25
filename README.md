@@ -4,12 +4,12 @@
 
 Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. Install one PKG, open it from the home screen, and the console boots straight into Android TV from its internal drive. Your apps, accounts and settings are kept between launches.
 
-[Download](https://archive.org/details/android-tv-for-ps4-1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
+[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
 
 ## Version 1.1
 
 - **Android TV 13**, with 32 GiB of Android storage
-- **One 3.11 GB PKG**, hosted on the Internet Archive. No joining needed.
+- **One 3.12 GB PKG**, downloaded from Google Drive. No joining needed.
 - Runs on **any firmware with GoldHEN that the Linux loader has offsets for**: 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52
 - No console model is blocked. Tested on a fat CUH-1102A on 13.52; everything else is waiting on test reports.
 
@@ -19,7 +19,7 @@ Slim and Pro models use a different southbridge. The kernel has drivers for them
 
 ## Quick start
 
-1. Download **[Android-TV-for-PS4-1.1.pkg](https://archive.org/download/android-tv-for-ps4-1.1/Android-TV-for-PS4-1.1.pkg)** ([checksum and other options](docs/DOWNLOAD.md)).
+1. Download **Android-TV-for-PS4-1.1.pkg** from the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) ([checksum and tips](docs/DOWNLOAD.md)).
 2. Copy the PKG to an exFAT USB drive and install it with GoldHEN's **Package Installer**.
 3. Enable **GoldHEN → Servers → BinLoader** (port 9090).
 4. Open **Android TV for PS4**.

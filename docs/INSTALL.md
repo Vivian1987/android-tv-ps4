@@ -55,8 +55,6 @@ To pair Bluetooth devices, go to **Settings → Remotes & accessories → Add ac
 
 On the controller, the PS button goes to Android Home. To use the DualShock 4 on the PS4 system again, connect it by USB and press PS.
 
-**Kayo 4.6.1:** one selection screen ignores the controller's X button. The Google TV remote's centre button works there. The controller keeps standard gamepad mappings so games aren't affected.
-
 ## Signing in
 
 **Device name:** after setup, check **Settings → Device name** and set it to **PlayStation 4** if it shows a different name. Apps like Spotify Connect show this name on your phone.

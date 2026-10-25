@@ -22,6 +22,7 @@
 !/releases/release-1.0/bundled-apps.json
 !/releases/release-1.0/bundled-apps-image.json
 !/releases/release-1.0/runtime-inputs.json
+!/releases/release-1.0/runtime-additions.json
 !/releases/release-1.0/source/*.c
 !/releases/release-1.0/source/*.h
 !/releases/release-1.0/source/*LICENSE.txt

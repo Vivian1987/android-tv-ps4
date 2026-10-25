@@ -1,13 +1,12 @@
 {
   "base_release": "retained-start",
   "base_initramfs_sha256": "b191d815dbbb322b4cedba7ffee89f10a25a8d3e66d2601fb4151bd9d3d52ecb",
-  "initramfs_sha256": "377a29fc6f2516c7eb2225c0430a365af69d8404e00c232a456575bfa99ed065",
-  "initramfs_bytes": 9523524,
-  "expanded_sha256": "a7d0b0d55a3cbc23c9eb571e66447d336ece44348c26726921feb40f32a7cb0c",
-  "expanded_bytes": 27112008,
+  "initramfs_sha256": "bf9d00de86b0739a8d627d1e83df0df866ad8e2066cfac5ad358ead04e6f89e5",
+  "initramfs_bytes": 9524072,
+  "expanded_sha256": "a8f1c858a6e633f9cfbb1196d3203b9aa8d59cd51f0119ebfec8a3dd0962d280",
+  "expanded_bytes": 27113468,
   "changed_entries": [
-    "opt/androidtv-ps4/autoboot.sh",
-    "usr/sbin/androidtv-ps4-start"
+    "opt/androidtv-ps4/device-name.sh"
   ],
   "kernel_composer_gralloc_bluetooth_unchanged": true,
   "mesa_sha256": "ca0b4228ede6a6763568e6cafd4efc472f7d31eaae7622b03ad8d3dd3c7e545f",
@@ -17,7 +16,7 @@
   "app_storage": "Bundled read-only app filesystem, signed APKs and prepared native libraries",
   "userdata_included": false,
   "console_boot_tested": false,
-  "parent_initramfs_sha256": "7f784dd96d9fca9afad1346882addffccd8cfe9f32613c0ac359acac09871670",
+  "parent_initramfs_sha256": "b9512ef2aae4b9da86d7cbea9f7427079a761bcf09465c4cb89c70849bc3e972",
   "power_supervisor_sha256": "096db3b060a9d6ba09cd88708d4d79ffac1ac8bec1267aae07d69d2fd70c385b",
   "power_supervisor_source_sha256": "7335c9c52192543c5c16a1189e026c46c0e67b060d8e60bad3ced402e4127c5a"
 }

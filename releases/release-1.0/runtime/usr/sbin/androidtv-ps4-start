@@ -10,21 +10,46 @@ stage() {
 }
 trap 'status=$?; if [ "$status" -ne 0 ]; then stage "SETUP FAILED (status $status); logs retained, data preserved"; fi' EXIT
 touch /run/androidtv-ps4/bootstrap-active
+# The internal drive is the non-USB disk with Sony's partition 27. A USB
+# stick left in from installing the PKG can take the sda name first.
+internal_disk() {
+ for disk in /sys/block/sd*; do
+  [ -b "/dev/${disk##*/}27" ] || continue
+  case "$(readlink -f "$disk/device")" in */usb*) continue ;; esac
+  echo "/dev/${disk##*/}27"; return 0
+ done
+ return 1
+}
 stage 'Waiting for internal PS4 disk'
+userpart=
 for attempt in $(seq 1 60); do
- [ ! -b /dev/sda27 ] || break
+ userpart=$(internal_disk || true)
+ [ -z "$userpart" ] || break
  if [ "$((attempt % 5))" = 0 ]; then stage "Still waiting for internal disk ($attempt seconds)"; fi
  sleep 1
 done
-[ -b /dev/sda27 ] || { stage 'Internal disk did not appear within 60 seconds'; exit 1; }
+[ -n "$userpart" ] || { stage 'Internal disk did not appear within 60 seconds'; exit 1; }
 stage 'Opening internal PS4 storage (disk encryption and filesystem)'
 [ -r /key/eap_hdd_key.bin ]
 # Record the southbridge for reports; Belize and Baikal consoles are allowed to try.
 southbridge=$(dmesg | grep -ioE 'aeolia|belize|baikal' | head -1 || true)
 stage "Southbridge: ${southbridge:-unknown}"
+# One line describing this console's hardware, for test reports.
+sdio=$(for d in /sys/bus/sdio/devices/*; do [ -r "$d/vendor" ] && printf '%s:%s ' "$(cat "$d/vendor")" "$(cat "$d/device")"; done 2>/dev/null || true)
+stage "Hardware: storage=$userpart sdio=[${sdio% }] net=[$(ls /sys/class/net 2>/dev/null | tr '\n' ' ' | sed 's/ $//')]"
+# Later Slim and Pro models (CUH-7215/7216, Belize and Baikal) use a MediaTek
+# MT7668 for Wi-Fi. Its driver only loads when that chip is present.
+mt7668=
+case " $sdio " in
+ *' 0x037a:0x7608 '*)
+  stage 'MediaTek MT7668 Wi-Fi found; loading its driver'
+  if insmod /lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko; then mt7668=1
+  else stage 'MT7668 Wi-Fi driver failed to load; continuing without Wi-Fi'; fi
+  ;;
+esac
 mkdir -p /mnt/ps4-user /mnt/android-share /mnt/android-sfs /mnt/android-lower /mnt/android-persistent /android
 if ! grep -q ' /mnt/ps4-user ' /proc/mounts; then
-cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 --key-file /key/eap_hdd_key.bin /dev/sda27 ps4-android-user
+cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 --key-file /key/eap_hdd_key.bin "$userpart" ps4-android-user
 mount -t ufs -o ufstype=ufs2,noatime /dev/mapper/ps4-android-user /mnt/ps4-user
 fi
 installation=/mnt/ps4-user/app/ps4-android
@@ -154,8 +179,25 @@ case "$mesa32_sha" in
  *) stage 'Unsupported 32-bit graphics library'; exit 1 ;;
 esac
 echo 'fbac4a587e486de0e4f6f6b02dbe3c9495371735ca3c35e5e3cfbcc753d85c2c  /android/system/vendor/lib/dri/libgallium_dri.so' | sha256sum -c -
+# PS4 Pro (Gladius, 1002:9924) has twice the shader engines and also needs
+# PA_SC_RASTER_CONFIG_1. Point Mesa's Kaveri case at a block carrying both
+# Gladius values; runtime-source/patch-mesa-raster.py documents these bytes.
+gpu=$(cat /sys/bus/pci/devices/*/device 2>/dev/null | grep -m1 -E '^0x992[0-4]$' || true)
+stage "GPU: ${gpu:-unknown}"
+if [ "$gpu" = 0x9924 ]; then
+ mesa64=/android/system/vendor/lib64/dri/libgallium_dri.so
+ printf '\141\273\025\001' | dd of="$mesa64" bs=1 seek=5873684 conv=notrunc 2>/dev/null
+ printf '\052' | dd of="$mesa64" bs=1 seek=24071009 conv=notrunc 2>/dev/null
+ printf '\116' | dd of="$mesa64" bs=1 seek=24071012 conv=notrunc 2>/dev/null
+ echo "7130ea84514d6113426ffb33c48b1e8dab68f75de33b4e1e25798ffcf53e836a  $mesa64" | sha256sum -c -
+ printf '\213\043\162\377' | dd of="$mesa32" bs=1 seek=5383584 conv=notrunc 2>/dev/null
+ printf '\052' | dd of="$mesa32" bs=1 seek=23111439 conv=notrunc 2>/dev/null
+ printf '\116' | dd of="$mesa32" bs=1 seek=23111441 conv=notrunc 2>/dev/null
+ echo "2fa26f9bc50f33ae07dfc13b0488770d5fe20a19b9a821ac956d2c0905d7c42a  $mesa32" | sha256sum -c -
+ stage 'Applied PS4 Pro raster configuration'
+fi
 sh "$assets/controller-home.sh"
-echo '6803c4d592e97e6252d0dffd25a6a332db1d5f632cc958f0ec7dd6d89cff9052  /android/system/vendor/lib64/hw/gralloc.gbm.so' | sha256sum -c -
+echo '2d10e6f61a3d58cd8ccc64e03a94a6a48da82ce15c453cf7844979a0ec35b375  /android/system/vendor/lib64/hw/gralloc.gbm.so' | sha256sum -c -
 stage 'Launching Android init with verified graphics baseline (standard-v1)'
 set -eu
 chmod 755 /run/androidtv-ps4/android-child.sh /run/androidtv-ps4/binder-devices
@@ -210,7 +252,14 @@ if [ -e /sys/class/net/eth0/address ]; then
 else
  stage 'No Ethernet interface found; continuing without Ethernet'
 fi
-# Move the real Marvell radio into Android.
+# The MT7668 creates its interface after loading firmware; give it time.
+if [ -n "$mt7668" ]; then
+ for attempt in $(seq 1 100); do
+  /usr/sbin/iw dev 2>/dev/null | grep -q Interface && break
+  sleep 0.1
+ done
+fi
+# Move the console's Wi-Fi radio into Android.
 if /usr/sbin/iw phy phy0 info >/dev/null 2>&1; then
     radio=$(/usr/sbin/iw dev | awk '$1 == "Interface" {print $2; exit}')
     /usr/sbin/ip link set "$radio" down

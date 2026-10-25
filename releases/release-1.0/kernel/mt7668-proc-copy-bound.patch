@@ -1,0 +1,62 @@
+--- a/drivers/net/wireless/mediatek/mt76x8/drv_wlan/MT6632/wlan/os/linux/gl_proc.c
++++ b/drivers/net/wireless/mediatek/mt76x8/drv_wlan/MT6632/wlan/os/linux/gl_proc.c
+@@ -488,10 +488,7 @@
+ 
+ 
+ 	kalMemSet(g_aucProcBuf, 0, u4CopySize);
+-	if (u4CopySize >= (count+1))
+-		u4CopySize = count;
+-	else
+-		u4CopySize -= 1;
++	u4CopySize = min_t(size_t, count, sizeof(g_aucProcBuf) - 1);
+ 
+ 	pucTmp = g_aucProcBuf;
+ 	i4Pos = scnprintf(pucTmp, sizeof(g_aucProcBuf), "%s ", "set_cfg");
+@@ -554,10 +551,7 @@
+ 
+ 
+ 	kalMemSet(g_aucProcBuf, 0, u4CopySize);
+-	if (u4CopySize >= (count+1))
+-		u4CopySize = count;
+-	else
+-		u4CopySize -= 1;
++	u4CopySize = min_t(size_t, count, sizeof(g_aucProcBuf) - 1);
+ 
+ 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
+ 		DBGLOG(INIT, ERROR, "error of copy from user\n");
+@@ -586,10 +580,7 @@
+ 	UINT_32 u4CopySize = sizeof(g_aucProcBuf);
+ 
+ 	kalMemSet(g_aucProcBuf, 0, u4CopySize);
+-	if (u4CopySize >= count+1)
+-		u4CopySize = count;
+-	else
+-		u4CopySize -= 1;
++	u4CopySize = min_t(size_t, count, sizeof(g_aucProcBuf) - 1);
+ 
+ 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
+ 		DBGLOG(INIT, ERROR, "error of copy from user\n");
+@@ -1189,10 +1180,7 @@
+ 	UINT_32 u4CopySize = sizeof(g_aucProcBuf);
+ 
+ 	kalMemSet(g_aucProcBuf, 0, u4CopySize);
+-	if (u4CopySize >= count+1)
+-		u4CopySize = count;
+-	else
+-		u4CopySize -= 1;
++	u4CopySize = min_t(size_t, count, sizeof(g_aucProcBuf) - 1);
+ 
+ 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
+ 		DBGLOG(INIT, ERROR, "error of copy from user\n");
+@@ -1268,10 +1256,7 @@
+ 	UINT_32 u4CopySize = sizeof(g_aucProcBuf);
+ 
+ 	kalMemSet(g_aucProcBuf, 0, u4CopySize);
+-	if (u4CopySize >= count+1)
+-		u4CopySize = count;
+-	else
+-		u4CopySize -= 1;
++	u4CopySize = min_t(size_t, count, sizeof(g_aucProcBuf) - 1);
+ 
+ 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
+ 		DBGLOG(INIT, ERROR, "error of copy from user\n");

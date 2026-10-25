@@ -1,0 +1,45 @@
+{
+  "comment": "Files added to the initramfs by repack-runtime.py --additions DIR. DIR mirrors these initramfs paths; each file must match its SHA256.",
+  "files": {
+    "lib/firmware/EEPROM_MT7668.bin": {
+      "sha256": "d3ecac0fde5b66fab282cd97f43c04d77bf4fd6abdbd9c35c5d3d40e2f1f035a",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/firmware/EEPROM_MT7668_e1.bin": {
+      "sha256": "a042c6ceb77ae4a0c367e5e5522cbf21f767936b8799a781096e1e72684d957c",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/firmware/TxPwrLimit_MT76x8.dat": {
+      "sha256": "49fa3e52b26fe49b837187c91765550e32cd6540ea2e09343274245d6630062a",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/firmware/WIFI_RAM_CODE2_SDIO_MT7668.bin": {
+      "sha256": "35faff6a613fefcbe33a6f6d8df885be76c546f9e78ba8ab93056a816ad87254",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/firmware/WIFI_RAM_CODE_MT7668.bin": {
+      "sha256": "977724f3eef0e6f27567a6684bf616b884b82fe948bde0a436ea546a1f9c83ee",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/firmware/mediatek/mt7668pr2h.bin": {
+      "sha256": "465ed634c61b46b34bb21240736f33d3d347fefec7cbfbd1cb6e63334aec4cc9",
+      "source": "linux-firmware mediatek/mt7668pr2h.bin (MT7668 Bluetooth, LICENCE.mediatek, redistributable)"
+    },
+    "lib/firmware/mrvl/sd8897_uapsta.bin": {
+      "sha256": "c366b003c8dbc07605fc6f8d1344f560c981afa2af38913a16c7525dc78f61a3",
+      "source": "linux-firmware mrvl/sd8897_uapsta.bin W15.68.19.17 (Marvell 88W8897 Wi-Fi/Bluetooth on Slim and CUH-12xx, LICENCE.Marvell, redistributable)"
+    },
+    "lib/firmware/mt7668_patch_e1_hdr.bin": {
+      "sha256": "519083ebb8318d9cfc8eaaaa7470d1a266c8f32275df3c62e3619d6c07f97389",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/firmware/mt7668_patch_e2_hdr.bin": {
+      "sha256": "05a619651517ee481ccfa3ed2cd11bd33f497967802233e6f81085036e0ec9d5",
+      "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
+    },
+    "lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko": {
+      "sha256": "1eb6fd92288c945ba3f052ade9a5ed53ecf757564e00817008f53db6163dbae2",
+      "source": "MT7668 Wi-Fi driver from the ps4-linux tree (drivers/net/wireless/mediatek/mt76x8), built as a module for 6.15.4-androidtv-ps4-aeolia with kernel/mt7668-proc-copy-bound.patch, debug symbols stripped"
+    }
+  }
+}

@@ -162,6 +162,7 @@ save_logs() {
  dmesg > "$installation/kernel.log" 2>/dev/null || true
  cp /run/androidtv-ps4/progress.log "$installation/boot-progress.log" 2>/dev/null || true
  cp /run/androidtv-ps4/hardware.txt "$installation/hardware.txt" 2>/dev/null || true
+ cp /run/androidtv-ps4/quota-upgrade.log "$installation/quota-upgrade.log" 2>/dev/null || true
  cp /run/androidtv-ps4/display-ready "$installation/display-ready.log" 2>/dev/null || true
  cp /run/androidtv-ps4/display-watch.log "$installation/display-watch.log" 2>/dev/null || true
  sync
@@ -179,7 +180,8 @@ if [ ! -f "$installation/data-ready" ]; then
  [ ! -e "$installation/data.img.part" ] || { stage 'Interrupted creation preserved; recovery needed'; exit 1; }
  stage "Creating fresh $capacity GiB Android storage"
  truncate -s "$((capacity * 1073741824))" "$installation/data.img.part"
- /usr/sbin/mke2fs -t ext4 -F -m 0 -E nodiscard,lazy_itable_init=1,lazy_journal_init=1 "$installation/data.img.part"
+ # Project quotas let Android tag each app's shared-storage folder (vold).
+ /usr/sbin/mke2fs -t ext4 -F -m 0 -O quota,project -E nodiscard,lazy_itable_init=1,lazy_journal_init=1,quotatype=usrquota:grpquota:prjquota "$installation/data.img.part"
  /usr/sbin/e2fsck -fn "$installation/data.img.part"
  sync
  mv "$installation/data.img.part" "$installation/data.img"
@@ -196,6 +198,21 @@ mount -t ext4 -o ro,loop,noload /mnt/android-sfs/system.img /mnt/android-lower
 mkdir -p /run/android-overlay/upper /run/android-overlay/work
 mount -t overlay overlay -o lowerdir=/mnt/android-lower,upperdir=/run/android-overlay/upper,workdir=/run/android-overlay/work /android
 [ "$(stat -c %s "$installation/data.img")" = "$((capacity * 1073741824))" ] || { stage 'Data image size does not match selected edition; data preserved'; exit 1; }
+# Images created before 1.1 have no project quotas, so vold failed to tag
+# app folders and apps were refused their Android/data folder. Add the
+# feature once, offline, checking the image before and after. If anything
+# fails, carry on without it; the data itself is never reformatted.
+if ! /usr/sbin/tune2fs -l "$installation/data.img" 2>/dev/null | grep -q '^Filesystem features:.* project'; then
+ stage 'Adding project quota support to Android storage (one time)'
+ if /usr/sbin/e2fsck -fy "$installation/data.img" >/run/androidtv-ps4/quota-upgrade.log 2>&1 &&
+    /usr/sbin/tune2fs -O quota,project -Q usrquota,grpquota,prjquota "$installation/data.img" >>/run/androidtv-ps4/quota-upgrade.log 2>&1 &&
+    /usr/sbin/e2fsck -fy "$installation/data.img" >>/run/androidtv-ps4/quota-upgrade.log 2>&1; then
+  stage 'Project quota support added'
+ else
+  stage 'Could not add project quota support; continuing without it (see quota-upgrade.log)'
+ fi
+ sync
+fi
 stage 'Mounting Android app storage'
 mount -t ext4 -o loop,noatime "$installation/data.img" /mnt/android-persistent
 stage 'System and userdata mounted; preparing graphics and media'

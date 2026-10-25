@@ -8,7 +8,7 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 ## What's new in 1.1
 
-- **Runs on every GoldHEN firmware the Linux loader supports:** 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52.
+- **Support added for every GoldHEN firmware the Linux loader covers** (tested on 13.52 so far): 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52.
 - **No console model is blocked.** Slim, Pro and Baikal support is built in but untested. See [Hardware support](docs/HARDWARE.md).
 - **More reliable video.** Some video, including YouTube and the NBA app, could freeze after a few seconds while the sound kept playing. That's fixed.
 - **Controller works like a TV remote in every app.** X selects and Circle goes back everywhere. Before, a few apps ignored the controller on some screens, such as Kayo's sign-in button and going back in the NBA app.

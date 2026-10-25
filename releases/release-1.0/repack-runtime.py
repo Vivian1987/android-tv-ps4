@@ -65,7 +65,7 @@ def main():
             parent='/'.join(parts[:depth])
             if parent not in entries:
                 fields=dir_fields.copy();fields[0]=inode;inode+=1;entries[parent]=(fields,b'')
-        fields=file_fields.copy();fields[0]=inode;inode+=1;fields[1]=0o100644
+        fields=file_fields.copy();fields[0]=inode;inode+=1;fields[1]=0o100000|int(item.get('mode','0644'),8)
         entries[name]=(fields,data)
     raw=api['pack'](entries)
     compressed=lzma.compress(raw,format=lzma.FORMAT_XZ,check=lzma.CHECK_CRC32,filters=[{'id':lzma.FILTER_X86},{'id':lzma.FILTER_LZMA2,'dict_size':8*1024*1024,'preset':6}])

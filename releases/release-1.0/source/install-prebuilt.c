@@ -80,7 +80,8 @@ static void progress(uint64_t done,uint64_t total){
  * launch take up to two minutes after a restart. Once a file matches this
  * package, a marker records the package's asset ID and the file's size and
  * modification time; later launches trust it while all three are unchanged.
- * A new package or a changed file gets the full comparison again. */
+ * A new package or a changed file gets the full comparison again. Files
+ * the launcher has just copied from the package are recorded the same way. */
 static void verified_marker(const char *path,const struct stat *st,char *marker,size_t marker_size,char *line,size_t line_size){
  snprintf(marker,marker_size,"%s.verified",path);
  snprintf(line,line_size,"%s %lld %lld\n",ATV_ASSET_SET_ID,(long long)st->st_size,(long long)st->st_mtime);
@@ -129,6 +130,7 @@ static int install_translation(void){
  if(path_stat(target,&st)==0){if(file_equal(files[8],target))return 0;errno=EIO;return -1;}
  if(errno!=ENOENT)return -1;
  if(copy_file(files[8],stage)||rename(stage,target)||sync_directory(ROOT))return -1;
+ remember_verified(target);
  return 0;
 }
 /* MT7668 Wi-Fi driver and firmware for later Slim and Pro models. Linux unpacks it
@@ -138,6 +140,7 @@ static int install_wifi(void){
  const char *stage=ROOT "/mt7668-wifi.tar.gz.part";
  if(file_equal(files[10],target))return 0;
  if(copy_file(files[10],stage)||rename(stage,target)||sync_directory(ROOT))return -1;
+ remember_verified(target);
  return 0;
 }
 static int install_graphics(void){
@@ -151,6 +154,7 @@ static int install_graphics(void){
  if(copy_file(files[7],stage))return -1;
  if(exists&&rename(target,backup))return -1;
  if(rename(stage,target)){int e=errno;if(exists)rename(backup,target);errno=e;return -1;}
+ remember_verified(target);
  return sync_directory(ROOT);
 }
 /* Names the boot-setup step that failed, so an error report says where. */
@@ -185,6 +189,7 @@ static int install_boot(void){
   if(exists&&rename(target,backup))return -1;
   BOOT_STEP("replace %s",target);
   if(rename(stage,target)){int e=errno;if(exists)rename(backup,target);errno=e;return -1;}
+  remember_verified(target);
   BOOT_STEP("sync %s",BOOT_ROOT);
   if(sync_directory(BOOT_ROOT))return -1;
  }
@@ -231,6 +236,7 @@ static int component(int index,const char *name,uint64_t expected,int zipped){
  int result=ps4_copy_image(files[index],out,expected,progress),saved=errno;
  if(close(out)&&result==0)return -1;errno=saved;if(result)return -1;
  if(commit_file(stage,target)||sync_directory(ROOT))return -1;
+ remember_verified(target);
  completed_bytes+=expected;return 0;
 }
 static int install_bundled_apps(void){

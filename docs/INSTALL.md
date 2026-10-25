@@ -4,7 +4,7 @@
 
 - A PS4 running GoldHEN on one of the [firmware versions the loader supports](COMPATIBILITY.md#firmware). It has been tested on a fat CUH-1102A on 13.52; other models and firmware are untested, so please [report how it goes](COMPATIBILITY.md#reporting-a-result).
 - `Android-TV-for-PS4-1.1.pkg` ([download](DOWNLOAD.md)).
-- An exFAT-formatted USB drive.
+- An exFAT-formatted USB drive, or a computer or phone on the same network to [send it over FTP](#installing-over-ftp).
 - Free space on the PS4's internal drive. Android starts small and grows as you use it. If you fill all 32 GiB and keep the PKG on the console, allow about **43 GiB** ([how that's calculated](STORAGE.md)).
 - A controller. USB is easiest for setup; Bluetooth devices can be paired once Android is running.
 
@@ -21,6 +21,18 @@
 The 5–10 minutes is a guide; timing depends on the console and drive. An error message means something has gone wrong, so don't keep waiting. If the screen stays blank with no animation well past that time, see [Troubleshooting](#troubleshooting).
 
 Booting doesn't need a PC, network or internet connection. The launcher sends its payload to GoldHEN on the console itself (`127.0.0.1`).
+
+### Installing over FTP
+
+No USB drive needed:
+
+1. In **GoldHEN → Servers**, turn on the **FTP server**. GoldHEN shows the console's IP address; the port is **2121**.
+2. On a computer or phone on the same network, connect with any FTP app (FileZilla on a computer, for example) to that IP address on port 2121. No username or password is needed.
+3. Upload `Android-TV-for-PS4-1.1.pkg` into `/data/pkg/`.
+4. Open GoldHEN's **Package Installer**. The PKG is listed there; install it.
+5. **Restart the PS4** before the first launch, then load GoldHEN and open the app. A 3 GB transfer and install leave the PS4's memory fragmented, and restarting first avoids the "Restart your PS4" (code 12) stop on the first launch.
+
+After installing, you can delete the PKG from `/data/pkg/` over FTP to free about 3 GB.
 
 ## What you'll see
 

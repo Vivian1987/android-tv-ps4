@@ -18,7 +18,7 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 ## Quick start
 
 1. Download **Android-TV-for-PS4-1.1.pkg** from the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) ([checksum and tips](docs/DOWNLOAD.md)).
-2. Install it with GoldHEN's **Package Installer**, from an exFAT USB drive or over FTP.
+2. Install it with GoldHEN's **Package Installer**, from an exFAT USB drive or [over FTP](docs/INSTALL.md#installing-over-ftp) (put it in `/data/pkg/`).
 3. Enable **GoldHEN → Servers → BinLoader** (port 9090).
 4. Open **Android TV for PS4**.
 

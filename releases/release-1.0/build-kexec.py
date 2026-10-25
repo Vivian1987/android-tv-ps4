@@ -7,8 +7,10 @@ import subprocess, sys, hashlib, json, re
 root=Path(__file__).resolve().parent
 out=Path(sys.argv[1]).resolve();out.mkdir(parents=True,exist_ok=True)
 source=root/'loader-source/linux/ps4-kexec-common'
-# The 13.52 blob is the one confirmed on a console; it must stay byte-identical.
-CONFIRMED={1352:'86ab8e60e8633975f928931527beb571c4f1f421b8700141b0a50d2f566ffa38'}
+# The 13.52 blob is pinned so loader changes are deliberate. 86ab8e60 was the
+# console-confirmed 1.1 loader; 05021f09 takes the kernel image from high
+# memory (fewer error 12 failures) and is pending its console boot test.
+CONFIRMED={1352:'05021f09ff7ca4cf8920dda4ffb967ec21080d829abb3df0bd61ec082fa3842b'}
 defines=re.findall(r'^#(?:if|elif) defined\s+(PS4_\d+_\d+)|^#ifdef\s+(PS4_\d+_\d+)',
     (root/'loader-source/linux/magic.h').read_text(),re.M)
 defines=[a or b for a,b in defines]

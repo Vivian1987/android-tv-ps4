@@ -61,7 +61,7 @@ Known limitations: this isn't a Google-certified device and there's no HDCP, so 
 
 These are the known weak spots in 1.1. Reports on any of them help the next release.
 
-- **The first launch after installing often needs a restart.** It stops with "Restart your PS4, then open Android TV again" (code 12). Copying a 3 GB PKG fragments the PS4's memory, and Linux needs two unbroken blocks of about 10–12 MB. A restart fixes it. The proper fix is reserving that memory before the copying starts, planned for the next release. Would you rather it restarted automatically? [Tell us](https://github.com/odiecay/android-tv-ps4/discussions).
+- **The first launch after installing often needs a restart.** It stops with "Restart your PS4, then open Android TV again" (code 12). Copying a 3 GB PKG fragments the PS4's memory, and Linux needs two unbroken blocks of about 10–12 MB. A restart fixes it, though occasionally it takes two, a bit like running the exploit. The proper fix is reserving that memory before the copying starts, planned for the next release. Would you rather it restarted automatically? [Tell us](https://github.com/odiecay/android-tv-ps4/discussions).
 - **Slim, Pro and Baikal are untested.** The support is built in, but no one has reported on it yet. Baikal is the most experimental, and its USB support is the biggest unknown. See [Hardware support](docs/HARDWARE.md).
 - **Firmware other than 13.52 is untested.** The loader has offsets for 20 versions, but only 13.52 has been run.
 - **MT7668 Wi-Fi** (many later Slims and Pros) is included but has never been run on real hardware.

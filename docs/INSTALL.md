@@ -85,7 +85,7 @@ You don't need to reinstall, because a completed installation is reused. Don't t
 
 **"Restart your PS4, then open Android TV again" (code 12).** The PS4 didn't have enough free memory in one piece to load Linux. Restart the console, load GoldHEN and open the app before doing anything else. Nothing was changed, and your installation is kept.
 
-Why it happens: to start Linux, the loader needs two unbroken blocks of memory, about 12 MB for the kernel and 10 MB for the startup files. Heavy disk activity breaks the PS4's free memory into small pieces, and the blocks may no longer fit. That activity comes from installing a 3 GB PKG (over FTP or from USB), the launcher's first install of Android, and the one-time file check on the first launch after an update. A restart clears it. Normal launches, without installing or updating first, rarely hit it.
+Why it happens: to start Linux, the loader needs two unbroken blocks of memory, about 12 MB for the kernel and 10 MB for the startup files. Heavy disk activity breaks the PS4's free memory into small pieces, and the blocks may no longer fit. That activity comes from installing a 3 GB PKG (over FTP or from USB), the launcher's first install of Android, and the one-time file check on the first launch after an update. A restart clears it; occasionally it takes a second restart, because even a freshly started PS4 has little room in that memory range. Normal launches, without installing or updating first, rarely hit it.
 
 To avoid it, restart the PS4 after installing or updating the PKG, then load GoldHEN and open the app. If it happens on a launch where you didn't install or update anything, report it with `launcher-boot.log`.
 

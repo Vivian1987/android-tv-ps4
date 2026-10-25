@@ -25,8 +25,10 @@
 #ifndef ROOT
 #define ROOT "/user/app/ps4-android"
 #endif
+/* Boot files live in this app's own folder. The shared /data/linux/boot is
+ * left alone, because another PS4 Linux setup may already own it. */
 #ifndef BOOT_PARENT
-#define BOOT_PARENT "/data/linux"
+#define BOOT_PARENT ROOT
 #endif
 #ifndef ASSET_ROOT
 #define ASSET_ROOT "/app0/assets"
@@ -106,8 +108,16 @@ static int install_graphics(void){
  if(rename(stage,target)){int e=errno;if(exists)rename(backup,target);errno=e;return -1;}
  return sync_directory(ROOT);
 }
+/* Names the boot-setup step that failed, so an error report says where. */
+static char boot_step[192];
+static void boot_failure(const char *s){
+ int saved=errno;char message[320];snprintf(message,sizeof(message),"%s at %s",s,boot_step);errno=saved;failure(message);
+}
+#define BOOT_STEP(...) snprintf(boot_step,sizeof(boot_step),__VA_ARGS__)
 static int install_boot(void){
+ BOOT_STEP("create %s",BOOT_PARENT);
  if(mkdir(BOOT_PARENT,0755)&&errno!=EEXIST)return -1;
+ BOOT_STEP("create %s",BOOT_ROOT);
  if(mkdir(BOOT_ROOT,0755)&&errno!=EEXIST)return -1;
  /* Each boot file commits atomically. Android is launched only after all four
   * match this package. A retry completes interrupted commits without touching data. */
@@ -116,13 +126,18 @@ static int install_boot(void){
   snprintf(target,sizeof(target),BOOT_ROOT "/%s",names[i+1]);
   snprintf(stage,sizeof(stage),"%s.ps4android-next",target);
   snprintf(backup,sizeof(backup),"%s.before-sparse-v015",target);
+  BOOT_STEP("check %s",target);
   if(file_equal(files[i+1],target))continue;
   int exists=path_stat(target,&st)==0;
   if(!exists&&errno!=ENOENT)return -1;
   if(exists){if(path_stat(backup,&st)==0){errno=EEXIST;return -1;}if(errno!=ENOENT)return -1;}
+  BOOT_STEP("write %s",stage);
   if(copy_file(files[i+1],stage))return -1;
+  BOOT_STEP("back up %s",target);
   if(exists&&rename(target,backup))return -1;
+  BOOT_STEP("replace %s",target);
   if(rename(stage,target)){int e=errno;if(exists)rename(backup,target);errno=e;return -1;}
+  BOOT_STEP("sync %s",BOOT_ROOT);
   if(sync_directory(BOOT_ROOT))return -1;
  }
  return 0;
@@ -210,7 +225,7 @@ static void install_or_boot(void *unused){
   if(install_translation()){failure("Cannot install app compatibility files; Android data preserved");return;}
   if(install_bundled_apps()){failure("Cannot install bundled apps; Android data preserved");return;}
   if(install_graphics()){failure("Cannot update graphics files; Android data preserved");return;}
-  if(install_boot()){failure("Boot files need recovery; Android data preserved");return;}
+  if(install_boot()){boot_failure("Boot files need recovery; Android data preserved");return;}
   notice("Booting Android TV from the internal HDD");
   request_boot();
   return;
@@ -233,7 +248,7 @@ static void install_or_boot(void *unused){
  if(install_graphics()){failure("Cannot install graphics library");return;}
  if(install_translation()){failure("Cannot install app compatibility files; Android data preserved");return;}
  if(install_bundled_apps()){failure("Cannot install bundled apps; Android data preserved");return;}
-  if(install_boot()){failure("Cannot finish boot setup; image files preserved");return;}
+  if(install_boot()){boot_failure("Cannot finish boot setup; image files preserved");return;}
  int ready=open(READY ".next",O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);
  if(ready<0){failure("Cannot record completion");return;}
  char state[128];int n=snprintf(state,sizeof(state),"PS4ANDROID13-SPARSE-V015\nedition=%d\n",EDITION_GIB);

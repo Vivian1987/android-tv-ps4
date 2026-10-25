@@ -5,14 +5,15 @@
 #include "file.h"
 #undef errno
 #include "local-payload-image.h"
-#include "kexec-1352-image.h"
+#include "kexec-images.h"
 #include "boot-inputs.h"
 #include "boot-control.h"
 #include "launch-protocol.h"
 #include "display-release.h"
 #define FN(name,type) ((type)((char*)memory+PAYLOAD_##name))
 #define VAR(name,type) (*(type*)((char*)memory+PAYLOAD_##name))
-struct result { unsigned int magic; int stage,rc,cancel_rc; unsigned long long elapsed,nonce; struct atv_boot_report report; };
+struct result { unsigned int magic; int stage,rc,cancel_rc; unsigned long long elapsed,nonce; unsigned short firmware,firmware_base; int southbridge; struct atv_boot_report report; };
+_Static_assert(__builtin_offsetof(struct result,report)==sizeof(struct atv_launch_status),"result begins with launch status");
 static struct result out;
 /* Same notification ABI as OpenOrbis's OrbisNotificationRequest. Kept local
  * because this freestanding runner does not link the native app's SDK libc. */
@@ -49,31 +50,37 @@ int _main(void){
  if(read_control(&control)||!atv_control_valid(&control,control.nonce)||control.released||control.cancelled){close(control_fd);return -111;}
  out.magic=ATV_LAUNCH_MAGIC;out.nonce=control.nonce;out.stage=1;
  if(save()){close(control_fd);return -114;}
- SceFwInfo fw={0};fw.unk1=sizeof(fw);
- if(!sceKernelGetSystemSwVersion||sceKernelGetSystemSwVersion(&fw)){out.rc=-100;save();return -1;}
- const char expected[]="13.520.001";for(unsigned i=0;i<sizeof(expected);i++)if(fw.version_string[i]!=expected[i]){out.rc=-101;save();close(control_fd);return -1;}
  out.rc=getFunctionAddressByName(libKernelHandle,"sceKernelMmap",&mapmem);
  out.rc|=getFunctionAddressByName(libKernelHandle,"sceKernelMunmap",&unmapmem);
  if(out.rc||!mapmem||!unmapmem){save();close(control_fd);return -1;}
  size_t first=(sizeof(local_payload_image)+16383)&~(size_t)16383;
- size_t bytes=first+((sizeof(kexec_1352_image)+16383)&~(size_t)16383);
+ size_t bytes=first+((ATV_KEXEC_MAX_BYTES+16383)&~(size_t)16383);
  void *memory=0,*kernel=0,*initrd=0;
  out.rc=mapmem(0,bytes,7,0x1002,-1,0,&memory);if(out.rc){save();close(control_fd);return -1;}
  copybytes(memory,local_payload_image,sizeof(local_payload_image));
- copybytes((char*)memory+first,kexec_1352_image,sizeof(kexec_1352_image));
+ /* One loader per firmware, built from the same source. Firmware without
+  * kernel offsets cannot run Linux and stops here, before anything is loaded.
+  * The console model is recorded but not restricted: the kernel carries the
+  * Slim/Pro southbridge drivers, and the launcher asks those users to report. */
  unsigned short fwver=FN(get_firmware,unsigned short(*)(void))();
  unsigned short norm=FN(normalize_fw_ver,unsigned short(*)(unsigned short))(fwver);
- if(norm!=1352){out.rc=-102;goto done;}
+ out.firmware=fwver;out.firmware_base=norm;out.southbridge=FN(get_sb_id,int(*)(void))();
+ const struct atv_kexec_image *loader=0;
+ for(unsigned i=0;i<sizeof(atv_kexec_images)/sizeof(atv_kexec_images[0]);i++)if(atv_kexec_images[i].firmware==norm)loader=&atv_kexec_images[i];
+ if(!loader){out.rc=ATV_RC_UNSUPPORTED_FIRMWARE;goto done;}
+ copybytes((char*)memory+first,atv_kexec_data+loader->offset,loader->bytes);
  VAR(g_fw,void*)=FN(find_offsets_by_fw,void*(*)(unsigned short))(norm);
- VAR(g_kexec_s,char*)=(char*)memory+first;VAR(g_kexec_e,char*)=(char*)memory+first+sizeof(kexec_1352_image);
- int sb=FN(get_sb_id,int(*)(void))();if(sb<0||!VAR(g_fw,void*)){out.rc=-103;goto done;}
+ VAR(g_kexec_s,char*)=(char*)memory+first;VAR(g_kexec_e,char*)=(char*)memory+first+loader->bytes;
+ int sb=out.southbridge;
+ if(!VAR(g_fw,void*)){out.rc=ATV_RC_UNSUPPORTED_FIRMWARE;goto done;}
+ if(sb<0){out.rc=-103;goto done;}
  out.stage=2;
  if(save()){out.rc=-114;goto done;}
  /* The small foreground app has already released its file-backed artwork.
   * Prepare Linux now; ARM still requires an explicit display release below. */
- out.rc=image("/data/linux/boot/bzImage",&kernel,ATV_KERNEL_BYTES);if(out.rc)goto done;
- out.rc=image("/data/linux/boot/initramfs.cpio.xz",&initrd,ATV_INITRD_BYTES);if(out.rc)goto done;
- char args[1024]={0};int fd=open("/data/linux/boot/bootargs.txt",O_RDONLY,0);
+ out.rc=image(ATV_BOOT_DIR "/bzImage",&kernel,ATV_KERNEL_BYTES);if(out.rc)goto done;
+ out.rc=image(ATV_BOOT_DIR "/initramfs.cpio.xz",&initrd,ATV_INITRD_BYTES);if(out.rc)goto done;
+ char args[1024]={0};int fd=open(ATV_BOOT_DIR "/bootargs.txt",O_RDONLY,0);
  if(fd<0){out.rc=-104;goto done;}ssize_t got=read(fd,args,sizeof(args)-1);close(fd);
  if(got<=0){out.rc=-105;goto done;}
  for(ssize_t i=0;i<got;i++)if(args[i]=='\n'||args[i]=='\r')args[i]=0;

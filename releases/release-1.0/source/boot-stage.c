@@ -46,9 +46,10 @@ static void close_channels(void){
  if(logfd>=0)close(logfd);if(controlfd>=0)close(controlfd);if(resultfd>=0)close(resultfd);
  logfd=controlfd=resultfd=-1;
 }
-static int fail(const char *message,int code){
+static int fail_with_detail(const char *message,const char *explanation,int code){
  char detail[160],log[320];
- snprintf(detail,sizeof(detail),"Startup stopped (code %d). See launcher-boot.log.",code);
+ if(explanation)snprintf(detail,sizeof(detail),"%s (code %d)",explanation,code);
+ else snprintf(detail,sizeof(detail),"Startup stopped (code %d). See launcher-boot.log.",code);
  snprintf(log,sizeof(log),"%s: %d\n",message,code);marker(log);
  if(code==ECONNREFUSED){
   message="BinLoader unavailable. Press PS, fully close this app, then toggle BinLoader off and on.";
@@ -56,6 +57,15 @@ static int fail(const char *message,int code){
  }
  if(controlfd>=0)(void)flag_at(offsetof(struct atv_launch_control,cancelled));
  (void)installer_ui_init();installer_ui_boot_status(message,detail);close_channels();return -1;
+}
+static int fail(const char *message,int code){return fail_with_detail(message,NULL,code);}
+static const char *southbridge_name(int sb){
+ switch(sb){case 1:return "Aeolia";case 2:return "Belize";case 3:return "Baikal";case 4:return "Belize 2";default:return "unknown";}
+}
+static int unsupported_firmware(const struct atv_launch_status *s){
+ char message[96];
+ snprintf(message,sizeof(message),"Firmware %u.%02u isn't supported yet",s->firmware/100,s->firmware%100);
+ return fail_with_detail(message,"The Linux loader has no kernel offsets for this firmware. Nothing was changed.",s->rc);
 }
 static const char *stage_message(int stage){
  switch(stage){
@@ -83,13 +93,19 @@ int atv_launch_with_progress(void){
  char line[256];snprintf(line,sizeof(line),"Payload delivery result=%d bytes=%zu/%zu errno=%d. Delivery alone does not confirm Linux boot.\n",rc,sent,sizeof(atv_bundled_payload),rc?saved:0);marker(line);
  if(rc)return fail(saved==ECONNREFUSED?"Enable GoldHEN > Servers > BinLoader, then open Android TV again.":"Android TV payload could not be sent",saved);
  unsigned long long started=sceKernelGetProcessTime(),last_draw=0;
- int last_stage=0,released=0;
+ int last_stage=0,released=0,console_logged=0,untested=0;
  for(;;){
   unsigned long long now=sceKernelGetProcessTime();
   struct atv_launch_status status;
   ssize_t n=pread(resultfd,&status,sizeof(status),0);
   if(n==sizeof(status)&&atv_status_valid(&status,control.nonce)){
+   if(status.rc==ATV_RC_UNSUPPORTED_FIRMWARE)return unsupported_firmware(&status);
    if(status.rc)return fail("Linux preparation reported an error",status.rc);
+   if(status.stage>=2&&!console_logged){
+    snprintf(line,sizeof(line),"Console firmware=%u base=%u southbridge=%s(%d)\n",status.firmware,status.firmware_base,southbridge_name(status.southbridge),status.southbridge);marker(line);
+    untested=status.southbridge!=ATV_SB_AEOLIA?status.southbridge:0;console_logged=1;
+    if(untested)last_draw=0; /* show the report request straight away */
+   }
    if(status.stage>last_stage){
     snprintf(line,sizeof(line),"Startup stage=%d elapsed_us=%llu prepare_us=%llu\n",status.stage,now-started,status.elapsed);marker(line);
     last_stage=status.stage;
@@ -103,7 +119,8 @@ int atv_launch_with_progress(void){
    }
   }
   if(!released&&(last_draw==0||now-last_draw>=1000000)){
-   snprintf(line,sizeof(line),"Starting Android TV  |  %llu seconds",(now-started)/1000000);
+   if(untested)snprintf(line,sizeof(line),"Untested on this console (%s southbridge) - please report how it goes  |  %llu s",southbridge_name(untested),(now-started)/1000000);
+   else snprintf(line,sizeof(line),"Starting Android TV  |  %llu seconds",(now-started)/1000000);
    installer_ui_boot_status(stage_message(last_stage),line);last_draw=now;
   }
   /* A timeout is a failure guard, never a condition for starting Linux. */

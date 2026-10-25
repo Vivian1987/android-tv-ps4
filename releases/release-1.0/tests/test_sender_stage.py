@@ -14,7 +14,8 @@ with tempfile.TemporaryDirectory() as tmp:
 #include <assert.h>
 #include <setjmp.h>
 static jmp_buf transferred;
-static int active,restored,delivery,scenario,closed,phase,draws;
+static int active,restored,delivery,scenario,closed,phase,draws,untested_draws;
+static char last_message[160],last_detail[160];
 static unsigned long long now;
 int ps4_as_root(void(*fn)(void*),void*a){
  if(scenario==2){errno=EACCES;return -1;}
@@ -22,7 +23,7 @@ int ps4_as_root(void(*fn)(void*),void*a){
 }
 int sceKernelDebugOutText(int x,const char*s){(void)x;(void)s;return 0;}
 unsigned long long sceKernelGetProcessTime(void){return now+=100000;}
-void installer_ui_boot_status(const char*m,const char*d){assert(m&&d);draws++;}
+void installer_ui_boot_status(const char*m,const char*d){assert(m&&d);draws++;if(strstr(d,"Untested on this console (Belize southbridge)"))untested_draws++;snprintf(last_message,sizeof(last_message),"%s",m);snprintf(last_detail,sizeof(last_detail),"%s",d);}
 int installer_ui_init(void){return 0;}
 static struct atv_launch_control disk_control(void){
  struct atv_launch_control c;int f=open(ATV_CONTROL_PATH,O_RDONLY);assert(f>=0);
@@ -34,14 +35,15 @@ int installer_ui_close(void){
  closed=1;return 0;
 }
 static void publish(int stage,int rc,int stale,int truncated){
- struct atv_launch_status s={.magic=ATV_LAUNCH_MAGIC,.stage=stage,.rc=rc,.nonce=control.nonce+(stale?1:0)};
+ struct atv_launch_status s={.magic=ATV_LAUNCH_MAGIC,.stage=stage,.rc=rc,.nonce=control.nonce+(stale?1:0),
+  .firmware=scenario==8?1101:1352,.firmware_base=scenario==8?1100:1352,.southbridge=scenario==9?2:1};
  int f=open(ATV_RESULT_PATH,O_WRONLY|O_TRUNC);assert(f>=0);
  int len=truncated?12:sizeof(s);assert(write(f,&s,len)==len);close(f);
 }
 int atv_send_payload(const unsigned char*p,size_t n,size_t*sent){
  assert(!active&&restored);assert(n==3&&!memcmp(p,atv_bundled_payload,3));delivery++;
  *sent=scenario==1?0:3;if(scenario==1){errno=ECONNREFUSED;return -1;}
- phase=1;publish(1,0,0,0);return 0;
+ phase=1;publish(1,scenario==8?ATV_RC_UNSUPPORTED_FIRMWARE:0,0,0);return 0;
 }
 int sceKernelUsleep(unsigned n){
  (void)n;
@@ -54,19 +56,21 @@ int sceKernelUsleep(unsigned n){
  phase++;publish(phase,scenario==3&&phase==4?12:0,0,0);return 0;
 }
 int main(void){
- for(scenario=0;scenario<8;scenario++){
-  active=restored=delivery=closed=phase=draws=0;now=1;
+ for(scenario=0;scenario<10;scenario++){
+  active=restored=delivery=closed=phase=draws=untested_draws=0;now=1;
   if(!setjmp(transferred)){
    assert(atv_launch_with_progress()==-1);
-   assert(scenario==1||scenario==2||scenario==3||scenario==6||scenario==7);
+   assert(scenario==1||scenario==2||scenario==3||scenario==6||scenario==7||scenario==8);
+   if(scenario==8)assert(!strcmp(last_message,"Firmware 11.01 isn't supported yet")&&strstr(last_detail,"Nothing was changed")&&strstr(last_detail,"code -120"));
    assert(!closed);
    if(scenario!=2){struct atv_launch_control c=disk_control();assert(!c.released&&c.cancelled);}
   }else{
-   assert(scenario==0||scenario==4||scenario==5);assert(closed&&draws>2);close_channels();
+   assert(scenario==0||scenario==4||scenario==5||scenario==9);assert(closed&&draws>2);close_channels();
+   assert(scenario==9?untested_draws>0:untested_draws==0);
   }
   assert(delivery==(scenario==2?0:1));
  }
- puts("PASS: visible app; credentials restored; release only after ready and display close; stale/partial reports ignored; refusal/root/payload/close/timeout failures never release");
+ puts("PASS: visible app; credentials restored; release only after ready and display close; stale/partial reports ignored; refusal/root/payload/close/timeout failures never release; unsupported firmware is named; untested southbridge continues with a report request");
 }
 ''')
  subprocess.run(['cc','-O2','-DROOT="'+str(d/'install')+'"','-DATV_CONTROL_PATH="'+str(d/'control')+'"','-DATV_RESULT_PATH="'+str(d/'result')+'"','-I'+str(d/'stubs'),'-I'+str(root/'source'),'-I'+str(d),str(d/'test.c'),'-o',str(d/'test')],check=True)

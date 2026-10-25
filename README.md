@@ -10,7 +10,10 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 - **Runs on every GoldHEN firmware the Linux loader supports:** 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52.
 - **No console model is blocked.** Slim, Pro and Baikal support is built in but untested. See [Hardware support](docs/HARDWARE.md).
-- **Video no longer freezes**, **Circle is Back in every app**, and the console shows a **screensaver instead of sleeping** (sleep froze PS4 Linux).
+- **More reliable video.** Some video, including YouTube and the NBA app, could freeze after a few seconds while the sound kept playing. That's fixed.
+- **Controller works like a TV remote in every app.** X selects and Circle goes back everywhere. Before, a few apps ignored the controller on some screens, such as Kayo's sign-in button and going back in the NBA app.
+- **Screensaver instead of sleep.** When idle, Android shows a screensaver and keeps running. Android's sleep mode froze PS4 Linux.
+- **Named "PlayStation 4"** on your network and in casting apps, instead of a phone model name.
 - **One 3.12 GB PKG** from Google Drive. No joining parts.
 - **Failed starts explain themselves** and save their logs to a USB stick.
 

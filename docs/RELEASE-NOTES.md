@@ -15,9 +15,9 @@ More consoles and a single download. Thanks to everyone who commented and opened
 - **Boots without Ethernet hardware.** A console with no Ethernet interface used to stop the Linux start; now it continues without it.
 - **Single-file download** from Google Drive. No more joining parts.
 - **Clearer errors.** Unsupported firmware, low memory (error 12) and boot-file problems now say what happened and what to do. If the previous Linux start didn't finish, the launcher shows the last step it reached.
-- **Video no longer freezes.** Video would stop after a few seconds while the sound kept playing (YouTube, NBA and others). The graphics allocator now lays out video frames the way the PS4's GPU driver needs.
-- **Circle is Back and X is Select in every app.** This fixes buttons that did nothing in some apps, such as Kayo's sign-in and going back in the NBA app.
-- **Screensaver instead of sleep.** Android's sleep froze PS4 Linux, so the console now shows a screensaver and stays awake. A small stick dead zone stops a resting DualShock 4 from keeping the screen on.
+- **More reliable video.** Some video could freeze after a few seconds while the sound kept playing, for example in YouTube and the NBA app. The graphics allocator now lays out video frames the way the PS4's GPU driver needs, so playback keeps going.
+- **The controller works like a TV remote in every app.** X selects and Circle goes back everywhere. In 1.0, a few apps only listened to a TV remote on some screens, so the controller did nothing there, for example Kayo's sign-in button and going back in the NBA app.
+- **Screensaver instead of sleep.** When idle, Android now shows a screensaver and keeps running. Android's sleep mode froze PS4 Linux, so the console needed a hard restart. A small stick dead zone also stops a resting DualShock 4 from keeping the screen awake.
 - **Device name defaults to "PlayStation 4"**, so Spotify Connect and casting list the console by name.
 - **Slim, Pro and Baikal hardware support.** Wi-Fi and Bluetooth firmware for the Marvell 88W8897 and MediaTek MT7668, a separate kernel for Baikal consoles with their Ethernet driver, and a graphics fix for the Pro's GPU. None of it has been tested on those consoles yet; see [Hardware support](HARDWARE.md).
 - **Failed starts explain themselves.** If Linux can't start Android, it says why, makes it safe to power off, and copies its reports to a USB stick as soon as one is plugged in. Every start also saves a hardware report (`hardware.txt`) listing the console's chips and the drivers that loaded.

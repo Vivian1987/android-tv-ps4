@@ -183,20 +183,18 @@ case "$mesa32_sha" in
 esac
 echo 'fbac4a587e486de0e4f6f6b02dbe3c9495371735ca3c35e5e3cfbcc753d85c2c  /android/system/vendor/lib/dri/libgallium_dri.so' | sha256sum -c -
 # PS4 Pro (Gladius, 1002:9924) has twice the shader engines and also needs
-# PA_SC_RASTER_CONFIG_1. Point Mesa's Kaveri case at a block carrying both
-# Gladius values; runtime-source/patch-mesa-raster.py documents these bytes.
+# PA_SC_RASTER_CONFIG_1=0x2e. Point Mesa's Kaveri case at the block that sets
+# 0x2e and give it the Gladius raster config; patch-mesa-raster.py documents it.
 gpu=$(cat /sys/bus/pci/devices/*/device 2>/dev/null | grep -m1 -E '^0x992[0-4]$' || true)
 stage "GPU: ${gpu:-unknown}"
 if [ "$gpu" = 0x9924 ]; then
  mesa64=/android/system/vendor/lib64/dri/libgallium_dri.so
  printf '\141\273\025\001' | dd of="$mesa64" bs=1 seek=5873684 conv=notrunc 2>/dev/null
  printf '\052' | dd of="$mesa64" bs=1 seek=24071009 conv=notrunc 2>/dev/null
- printf '\116' | dd of="$mesa64" bs=1 seek=24071012 conv=notrunc 2>/dev/null
- echo "7130ea84514d6113426ffb33c48b1e8dab68f75de33b4e1e25798ffcf53e836a  $mesa64" | sha256sum -c -
+ echo "37934e40c2e566bc979935bf41443f52766fd78e7ce4762f3bf8263fb00d5dfd  $mesa64" | sha256sum -c -
  printf '\213\043\162\377' | dd of="$mesa32" bs=1 seek=5383584 conv=notrunc 2>/dev/null
  printf '\052' | dd of="$mesa32" bs=1 seek=23111439 conv=notrunc 2>/dev/null
- printf '\116' | dd of="$mesa32" bs=1 seek=23111441 conv=notrunc 2>/dev/null
- echo "2fa26f9bc50f33ae07dfc13b0488770d5fe20a19b9a821ac956d2c0905d7c42a  $mesa32" | sha256sum -c -
+ echo "fed7b1080589b15d7f7b3b008544b750707917b3110e53d1a67ce0f51d78dd93  $mesa32" | sha256sum -c -
  stage 'Applied PS4 Pro raster configuration'
 fi
 sh "$assets/controller-home.sh"

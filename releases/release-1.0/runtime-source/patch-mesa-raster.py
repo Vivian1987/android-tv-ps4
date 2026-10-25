@@ -27,16 +27,17 @@ def patch(data, abi='x86_64'):
     return result
 
 # PS4 Pro (Gladius) has twice the shader engines and also needs
-# PA_SC_RASTER_CONFIG_1=0x4e (kernel gfx_v7_0_raster_config, CHIP_GLADIUS).
-# Mesa identifies both PS4 GPUs as Kaveri, whose case leaves raster_config_1
-# at 0. The Gladius build points the Kaveri jump-table entry at the Hawaii
-# block (never used on a PS4) and gives that block both Gladius values. The
-# boot script applies these bytes only when the GPU is 1002:9924.
+# PA_SC_RASTER_CONFIG_1=0x2e (kernel gfx_v7_0_raster_config, CHIP_GLADIUS;
+# the PS4 Mesa fork oberdfr/mesa-ps4linux uses 0x2a00161a/0x2e). Mesa
+# identifies both PS4 GPUs as Kaveri, whose case leaves raster_config_1 at 0.
+# The Gladius build points the Kaveri jump-table entry at the Hawaii block,
+# which already sets 0x2e and is never used on a PS4, and gives that block the
+# Gladius raster config. The boot script applies this only on GPU 1002:9924.
 GLADIUS = {
-    'x86_64': (PATCHED_SHA, '7130ea84514d6113426ffb33c48b1e8dab68f75de33b4e1e25798ffcf53e836a',
-               [(5873684, '61bb1501'), (24071009, '2a'), (24071012, '4e')]),
-    'x86': (X86_PATCHED_SHA, '2fa26f9bc50f33ae07dfc13b0488770d5fe20a19b9a821ac956d2c0905d7c42a',
-            [(5383584, '8b2372ff'), (23111439, '2a'), (23111441, '4e')]),
+    'x86_64': (PATCHED_SHA, '37934e40c2e566bc979935bf41443f52766fd78e7ce4762f3bf8263fb00d5dfd',
+               [(5873684, '61bb1501'), (24071009, '2a')]),
+    'x86': (X86_PATCHED_SHA, 'fed7b1080589b15d7f7b3b008544b750707917b3110e53d1a67ce0f51d78dd93',
+            [(5383584, '8b2372ff'), (23111439, '2a')]),
 }
 
 def patch_gladius(data, abi='x86_64'):

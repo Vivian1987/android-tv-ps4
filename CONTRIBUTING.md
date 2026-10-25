@@ -1,56 +1,48 @@
 # Contributing
 
-This project brings Android TV to PS4 hardware through a native launcher and a PS4 Linux runtime. Contributions that make the installation reliable, improve hardware support, explain the code or establish behaviour on another console are welcome.
+Thanks for wanting to help. This started as one person tinkering with one PS4, and it gets better with every console, report and fix people bring. You don't need permission to jump in.
 
-Start with [Architecture](docs/DEVELOPMENT.md), then [Build](docs/BUILD.md). The active source is `releases/release-1.0`. Older installer experiments in Git history explain how the project developed; they are not the release build path.
+## Ways to help
+
+- **Test it on your console** and send a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Slim, Pro and Baikal reports are the most valuable right now. The form explains how to get the logs.
+- **Talk it through** in [Discussions](https://github.com/odiecay/android-tv-ps4/discussions): ideas, questions, what you're working on.
+- **Fix docs or add your console** to [Hardware support](docs/HARDWARE.md#tested-consoles).
+- **Work on the code.** The sections below get you started.
 
 ## Editing a page without Git
 
-You can fix a doc or add your console to [Hardware support](docs/HARDWARE.md#tested-consoles) from the browser. Open the file on GitHub, click the **pencil icon** (Edit this file), make your change, and choose **Propose changes**. GitHub copies the repository to your account and opens a pull request for you. No Git or command line needed.
+Open the file on GitHub, click the **pencil icon** (Edit this file), make your change and choose **Propose changes**. GitHub copies the repository to your account and opens a pull request for you. No Git or command line needed.
 
-## Where to work
+## Where things live
 
-| Area | Entry point | Useful work |
-| --- | --- | --- |
-| Installation and recovery | `source/install-prebuilt.c`, `image-copy.c` | Interrupted copies, storage checks, update/uninstall design. |
-| Boot reliability | `source/boot-stage.c`, `boot-payload.c`, `loader-source/` | Receiver readiness, memory preparation, explicit handoff states. |
-| Another firmware or PS4 revision | `build-kexec.py`, `loader-source/`, kernel, runtime disk/radio setup | Test on real hardware and send a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml); find where Belize/Baikal or other firmware differ. |
-| Graphics and video | `patches/`, `runtime-source/patch-mesa-raster.py`, composer/gralloc inputs | Rebuildable driver adaptations, 32-bit raster testing, codec and frame-presentation diagnostics. |
-| Wi-Fi and Bluetooth | `connectivity/`, `source/bluetooth*`, runtime interface handoff | Reconnection, pairing, hardware variants, Android network policy. |
-| Controller input | `runtime/opt/androidtv-ps4/controller-home.sh` | Keylayout coverage, latency and remote mappings. |
-| Power control | `power/android-supervisor.c` | Safe unmount order and physical restart/shutdown. |
-| Apps | `bundled-apps.json`, `prepare-apps.py` | Native ABI selection, signed split layouts, reproducible playback tests. |
-| User experience | `source/installer-ui.c`, `artwork/`, `docs/INSTALL.md` | Clear stage information, useful recovery instructions and measured first-run timings. |
-| Build portability | `prepare-build.py`, `build-release.py` | Fresh-checkout builds, pinned inputs and source provenance. |
+All the source is in [`releases/release-1.0/`](releases/release-1.0/) (the folder name predates 1.1). Read [How it works](docs/DEVELOPMENT.md) first, then [Build it](docs/BUILD.md).
 
-## Development loop
+| If you want to work on... | Start with |
+| --- | --- |
+| Installing and launching | `source/install-prebuilt.c`, `source/boot-stage.c`, `source/installer-ui.c` |
+| Getting Linux to start | `source/boot-payload.c`, `loader-source/` |
+| A new firmware or console model | `build-kexec.py`, `kernel/`, `runtime/usr/sbin/androidtv-ps4-start` |
+| Graphics and video | `patches/`, `runtime-source/` |
+| Wi-Fi, Bluetooth and Ethernet | `connectivity/`, `kernel/baikal/`, the start script |
+| Controller and remote | `runtime/opt/androidtv-ps4/controller-home.sh` |
+| Android defaults (name, screensaver) | `name-overlay/`, `screensaver-overlay/`, `runtime/opt/androidtv-ps4/device-name.sh` |
+| Bundled apps | `bundled-apps.json`, `prepare-apps.py` |
 
-1. Reproduce one problem and record the package hash, console model and firmware.
-2. Identify the failing layer: launcher, payload preparation, Linux, Android framework, graphics or app/service.
-3. Make the smallest relevant source change and run its host tests.
-4. Build a new PKG. Record its manifest and hash.
-5. Test both a fresh installation and relaunch when the change affects those paths.
-6. Include the observation and logs supporting the result in your pull request.
+## How we work
 
-A live Android change can establish a diagnosis. It becomes part of the project only when the build produces it on a fresh installation. A payload's successful delivery is not proof of Linux boot, and a screenshot is not proof of sustained playback.
+1. Reproduce the problem and note your console model, firmware and the PKG hash.
+2. Make the smallest change that fixes it.
+3. Build a PKG and test it on a real console: a fresh install, and a launch over an existing install if your change touches either.
+4. Open a pull request saying what you changed and what you saw, with the logs.
 
-## Test reports
+A fix only counts once it works from a freshly built PKG on a fresh install. Changing a running console by hand is a good way to find a fix, not to prove it.
 
-Useful reports include console model, southbridge if known, PS4 firmware, GoldHEN version, PKG SHA256, first-install/relaunch status and the last stage reached. For graphics, include a repeatable screen or clip and whether the artifact is present in Android screenshots or only on HDMI output. For playback, distinguish app rejection, decoding, rendering, audio and protected-output errors.
+## A few ground rules
 
-Remove account identifiers, Wi-Fi credentials, access tokens and private device identifiers before sharing captures. Do not attach a userdata image.
+- **Never risk people's data.** If something fails, existing Android data is kept, and nothing is formatted or overwritten that a user would miss.
+- **Booting needs no PC or network.** GoldHEN on the console itself is the only requirement.
+- **Be honest about what's tested.** Say which console and firmware a result comes from, and don't claim more than that.
+- **No personal data in the build.** Accounts and app data come from each user's own setup.
+- **Credit your sources.** Keep upstream licence notices and say where copied code, patches and binaries come from. There's no single project licence yet, so don't relabel upstream code.
 
-## Preserve these contracts
-
-- Boot preparation and display release remain condition-based. A delay is not permission to hand off hardware.
-- Boot works without a LAN connection. GoldHEN's local receiver is an explicit prerequisite.
-- Existing userdata is preserved on failure or edition mismatch.
-- Apps and credentials come from each user's own setup. Build inputs contain no personal Android state.
-- Every mount introduced by a feature has a matching cleanup path.
-- Hardware/service claims identify the tested scope. Device labels and compatibility fingerprints are not certification.
-
-## Licensing and attribution
-
-Retain upstream notices and identify the origin of copied code, patches and binary inputs. The repository currently has component-specific licences and no blanket project licence; do not relabel upstream material as newly licensed code. Link the relevant source/version when proposing an additional bundled app.
-
-Open an issue or pull request on [GitHub](https://github.com/odiecay/android-tv-ps4) with a focused change and the evidence you have. Reports from additional PS4 revisions are useful even when the port does not boot: knowing exactly where a hardware assumption fails helps define the next port.
+Leave account names, Wi-Fi names, tokens and IP addresses out of anything you share, and never attach a userdata image.

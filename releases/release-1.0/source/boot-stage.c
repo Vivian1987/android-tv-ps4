@@ -58,8 +58,33 @@ static int fail_with_detail(const char *message,const char *explanation,int code
  if(code==ENOMEM){
   /* Linux needs one large contiguous block; long PS4 sessions fragment memory. */
   message="Not enough free memory to start Linux right now";
-  snprintf(detail,sizeof(detail),"Restart the PS4, load GoldHEN and open Android TV first. Installation is preserved. (code %d)",code);
+  snprintf(detail,sizeof(detail),"Common right after installing. Restart the PS4, load GoldHEN and open Android TV first. Nothing was changed. (code %d)",code);
  }
+ /* Everything the PS4 side can stop on is explained here, so a report says
+  * what happened rather than only a number. Nothing below changes the PS4. */
+ const char *advice=NULL;
+ switch(code){
+ case -1:case -2:case -3:case -104:case -105:case -108:
+  message="Android TV's startup files are missing or damaged";
+  advice="Open Android TV again to repair them. Your Android data is kept.";break;
+ case -103:
+  message="Couldn't identify this console's southbridge";
+  advice="Nothing was changed. Please report your console model and firmware.";break;
+ case -106:
+  message="Linux didn't pass its final check";
+  advice="Nothing was started. Restart the PS4 and try again; report it if it repeats.";break;
+ case -107:
+  message="Linux couldn't be armed to start";
+  advice="Nothing was started. Restart the PS4 and try again; report it if it repeats.";break;
+ case EINVAL:
+  if(strcmp(message,"Linux preparation reported an error"))break;
+  message="The Linux loader couldn't prepare this console";
+  advice="Its GPU firmware or kernel check failed. Nothing was changed. Please report your model.";break;
+ case ETIMEDOUT:
+  message="GoldHEN didn't finish starting Linux";
+  advice="Nothing was changed. Restart the PS4, load GoldHEN and try again.";break;
+ }
+ if(advice)snprintf(detail,sizeof(detail),"%s (code %d)",advice,code);
  if(controlfd>=0)(void)flag_at(offsetof(struct atv_launch_control,cancelled));
  (void)installer_ui_init();installer_ui_boot_status(message,detail);close_channels();return -1;
 }

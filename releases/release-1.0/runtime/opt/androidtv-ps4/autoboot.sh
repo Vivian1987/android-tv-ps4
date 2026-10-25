@@ -89,6 +89,13 @@ case " $sdio " in
   else stage 'MT7668 Wi-Fi driver failed to load; continuing without Wi-Fi'; fi
   ;;
 esac
+# Baikal's Ethernet controller (104d:90d8) is not a Yukon. It uses linux-psx's
+# polled MTS driver, built for the Baikal kernel, which names it psx0.
+for device in /sys/bus/pci/devices/*; do
+ [ "$(cat "$device/vendor" 2>/dev/null)" = 0x104d ] && [ "$(cat "$device/device" 2>/dev/null)" = 0x90d8 ] || continue
+ stage 'Baikal Ethernet found; loading its driver'
+ insmod /lib/modules/6.15.4-androidtv-ps4-aeolia/extra/psx_mts_net.ko autoarm=1 || stage 'Baikal Ethernet driver failed to load; continuing without Ethernet'
+done
 mkdir -p /mnt/ps4-user /mnt/android-share /mnt/android-sfs /mnt/android-lower /mnt/android-persistent /android
 if ! grep -q ' /mnt/ps4-user ' /proc/mounts; then
 cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 --key-file /key/eap_hdd_key.bin "$userpart" ps4-android-user
@@ -284,10 +291,12 @@ if [ -z "$child" ]; then
 fi
 # Android owns its DHCP configuration; the host has no management address.
 # A console without a recognised Ethernet port still boots, just without it.
-if [ -e /sys/class/net/eth0/address ]; then
- /usr/sbin/ip link set eth0 up
- hwmac=$(cat /sys/class/net/eth0/address)
- /usr/sbin/ip link add link eth0 name atv0 address "02${hwmac#??}" type macvlan mode bridge
+wired=eth0
+[ -e /sys/class/net/eth0/address ] || wired=psx0
+if [ -e "/sys/class/net/$wired/address" ]; then
+ /usr/sbin/ip link set "$wired" up
+ hwmac=$(cat "/sys/class/net/$wired/address")
+ /usr/sbin/ip link add link "$wired" name atv0 address "02${hwmac#??}" type macvlan mode bridge
  /usr/sbin/ip link set atv0 netns "$child"
  nsenter -t "$child" -n /usr/sbin/ip link set atv0 name eth0
  nsenter -t "$child" -n /usr/sbin/ip link set eth0 up

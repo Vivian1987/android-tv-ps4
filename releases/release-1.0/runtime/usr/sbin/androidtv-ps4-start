@@ -45,6 +45,15 @@ hardware_report() {
   done
   echo " (Wi-Fi is moved into Android once it starts, so wlan0 may not be listed here.)"
   for p in /sys/class/ieee80211/*; do [ -e "$p" ] && echo " Wi-Fi radio ${p##*/}: $(basename "$(readlink "$p/device/driver" 2>/dev/null)" 2>/dev/null)"; done
+  echo; echo "GPU and display:"
+  gpu=$(dmesg | grep -m1 'initializing kernel modesetting' | grep -oE '\((LIVERPOOL|GLADIUS)[^)]*\)')
+  echo " GPU found: ${gpu:-no (the amdgpu driver never saw a PS4 GPU)}"
+  dmesg | grep -iE 'amdgpu.*(fail|error|timeout|ring .* test)|firmware.*(liverpool|gladius)|active_cu_number|Initialized amdgpu|amdgpudrmfb' | sed 's/^/ /'
+  for c in /sys/class/drm/card*-*; do [ -e "$c/status" ] && echo " Output ${c##*/}: $(cat "$c/status")"; done
+  if dmesg | grep -q 'amdgpudrmfb'; then echo " Verdict: the GPU driver is up and drawing; a black screen points at the HDMI output or the TV."
+  elif dmesg | grep -q 'Initialized amdgpu'; then echo " Verdict: the GPU driver started but no picture was set up."
+  elif [ -n "$gpu" ]; then echo " Verdict: the GPU was found but its driver failed; the lines above show where."
+  else echo " Verdict: no GPU driver activity."; fi
   echo; echo "Bluetooth: $(ls /sys/class/bluetooth 2>/dev/null | tr '\n' ' ')"
   echo "Loaded modules:"; cut -d' ' -f1 /proc/modules 2>/dev/null | sed 's/^/ /'
   echo; echo "Driver and setup decisions:"; grep -E 'found|driver|GPU|Southbridge|Hardware|Wi-Fi|Ethernet|failed' /run/androidtv-ps4/progress.log 2>/dev/null || true

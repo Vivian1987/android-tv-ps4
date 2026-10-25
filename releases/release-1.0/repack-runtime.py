@@ -13,7 +13,8 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--assets',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--runtime-tree',type=Path,default=ROOT/'runtime');a=p.parse_args()
+    p.add_argument('--runtime-tree',type=Path,default=ROOT/'runtime')
+    p.add_argument('--additions',type=Path,help='directory mirroring runtime-additions.json paths');a=p.parse_args()
     manifest=json.loads((ROOT/'runtime-inputs.json').read_text())
     original=(a.assets/'initramfs.cpio.xz').read_bytes();parent_sha=digest(original)
     if parent_sha!=manifest['initramfs_sha256']:raise SystemExit('Input runtime does not match runtime-inputs.json')
@@ -35,6 +36,25 @@ def main():
         subprocess.run(['cc','-static','-O2','-Wall','-Wextra','-Werror',str(source),'-o',str(binary)],check=True)
         power=binary.read_bytes()
     name='usr/sbin/android-supervisor';entries[name]=(entries[name][0],power)
+    gralloc=runpy.run_path(str(ROOT/'runtime-source/patch-gralloc-yv12.py'))
+    name='opt/androidtv-ps4/gralloc-gbm-yv12-stride.so'
+    if digest(entries[name][1])!=gralloc['PATCHED_SHA']:entries[name]=(entries[name][0],gralloc['patch'](entries[name][1]))
+    # Hardware-support files (Slim/Pro Wi-Fi and Bluetooth) that the base
+    # runtime lacks. Each must match runtime-additions.json exactly.
+    additions=json.loads((ROOT/'runtime-additions.json').read_text())['files']
+    if additions and not a.additions:raise SystemExit('--additions is required for runtime-additions.json')
+    inode=max(f[0] for f,_ in entries.values())+1
+    dir_fields=entries['lib/firmware'][0];file_fields=entries['lib/firmware/regulatory.db'][0]
+    for name,item in sorted(additions.items()):
+        data=(a.additions/name).read_bytes()
+        if digest(data)!=item['sha256']:raise SystemExit('Addition does not match runtime-additions.json: '+name)
+        parts=name.split('/')
+        for depth in range(1,len(parts)):
+            parent='/'.join(parts[:depth])
+            if parent not in entries:
+                fields=dir_fields.copy();fields[0]=inode;inode+=1;entries[parent]=(fields,b'')
+        fields=file_fields.copy();fields[0]=inode;inode+=1;fields[1]=0o100644
+        entries[name]=(fields,data)
     raw=api['pack'](entries)
     compressed=lzma.compress(raw,format=lzma.FORMAT_XZ,check=lzma.CHECK_CRC32,filters=[{'id':lzma.FILTER_X86},{'id':lzma.FILTER_LZMA2,'dict_size':8*1024*1024,'preset':6}])
     if len(compressed)>16*1024*1024:raise ValueError('Unexpected initramfs growth; review boot memory budget')

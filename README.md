@@ -38,7 +38,7 @@ Android gets 32 GiB of storage. That isn't the download size: PS4 drive space is
 ## If it doesn't work
 
 - **"BinLoader unavailable" (error 61):** close the app, turn BinLoader off and on again, and reopen it.
-- **"Not enough free memory" (error 12):** restart the PS4, load GoldHEN and open the app before doing anything else.
+- **"Restart your PS4, then open Android TV again" (code 12):** the PS4 ran short of free memory, usually on the first launch after installing or updating. Restart, load GoldHEN and open the app before doing anything else. Restarting straight after installing the PKG avoids it.
 
 For anything else, please report it, because failed starts are how other consoles get fixed:
 

@@ -36,7 +36,9 @@ Booting doesn't need a PC, network or internet connection. The launcher sends it
 
 Load GoldHEN, make sure BinLoader is on, and open **Android TV for PS4**. Your apps, accounts, Wi-Fi and Bluetooth pairings are all kept.
 
-After the app opens, the handover to Linux usually takes about 30 seconds but can take up to 2 minutes, especially straight after the PS4 has been restarted. Leave it running; an error message means something went wrong, a wait doesn't.
+After the app opens, the handover to Linux usually takes 30 seconds to a minute. Leave it running; an error message means something went wrong, a wait doesn't.
+
+The first launch after installing or updating takes longer, because the launcher checks the installed Android files against the new package once (about 15 seconds on a fat PS4). Later launches skip that check unless a file has changed. That first launch is also the one most likely to stop with **"Restart your PS4, then open Android TV again"** ([why](#troubleshooting)).
 
 In Android, **Restart** returns the console to the PS4 system, where GoldHEN needs to be loaded again. **Shut down** powers the console off. Android unmounts its storage cleanly before either one.
 
@@ -44,7 +46,13 @@ Reinstalling the same PKG keeps your existing Android data. It doesn't reset any
 
 ## Updating from 1.0
 
-Delete **Android TV for PS4** from the PS4 home screen, then install the 1.1 PKG with the Package Installer and open it. Deleting the app only removes the launcher: Android itself, with your apps, accounts and settings, is stored separately in `/user/app/ps4-android` and is kept. The launcher finds it, updates the startup files and boots straight in, without the 5–10 minute first install. 1.1 keeps its boot files in `/user/app/ps4-android/boot` instead of `/data/linux/boot`; the old 1.0 copies in `/data/linux/boot` are no longer used (see [Removing Android](#removing-android)).
+Delete **Android TV for PS4** from the PS4 home screen, then install the 1.1 PKG with the Package Installer and open it. Deleting the app only removes the launcher: Android itself, with your apps, accounts and settings, is stored separately in `/user/app/ps4-android` and is kept. The launcher finds it, updates the startup files and boots straight in, without the 5–10 minute first install.
+
+On the first 1.1 start, Linux upgrades Android's storage once so apps can get their storage folders: the screen shows **"Adding project quota support to Android storage (one time)"** for a second or two. The storage image is checked before and after, nothing is reformatted, and if the upgrade can't be done, Android starts as before. The result is saved in `quota-upgrade.log`.
+
+If the first launch after updating stops with "Restart your PS4, then open Android TV again", restart, load GoldHEN and open the app again.
+
+After this upgrade, the 1.0 kernel can't open Android's storage, so going back to 1.0 isn't supported. 1.1 keeps its boot files in `/user/app/ps4-android/boot` instead of `/data/linux/boot`; the old 1.0 copies in `/data/linux/boot` are no longer used (see [Removing Android](#removing-android)).
 
 ## Network and controllers
 
@@ -75,7 +83,13 @@ On the controller, the PS button goes to Android Home. To use the DualShock 4 on
 
 You don't need to reinstall, because a completed installation is reused. Don't test port 9090 with a port scanner or `nc`: an empty connection can disrupt BinLoader.
 
-**Error 12 during startup ("Not enough free memory to start Linux right now").** Linux needs one large block of free memory, and the PS4 may not have one after it's been busy, especially straight after copying and installing the PKG. Restart the console, load GoldHEN and open the app before doing anything else. Your installation is kept. If it keeps happening, report it with `launcher-boot.log`.
+**"Restart your PS4, then open Android TV again" (code 12).** The PS4 didn't have enough free memory in one piece to load Linux. Restart the console, load GoldHEN and open the app before doing anything else. Nothing was changed, and your installation is kept.
+
+Why it happens: to start Linux, the loader needs two unbroken blocks of memory, about 12 MB for the kernel and 10 MB for the startup files. Heavy disk activity breaks the PS4's free memory into small pieces, and the blocks may no longer fit. That activity comes from installing a 3 GB PKG (over FTP or from USB), the launcher's first install of Android, and the one-time file check on the first launch after an update. A restart clears it. Normal launches, without installing or updating first, rarely hit it.
+
+To avoid it, restart the PS4 after installing or updating the PKG, then load GoldHEN and open the app. If it happens on a launch where you didn't install or update anything, report it with `launcher-boot.log`.
+
+**"Could not add project quota support; continuing without it."** The one-time storage upgrade didn't finish, so Android starts as it did in 1.0. Some apps may not get their storage folders and Google setup may restart itself. Please report it with `quota-upgrade.log` from `/user/app/ps4-android`.
 
 **"Firmware X isn't supported yet."** The Linux loader has no kernel offsets for your firmware, so nothing was loaded and nothing was changed. The supported list is in [Compatibility](COMPATIBILITY.md#firmware).
 
@@ -93,6 +107,7 @@ The console also keeps the logs in `/user/app/ps4-android`, which you can reach 
 
 - `launcher-boot.log`: installation and handing off to Linux, including firmware and southbridge
 - `hardware.txt`: the console's chips, which kernel booted and which drivers loaded
+- `quota-upgrade.log`: the one-time storage upgrade, if it ran
 - `boot-progress.log`, `boot.log`, `kernel.log`: Linux startup
 - `android-stages.log`: Android startup
 

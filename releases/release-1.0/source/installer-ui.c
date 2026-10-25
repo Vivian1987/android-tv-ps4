@@ -56,6 +56,20 @@ static void text(int x,int y,int scale,const char *message,uint32_t color){
   x+=advance[ch];
  }
 }
+/* Pixel width of a string in the given font, for wrapping to the screen. */
+static int text_width(int scale,const char *s,size_t n){
+ const unsigned char *advance=scale==3?advance34:advance22;int w=0;
+ for(size_t i=0;i<n&&s[i];i++){unsigned char c=(unsigned char)s[i];w+=advance[c>=32&&c<=126?c-32:'?'-32];}
+ return w;
+}
+/* Longest prefix of s, ending at a space, that fits in width pixels. */
+static size_t fit_words(int scale,const char *s,int width,size_t limit){
+ size_t len=strlen(s);if(len>limit)len=limit;
+ if(text_width(scale,s,len)<=width)return len;
+ size_t best=0;for(size_t i=1;i<=len;i++)if(s[i]==' '||s[i]==0){if(text_width(scale,s,i)>width)break;best=i;}
+ if(best)return best;
+ while(len>1&&text_width(scale,s,len)>width)len--;return len;
+}
 static double seconds(void){struct timeval tv;gettimeofday(&tv,NULL);return tv.tv_sec+tv.tv_usec/1000000.;}
 static double started,last_draw,opened;
 static uint64_t initial_bytes;
@@ -74,7 +88,7 @@ static void render(void){
   * allocations, file reads or mapped artwork remain in the boot phase. */
  rectangle(0,538,WIDTH,182,0xff080f1d);
  rectangle(0,538,WIDTH,1,0xff3a5274);
- char line[96];const char *p=status;int y=550;
+ char line[160];const char *p=status;int y=550;
  while(*p&&y<607){size_t n=strlen(p);if(n>79){n=79;while(n>0&&p[n]!=' ')n--;if(!n)n=79;}
   memcpy(line,p,n);line[n]=0;text(64,y,2,line,0xfff4f8fa);p+=n;while(*p==' ')p++;y+=28;}
  int percent=total_bytes?(int)(done_bytes*100/total_bytes):0;if(percent>100)percent=100;
@@ -84,7 +98,7 @@ static void render(void){
  if(failed){
   /* A stopped start shows no activity, and its instruction gets the full width. */
   const char *q=boot_detail;int fy=648;
-  while(*q&&fy<=676){size_t n=strlen(q);if(n>92){n=92;while(n>0&&q[n]!=' ')n--;if(!n)n=92;}
+  while(*q&&fy<=676){size_t n=fit_words(2,q,1152,sizeof(line)-1);
    memcpy(line,q,n);line[n]=0;text(64,fy,2,line,0xffd8e6f5);q+=n;while(*q==' ')q++;fy+=28;}
   goto flip;
  }

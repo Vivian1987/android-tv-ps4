@@ -64,7 +64,7 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 | YouTube guest mode | Guest playback can request a secure decoder that isn't available. Sign in to watch. |
 | Setup navigation | Some setup screens have been reported to jump back or repeat. |
 | BinLoader connection (error 61) | The launcher couldn't reach BinLoader. Close the app, toggle BinLoader off and on, and reopen it ([steps](INSTALL.md#troubleshooting)). |
-| Startup memory (error 12) | Linux couldn't get a large enough block of contiguous memory. This happens after the PS4 has been busy, for example straight after copying and installing the 3 GB PKG. Restart the PS4, load GoldHEN and open the app first. Your installation is kept. |
+| Startup memory (code 12) | The launcher shows "Restart your PS4, then open Android TV again". Linux needs two unbroken blocks of memory (about 12 MB and 10 MB), and heavy disk activity in the same session, such as installing the PKG or the first launch after an update, can leave none that large. Restart the PS4, load GoldHEN and open the app first. Nothing is changed. ([details](INSTALL.md#troubleshooting)) |
 | Payload received but not run | GoldHEN may show the payload as received but then report "failed to launch payload". The launcher keeps waiting. Restart the console and try again. |
 | Not certified | This isn't a Google-certified Android TV device. Some apps and services may refuse to run or limit playback. |
 | App updates | Play Store updates can change how an app behaves. The bundled versions are listed in [Apps](APPS.md). |

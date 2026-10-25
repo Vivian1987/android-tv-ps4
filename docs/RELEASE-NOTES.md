@@ -37,6 +37,10 @@ Fresh install over FTP and first boot to Android TV with this exact package on a
 
 Delete Android TV for PS4 from the PS4 home screen, then install the 1.1 PKG. Your Android apps and data are stored separately and are kept ([details](INSTALL.md#updating-from-10)). If you had renamed the device, it's set to PlayStation 4 once; rename it again in Settings.
 
+On the first start, Linux adds project quota support to Android's storage once. After that, the 1.0 kernel can't open it, so going back to 1.0 isn't supported.
+
+The first launch after installing or updating is the one most likely to stop with "Restart your PS4, then open Android TV again" (code 12): installing the PKG and the launcher's one-time file check leave the PS4's memory too fragmented to load Linux. Restart, load GoldHEN and open the app. Restarting straight after installing avoids it ([details](INSTALL.md#troubleshooting)).
+
 ## 1.0
 
 The first public release: Android TV 13 on PlayStation 4, installed from a single PKG and booted from the console's internal drive.

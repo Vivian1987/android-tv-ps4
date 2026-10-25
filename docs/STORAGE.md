@@ -10,18 +10,24 @@ Android uses files on the PS4's existing internal filesystem. Installation does 
   bundled-apps.sfs             signed APKs, splits and prepared native libraries
   libgallium-baseline.so       selected 64-bit PS4 graphics adaptation
   ndk-translation.tar.gz       native-bridge support
+  mt7668-wifi.tar.gz          MT7668 Wi-Fi driver and firmware, unpacked only on consoles with that chip
   data-gib.txt                selected userdata capacity: 32
   data.img                    sparse ext4 userdata image, created on first boot
   ready                       native installation completion marker
   data-ready                  userdata creation completion marker
   device-id                   random identifier generated on this installation
+  *.verified                  records that a file matched the package (see below)
+  hardware.txt                hardware report from the last start
   *.log                       console-local diagnostics
   boot/
-    bzImage
+    bzImage                   kernel for Aeolia and Belize consoles
+    bzImage-baikal            kernel for Baikal consoles
     initramfs.cpio.xz
     bootargs.txt
     vram.txt
 ```
+
+A `.verified` file sits next to each installed file the launcher has checked. It records that file's ID in the package and the installed file's size and modification time. While all three match, the launcher doesn't re-read the file on launch. A new package that changes the file, or any change to the file on disk, brings back the full byte-for-byte comparison. Deleting `.verified` files is safe; the next launch just takes longer.
 
 `system.sfs` contains `system.img`, mounted read-only as ext4. An OverlayFS RAM layer holds the PS4 adaptations. The data image contains directories bound to Android's `/data` and `/metadata`; accounts, app data, downloads and pairings persist there.
 
@@ -29,13 +35,15 @@ The installed launcher retains its original assets. Copies under `/user/app/ps4-
 
 ## Capacity versus allocated space
 
-The first-boot script uses `truncate -s` and `mke2fs` to create a **32 GiB logical image** without writing 32 GiB of empty blocks. It formats with lazy inode/journal initialization, checks the new filesystem, then commits it with a completion marker. This is why the PKG can be approximately 3.11 GB rather than a 32 GiB download.
+The first-boot script uses `truncate -s` and `mke2fs` to create a **32 GiB logical image** without writing 32 GiB of empty blocks. It formats with lazy inode/journal initialization, checks the new filesystem, then commits it with a completion marker. This is why the PKG can be approximately 3.12 GB rather than a 32 GiB download.
+
+From 1.1 the image is formatted with ext4 quota and project-quota features (`mke2fs -O quota,project`). Android's storage daemon tags each app's folder under `Android/data` with a project ID; without the feature, apps were refused those folders. An image created by 1.0 gets the features added once at startup: `e2fsck`, then `tune2fs -O quota,project`, then `e2fsck` again, all before mounting. The output is kept in `quota-upgrade.log`. Both formatting and conversion happen only if the running kernel reports `CONFIG_QUOTA` and `CONFIG_QFMT_V2` in `/proc/config.gz`, because an image with quota features can't be mounted by a kernel without them. A 1.1 data image therefore can't be mounted by the 1.0 kernel; going back to 1.0 after updating isn't supported.
 
 The file grows in physical allocation as Android writes data. It still has a fixed 32 GiB filesystem capacity, and the PS4's physical free space is shared with games and other files. Android's apparent free space inside its image does not reserve that space on the PS4 drive.
 
 ## Storage accounting for release 1.1
 
-These figures describe the package SHA256 `bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e`.
+These figures were measured on an earlier 1.1 test package (SHA256 `bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e`). The released package is about 14 MB larger, mostly the second kernel and the Wi-Fi package, which doesn't change the totals at this precision.
 
 | Item | Bytes | GiB |
 | --- | ---: | ---: |

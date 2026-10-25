@@ -12,6 +12,10 @@ The compiled storage edition is 32 GiB. The app checks the installed edition bef
 
 The `PS4ANDROID13-SPARSE-V015` string is an on-disk layout marker retained for compatibility. It is not the public application version. `ready` means the Orbis-side file installation completed; `data-ready` means Linux created and checked the userdata image. These are separate states.
 
+On later launches the launcher checks that the installed files still match the package. A full byte-for-byte comparison reads about 1.5 GB, which took up to two minutes after a restart and left memory fragmented just before Linux needed large contiguous blocks. A file that matches is now recorded in a `.verified` file holding its package ID (a SHA256 prefix generated into `boot-inputs.h` by `build-release.py`) and its installed size and modification time. While those match, the comparison is skipped. Files the launcher has just copied are recorded the same way. The time taken is logged as "Installed files checked in N s".
+
+When startup stops, the launcher's status area switches to an error state: the activity bar stops, the headline says what to do, and the detail is wrapped by pixel width (`installer-ui.c`).
+
 [`image-copy.c`](../releases/release-1.0/source/image-copy.c) verifies an existing file prefix before appending. A complete or partial mismatched copy is preserved and rejected. Completed copies are synchronized and renamed. Boot files and the graphics replacement use staged names and retain old copies. The launcher refuses unknown editions or conflicting recovery state instead of formatting user data.
 
 The `stat` ABI shim in [`ps4-stat-abi.h`](../releases/release-1.0/source/ps4-stat-abi.h) supplies the target layout and compile-time offset checks. It must precede SDK headers: a host/SDK layout mismatch previously made file-size checks read the wrong field.
@@ -41,9 +45,15 @@ Source: [`launch-protocol.h`](../releases/release-1.0/source/launch-protocol.h),
 
 The initramfs [`init`](../releases/release-1.0/runtime/init) creates the basic Linux mounts and starts [`androidtv-ps4-start`](../releases/release-1.0/runtime/usr/sbin/androidtv-ps4-start).
 
-The script logs the southbridge it finds (Aeolia, Belize or Baikal) but doesn't require a particular one, and continues without Ethernet if no interface exists. It expects the internal user-storage block device at `/dev/sda27`. It uses the console-specific key supplied in the boot environment to open a dm-crypt mapping, then mounts the existing UFS2 filesystem. That key is not a release-package asset.
+The script logs the southbridge it finds (Aeolia, Belize or Baikal) but doesn't require a particular one, and continues without Ethernet if no interface exists. It finds the internal drive as the disk that has partition 27; the PS4's internal drive sits behind a USB bridge, so it can't be told apart by its bus. It uses the console-specific key supplied in the boot environment to open a dm-crypt mapping, then mounts the existing UFS2 filesystem. That key is not a release-package asset.
 
 The installation directory appears as `/mnt/ps4-user/app/ps4-android` in Linux. A fresh start creates `data.img.part` with `truncate`, formats that file as ext4 with lazy initialization, checks it, and commits `data.img` plus `data-ready`. An existing uncommitted data image stops for recovery; it is not silently reformatted.
+
+The data image uses ext4 project quotas, because Android 13's vold tags each app's `Android/data` folder with a project ID and refuses the folder when that fails. Both kernels are built with `CONFIG_QUOTA` and `CONFIG_QFMT_V2`. New images are formatted with `-O quota,project`; older images are upgraded once before mounting (details in [Storage](STORAGE.md)). The script reads `/proc/config.gz` first and skips both steps on a kernel without quota support, so an image is never left in a format the running kernel can't mount. Case-insensitive folders (`external_storage.casefold.enabled`) stay off because the kernel doesn't have `CONFIG_UNICODE`.
+
+The script also removes the `virtualmachine` group mapping for `MANAGE_VIRTUAL_MACHINE` from `platform.xml` in the RAM overlay. This build's C library doesn't know that group, so it resolved to an invalid ID (-1) and any app holding the permission, such as Shell, failed to start and was retried every 10 seconds.
+
+Each start writes `hardware.txt`: the southbridge, which kernel image booted, every PCI, SDIO and USB device with its bound driver, network interfaces, loaded modules and the driver decisions the script made. If the start fails, the reports are copied to the first FAT or exFAT USB stick that appears, never to a partition of the internal drive.
 
 Mounts:
 
@@ -65,6 +75,8 @@ The boot script installs the PS4 adaptations into the RAM overlay on each start.
 This is Android userspace on the PS4 Linux kernel. Namespace isolation does not emulate the CPU or GPU. Native x86 and x86-64 apps use the console CPU directly; selected ARM apps use the separately supplied native bridge.
 
 The Android command line is bound into its `/proc/cmdline`. A per-install random identifier is generated locally and stored as `device-id`; it is not the console's factory serial number. No developer serial is copied into other installations.
+
+Two static overlays set PS4 defaults so Android TV setup starts with them. `name-overlay/` targets the Settings provider: device name "PlayStation 4", `def_sleep_timeout` -1 (never sleep) and `def_screen_off_timeout` 15 minutes. `screensaver-overlay/` targets the framework: the default screensaver is the `dreamx` Backdrop this build ships (the framework default names `com.google.android.backdrop`, which isn't included), and it starts instead of sleep. Android's sleep freezes PS4 Linux, so it must never be entered. `device-name.sh` re-applies the sleep settings at each boot as a backstop for installs from 1.0, retrying each write and logging under the `androidtv-defaults` tag.
 
 The default device name is **PlayStation 4**. Setting `Settings.Global.device_name` from a boot script didn't survive Android TV setup, which writes its own default from the Settings provider. A static resource overlay (`name-overlay/`) for `com.android.providers.settings` changes that default (`def_device_name` and `def_device_name_simple`), so setup itself uses PlayStation 4. A script (`device-name.sh`, guarded by `persist.vendor.androidtv.named`) also sets the name once per installation, so a 1.0 install updated to 1.1 is renamed once, including one the user had renamed. Any name chosen after that is kept. Spotify Connect and casting read this setting.
 

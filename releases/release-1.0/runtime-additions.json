@@ -54,7 +54,7 @@
       "location": "drive"
     },
     "opt/androidtv-ps4/AtvDeviceNameOverlay.apk": {
-      "sha256": "685fd80ca18cd446b03029d2551eabfaafe0ac7c6011ba760b49cecc3417d35d",
+      "sha256": "d002f8428d91cda7e0fd27e11b63d93ee7971bacdb6b651d17ae25457e59f6b7",
       "source": "name-overlay/ built by name-overlay/build.py, signed with the AOSP platform test key"
     },
     "opt/androidtv-ps4/AtvScreensaverOverlay.apk": {

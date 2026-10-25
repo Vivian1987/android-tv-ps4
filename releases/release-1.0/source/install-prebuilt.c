@@ -14,6 +14,7 @@
 #include <orbis/libkernel.h>
 #ifdef RAW_IMAGES
 #include "image-copy.h"
+#include "boot-inputs.h"
 #else
 #include "image-extract.h"
 #endif
@@ -75,11 +76,43 @@ static const uint64_t install_bytes=SYSTEM_BYTES+BUNDLED_APP_BYTES;
 static void progress(uint64_t done,uint64_t total){
  (void)total;installer_ui_progress(completed_bytes+done,install_bytes);
 }
+/* Comparing installed files byte for byte reads about 1.5 GB, which made every
+ * launch take up to two minutes after a restart. Once a file matches this
+ * package, a marker records the package's asset ID and the file's size and
+ * modification time; later launches trust it while all three are unchanged.
+ * A new package or a changed file gets the full comparison again. */
+static void verified_marker(const char *path,const struct stat *st,char *marker,size_t marker_size,char *line,size_t line_size){
+ snprintf(marker,marker_size,"%s.verified",path);
+ snprintf(line,line_size,"%s %lld %lld\n",ATV_ASSET_SET_ID,(long long)st->st_size,(long long)st->st_mtime);
+}
+static int verified_before(const char *path){
+ struct stat st;char marker[224],line[128],seen[128]={0};
+ if(path_stat(path,&st)||!S_ISREG(st.st_mode))return 0;
+ verified_marker(path,&st,marker,sizeof(marker),line,sizeof(line));
+ int fd=open(marker,O_RDONLY|O_NOFOLLOW);if(fd<0)return 0;
+ ssize_t n=read(fd,seen,sizeof(seen)-1);close(fd);
+ return n>0&&strcmp(seen,line)==0;
+}
+static void remember_verified(const char *path){
+ struct stat st;char marker[224],line[128],next[232];
+ if(path_stat(path,&st))return;
+ verified_marker(path,&st,marker,sizeof(marker),line,sizeof(line));
+ snprintf(next,sizeof(next),"%s.next",marker);
+ int fd=open(next,O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);if(fd<0)return;
+ size_t len=strlen(line);int ok=write(fd,line,len)==(ssize_t)len&&fsync(fd)==0;close(fd);
+ if(!ok||rename(next,marker))unlink(next);
+}
 static int file_equal_progress(int source,const char *path,void (*callback)(uint64_t,uint64_t)){
+ if(verified_before(path)){
+  struct stat a;if(callback&&fstat(source,&a)==0)callback((uint64_t)a.st_size,(uint64_t)a.st_size);
+  return 1;
+ }
  int target=open(path,O_RDWR|O_NOFOLLOW);if(target<0)return 0;
  struct stat a,b;int ok=fstat(source,&a)==0&&fstat(target,&b)==0&&a.st_size==b.st_size;
  if(ok)ok=ps4_copy_image(source,target,(uint64_t)a.st_size,callback)==0;
- int saved=errno;close(target);errno=saved;return ok;
+ int saved=errno;close(target);
+ if(ok)remember_verified(path);
+ errno=saved;return ok;
 }
 static int file_equal(int source,const char *path){return file_equal_progress(source,path,NULL);}
 static int copy_file(int source,const char *path){
@@ -251,6 +284,7 @@ static void install_or_boot(void *unused){
 #endif
  if(!compatible_installation()){notice("Different storage edition or unknown installation. Existing data preserved.");return;}
  if(installation_ready()){
+  uint64_t check_start=sceKernelGetProcessTime();
   if(path_stat(ROOT "/system.sfs",&st)||!S_ISREG(st.st_mode)||(uint64_t)st.st_size!=SYSTEM_BYTES){
    failure("Installed image is missing or has the wrong size");return;}
   if(install_translation()){failure("Cannot install app compatibility files; Android data preserved");return;}
@@ -258,6 +292,8 @@ static void install_or_boot(void *unused){
   if(install_graphics()){failure("Cannot update graphics files; Android data preserved");return;}
   if(install_wifi()){failure("Cannot install Wi-Fi files; Android data preserved");return;}
   if(install_boot()){boot_failure("Boot files need recovery; Android data preserved");return;}
+  {char took[96];uint64_t ms=(sceKernelGetProcessTime()-check_start)/1000;
+   snprintf(took,sizeof(took),"Installed files checked in %llu.%01llu s",(unsigned long long)(ms/1000),(unsigned long long)(ms%1000/100));notice(took);}
   show_previous_failure();
   notice("Booting Android TV from the internal HDD");
   request_boot();

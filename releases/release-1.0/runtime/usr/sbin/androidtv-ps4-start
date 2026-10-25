@@ -209,6 +209,12 @@ cp "$assets/system-build.prop" /android/system/build.prop
 cp "$assets/vendor-build.prop" /android/system/vendor/build.prop
 cp "$assets/init.android_x86_64.rc" /android/system/vendor/etc/init/init.android_x86_64.rc
 cp "$assets/product-build.prop" /android/system/product/etc/build.prop
+# The kernel has no project quotas or case-insensitive ext4 (see build.prop:
+# external_storage.projid/casefold are 0), and this build's C library has no
+# "virtualmachine" group. The permission mapped to that group gave apps an
+# invalid group (-1), so they could not start. The PS4 has no virtual machines.
+sed -i '/<permission name="android.permission.MANAGE_VIRTUAL_MACHINE">/,/<\/permission>/d' /android/system/etc/permissions/platform.xml
+! grep -q '"virtualmachine"' /android/system/etc/permissions/platform.xml || stage 'Warning: could not remove the virtualmachine group mapping'
 cp "$assets/init.sh" /android/system/etc/init.sh
 cp "$assets/init.rc" /android/system/etc/init/hw/init.rc
 cp "$assets/androidtv-ps4.rc" /android/system/etc/init/androidtv-ps4.rc

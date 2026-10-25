@@ -29,14 +29,8 @@ ensure() {
 note "applying PS4 defaults"
 
 # Android sleep locks up PS4 Linux, so idle time runs the screensaver instead
-# and never goes to sleep. A screensaver chosen in Settings is kept.
-backdrop=com.google.android.apps.tv.dreamx/com.google.android.apps.tv.dreamx.service.Backdrop
-case "$(settings get secure screensaver_components 2>&1)" in
-    ''|null)
-        ensure secure screensaver_components "$backdrop"
-        ensure secure screensaver_default_component "$backdrop"
-        ;;
-esac
+# and never goes to sleep. The screensaver itself is the build default
+# (screensaver-overlay); these settings back it up on installs from 1.0.
 ensure secure screensaver_enabled 1
 ensure secure screensaver_activate_on_sleep 1
 ensure secure sleep_timeout -1

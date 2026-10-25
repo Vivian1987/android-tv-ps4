@@ -37,6 +37,12 @@ boot_inputs=[]
 for prefix,name in [('KERNEL','bzImage'),('KERNEL_BAIKAL','bzImage-baikal'),('INITRD','initramfs.cpio.xz')]:
  data=(a.assets/name).read_bytes()
  boot_inputs += [f'#define ATV_{prefix}_BYTES {len(data)}ULL',f'#define ATV_{prefix}_CRC32 0x{zlib.crc32(data):08x}U']
+# One ID for the whole asset set. The launcher trusts a file it verified earlier
+# only while this ID and the installed file are unchanged.
+asset_set=hashlib.sha256()
+for x in sorted(a.assets.iterdir()):
+ asset_set.update(x.name.encode()+b'\0'+hashlib.file_digest(x.open('rb'),'sha256').digest())
+boot_inputs.append(f'#define ATV_ASSET_SET_ID "{asset_set.hexdigest()[:32]}"')
 (b/'boot-inputs.h').write_text('\n'.join(boot_inputs)+'\n')
 subprocess.run(['python3',str(root/'build-payload.py'),'--build',str(b),'--probe-build',str(a.probe_build),'--probe-linker',str(a.probe_linker)],check=True)
 compiled={}

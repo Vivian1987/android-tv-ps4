@@ -4,4 +4,6 @@
  <string name="def_device_name_simple">PlayStation 4</string>
  <!-- Never sleep: Android sleep freezes PS4 Linux. Idle time runs the screensaver. -->
  <integer name="def_sleep_timeout">-1</integer>
+ <!-- Start the screensaver after 15 minutes without input. -->
+ <integer name="def_screen_off_timeout">900000</integer>
 </resources>

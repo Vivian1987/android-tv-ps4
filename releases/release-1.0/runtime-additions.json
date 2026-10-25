@@ -40,6 +40,10 @@
     "lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko": {
       "sha256": "1eb6fd92288c945ba3f052ade9a5ed53ecf757564e00817008f53db6163dbae2",
       "source": "MT7668 Wi-Fi driver from the ps4-linux tree (drivers/net/wireless/mediatek/mt76x8), built as a module for 6.15.4-androidtv-ps4-aeolia with kernel/mt7668-proc-copy-bound.patch, debug symbols stripped"
+    },
+    "opt/androidtv-ps4/AtvDeviceNameOverlay.apk": {
+      "sha256": "3b79c30eb651f978a95901d072747dce0345784846db9ac72131a53228a02184",
+      "source": "name-overlay/ built by name-overlay/build.py, signed with the AOSP platform test key"
     }
   }
 }

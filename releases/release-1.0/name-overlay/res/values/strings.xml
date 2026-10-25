@@ -1,0 +1,5 @@
+<resources>
+ <!-- Default device name on a new installation. Build.MODEL is unchanged. -->
+ <string name="def_device_name">PlayStation 4</string>
+ <string name="def_device_name_simple">PlayStation 4</string>
+</resources>

@@ -58,3 +58,6 @@ __pycache__/
 /evidence/
 /checkpoints/
 /host/
+!/releases/release-1.0/name-overlay/AndroidManifest.xml
+!/releases/release-1.0/name-overlay/build.py
+!/releases/release-1.0/name-overlay/res/**

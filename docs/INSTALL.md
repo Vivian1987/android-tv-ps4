@@ -85,13 +85,18 @@ You don't need to reinstall, because a completed installation is reused. Don't t
 
 ## Logs and reporting problems
 
-The console keeps install and boot logs in `/user/app/ps4-android`. You can reach them over GoldHEN's FTP server:
+**If a start fails after Linux has started,** the screen says so and asks for a USB stick. Plug in a FAT32 or exFAT stick, now or later, and the reports are copied to a folder called `AndroidTV-PS4-report-…` on it. The console keeps watching for a stick until it's turned off, and it never writes to its own drive for this.
 
-- `launcher-boot.log`: installation and handing off to Linux
-- `boot-progress.log`, `kernel.log`: Linux startup
+The console also keeps the logs in `/user/app/ps4-android`, which you can reach over GoldHEN's FTP server:
+
+- `launcher-boot.log`: installation and handing off to Linux, including firmware and southbridge
+- `hardware.txt`: the console's chips, which kernel booted and which drivers loaded
+- `boot-progress.log`, `boot.log`, `kernel.log`: Linux startup
 - `android-stages.log`: Android startup
 
-When reporting a problem, include your console model, firmware, the southbridge line from `launcher-boot.log` if you have it, the PKG SHA256, whether it was a first install or a later launch, and the last thing on screen. Remove account names, Wi-Fi names and IP addresses from logs first.
+To report a problem, open a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) and drag the files (or a ZIP of the USB report folder) into the **Logs** box.
+
+Include your console model, firmware, the PKG SHA256, whether it was a first install or a later launch, and the last thing on screen. Remove account names, Wi-Fi names and IP addresses from logs first.
 
 Network ADB is enabled on port 5555 and requires you to approve each computer on the TV. No debugging keys ship with the release.
 

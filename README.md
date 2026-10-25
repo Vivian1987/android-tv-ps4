@@ -32,6 +32,14 @@ Booting needs no PC, network or internet connection. The app hands its payload t
 
 If the launcher reports that BinLoader is unavailable, close the app, turn BinLoader off and on again, and reopen it. If startup stops with error 12, restart the PS4 and open the app before doing anything else. More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting).
 
+### If it doesn't work
+
+1. **If Linux started but Android didn't**, plug a FAT32 or exFAT USB stick into the PS4 and wait for the message saying the reports were saved. It can be plugged in after the failure; the console keeps watching for one. The reports go into a folder called `AndroidTV-PS4-report-…` on the stick.
+2. **If it stopped in the launcher**, the logs are in `/user/app/ps4-android` on the console. Copy them off with GoldHEN's FTP server.
+3. Open a **[console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml)**, fill in your model, firmware and how far it got, and drag the log files (or a ZIP of the report folder) into the **Logs** box.
+
+Reports from consoles that fail are just as useful as ones that work. They're how Slim, Pro and other firmware support gets fixed.
+
 ## What's included
 
 **YouTube, Spotify, VLC, Jellyfin, Kodi, Plex, TV Bro, BiglyBT, Crossy Road and AIDA64** come pre-installed, along with Google Play services and the Play Store. Sign in with your own accounts. [Exact app versions](docs/APPS.md).
@@ -66,7 +74,7 @@ The Android system image is read-only. PS4-specific changes are applied in memor
 
 ## Help wanted: test reports
 
-1.1 lets every console try, so what's needed now is people running it on other models and firmware. If you test it, [open a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) with your model, firmware and how far it got. "Black screen after the Linux text" is useful too. Anyone with PS4 Linux experience on Slim or Pro hardware is especially welcome.
+1.1 lets every console try, so what's needed now is people running it on other models and firmware. If you test it, [open a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) with your model, firmware and how far it got, and attach the logs ([how to get them](#if-it-doesnt-work)). "Black screen after the Linux text" is useful too. Anyone with PS4 Linux experience on Slim or Pro hardware is especially welcome.
 
 ## Development
 

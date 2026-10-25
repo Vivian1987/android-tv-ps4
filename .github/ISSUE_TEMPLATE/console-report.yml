@@ -73,8 +73,11 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Logs and notes
+      label: Logs
       description: |
-        If you can reach the console over GoldHEN FTP, the logs are in /user/app/ps4-android:
-        launcher-boot.log (includes the southbridge line), boot-progress.log, kernel.log and android-stages.log.
-        Attach them or paste the relevant part.
+        Drag the files into this box to attach them. A ZIP is fine.
+        - If a start failed after Linux started, plug a FAT32 or exFAT USB stick into the PS4 (even afterwards).
+          The reports are saved to a folder called AndroidTV-PS4-report-... on it. Attach the whole folder as a ZIP.
+        - Otherwise, copy them from /user/app/ps4-android over GoldHEN FTP: launcher-boot.log, hardware.txt,
+          boot-progress.log, kernel.log and android-stages.log.
+        hardware.txt is the most useful single file.

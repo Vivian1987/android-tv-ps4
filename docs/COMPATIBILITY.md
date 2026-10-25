@@ -71,6 +71,6 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 
 ## Reporting a result
 
-Include your console model, firmware, southbridge (from `launcher-boot.log`, if you can get it), the PKG SHA256, and whether it was a first install or a later launch. For startup problems, add the last thing on screen and any error message. For video problems, say whether the app refused to play, played audio only, or showed broken video. Keep account names, codes and private logs out of public reports.
+Include your console model, firmware, the PKG SHA256, and whether it was a first install or a later launch. Attach the logs: if a start fails after Linux has started, plug in a FAT32 or exFAT USB stick and the reports are saved to it (see [Logs and reporting problems](INSTALL.md#logs-and-reporting-problems)); otherwise copy them from `/user/app/ps4-android` over FTP. `hardware.txt` lists the console's southbridge, chips and drivers, so it's the most useful single file. For startup problems, add the last thing on screen and any error message. For video problems, say whether the app refused to play, played audio only, or showed broken video. Keep account names, codes and private logs out of public reports.
 
 The quickest way is the [console report form](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml). The [testing checklist](RELEASE-CHECKLIST.md) covers everything worth checking.

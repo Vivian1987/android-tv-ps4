@@ -4,7 +4,12 @@ Every PS4 model has the same CPU, but the chips around it changed over the years
 
 Only one console has been tested so far: a fat **CUH-1102A (Aeolia) on 13.52**. Everything else on this page is built from PS4 Linux community work and source code, and is waiting on real hardware reports. If you have one of these consoles, a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) is the most useful thing you can send, even if it fails.
 
-**Key:** ✅ tested on a real console · 🧪 built in, needs testing (your console could be the first) · ⚠️ partial or uncertain · ❌ not supported yet
+| Mark | Meaning |
+| :---: | --- |
+| ✅ | **Tested.** Confirmed working on a real console, with a report behind it ([list below](#tested-consoles)). |
+| 🧪 | **Built in, needs testing.** The support is in 1.1, but nobody has reported on this hardware yet. Your console could be the first. |
+| ⚠️ | **Partial or uncertain.** Built from experimental community work, or known to work only in part. |
+| ❌ | **Not supported yet.** |
 
 ## Which model do I have?
 
@@ -75,6 +80,24 @@ That work exists in the PS4 Linux community, and 1.1 ships it as a **separate Ba
 ## Firmware versions
 
 Every firmware the Linux loader has kernel offsets for: 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52. Only 13.52 has been tested. See [Compatibility](COMPATIBILITY.md#firmware).
+
+## Tested consoles
+
+Every ✅ on this page comes from a console in this list. Failed attempts are listed too, because they're just as useful.
+
+| Model | Firmware | Southbridge | Result | Report |
+| --- | --- | --- | --- | --- |
+| CUH-1102A | 13.52 | Aeolia | Works: install, boot, video, Wi-Fi, Ethernet, Bluetooth, controller, screensaver | Maintainer's test console |
+
+## How this page gets updated
+
+A [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) with logs is what changes a mark:
+
+- A report that Android started, with `hardware.txt`, turns the matching 🧪 into ✅ for that hardware and adds a row to [Tested consoles](#tested-consoles).
+- A report that something didn't work turns the mark into ⚠️ or ❌, with a note on what failed, until it's fixed.
+- `hardware.txt` decides which column a console belongs in, because the model number alone doesn't tell Belize 2 from Baikal.
+
+Maintainers update the page from reports. You can also open a pull request that edits this file yourself: add your row to **Tested consoles**, link your report, and change only the marks your report shows.
 
 ## Reporting your console
 

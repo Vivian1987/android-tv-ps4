@@ -57,7 +57,7 @@ On the controller, the PS button goes to Android Home. To use the DualShock 4 on
 
 ## Signing in
 
-**Google account (Play Store):** on the sign-in screen, press **down** on the D-pad a couple of times to reach the email and password boxes.
+**Google account (Play Store):** on the sign-in screens, press **down** on the D-pad a couple of times to reach the email and password boxes, and again to reach the **I agree** button.
 
 **YouTube:** sign in with the QR code or phone flow. Signed-in playback works; guest mode can fail with a secure-decoder error. To control YouTube from your phone, use YouTube's link-with-TV-code option.
 

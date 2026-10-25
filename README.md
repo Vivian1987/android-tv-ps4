@@ -10,15 +10,10 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 - **Support added for every GoldHEN firmware the Linux loader covers** (tested on 13.52 so far): 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52.
 - **No console model is blocked.** Slim, Pro and Baikal support is built in but untested. See [Hardware support](docs/HARDWARE.md).
-- **More reliable video.** Some video, including YouTube and the NBA app, could freeze after a few seconds while the sound kept playing. That's fixed.
-- **Controller works like a TV remote in every app.** X selects and Circle goes back everywhere. Before, a few apps ignored the controller on some screens, such as Kayo's sign-in button and going back in the NBA app.
-- **Screensaver instead of sleep.** When idle, Android shows a screensaver and keeps running. Android's sleep mode froze PS4 Linux.
-- **Named "PlayStation 4"** on your network, so Spotify Connect and casting find it by name.
-- **More stable, faster launches.** Apps get their storage folders properly (no more setup restarting itself), a background crash loop is gone, and the app no longer re-reads every installed file on each launch.
-- **One 3.12 GB PKG** from Google Drive. No joining parts.
-- **Failed starts explain themselves** and save their logs to a USB stick.
+- **Fixes you'll notice:** video no longer freezes, the controller works like a TV remote in every app, a screensaver replaces the sleep mode that froze the console, and it shows up as "PlayStation 4" for Spotify Connect.
+- **One 3.12 GB PKG** from Google Drive, and failed starts explain themselves and save their logs to a USB stick.
 
-[Full release notes](docs/RELEASE-NOTES.md)
+[Everything in 1.1](docs/RELEASE-NOTES.md)
 
 ## Quick start
 
@@ -29,7 +24,7 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 **The first launch takes 5–10 minutes** while Android installs to the internal drive and sets itself up. Leave the console alone while progress or the Android animation is showing. After that, Android boots in about **2 minutes**.
 
-To launch again later, load GoldHEN, make sure BinLoader is on, and open the app. The handover to Linux can take up to 2 minutes, so give it time. In Android, **Restart** takes you back to the PS4 system and **Shut down** turns the console off. Booting needs no PC or network.
+To launch again later, load GoldHEN, make sure BinLoader is on, and open the app. The handover to Linux usually takes 30 seconds to a minute, so give it time. In Android, **Restart** takes you back to the PS4 system and **Shut down** turns the console off. Booting needs no PC or network.
 
 **Updating from 1.0:** delete Android TV for PS4 from the PS4 home screen first, then install the 1.1 PKG and open it. Your Android apps, accounts and settings are stored separately in `/user/app/ps4-android`, so deleting the app doesn't remove them.
 
@@ -61,6 +56,18 @@ Confirmed on the test console (fat CUH-1102A, firmware 13.52):
 - Screensaver when idle, Restart to the PS4 system, and Shut down
 
 Known limitations: this isn't a Google-certified device and there's no HDCP, so some protected streams won't play (7plus is one). YouTube needs you to sign in. The first Android setup may jump back to the start two or three times; keep going and it finishes. Details are in [Compatibility](docs/COMPATIBILITY.md#known-issues).
+
+## Questions
+
+**Can this damage my PS4, games or saves?** It doesn't touch them. Nothing is repartitioned or formatted: Android lives in one folder on the internal drive, and the PS4 system is unchanged.
+
+**How do I get back to the PS4 system?** Choose **Restart** in Android. The console boots back into the PS4 system as normal; load GoldHEN again if you want to reopen Android TV.
+
+**How do I remove it?** Delete the app from the home screen, then delete `/user/app/ps4-android` over FTP ([details](docs/INSTALL.md#removing-android)).
+
+**Does it need a PC or internet to start?** No. The app hands Linux to GoldHEN on the console itself.
+
+**Which consoles work?** Only a fat CUH-1102A on 13.52 has been tested so far. Everything else is built in and waiting on reports; see [Hardware support](docs/HARDWARE.md).
 
 ## Help wanted: other consoles
 

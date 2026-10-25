@@ -4,7 +4,7 @@ Every PS4 model has the same CPU, but the chips around it changed over the years
 
 Only one console has been tested so far: a fat **CUH-1102A (Aeolia) on 13.52**. Everything else on this page is built from PS4 Linux community work and source code, and is waiting on real hardware reports. If you have one of these consoles, a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) is the most useful thing you can send, even if it fails.
 
-**Key:** ✅ tested on a console · 🟢 supported in the build, not yet tested · 🟡 in progress or uncertain · ❌ not supported yet
+**Key:** ✅ tested on a real console · 🧪 built in, needs testing (your console could be the first) · ⚠️ partial or uncertain · ❌ not supported yet
 
 ## Which model do I have?
 
@@ -25,15 +25,15 @@ The model number alone can't tell Belize 2 from Baikal. The launcher writes the 
 
 | | Fat, Aeolia | Fat CUH-12xx, Belize | Slim, Belize or Belize 2 | Slim, Baikal | Pro, Belize or Belize 2 | Pro, Baikal |
 | --- | --- | --- | --- | --- | --- | --- |
-| Starting Linux (all GoldHEN firmware) | ✅ | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
-| GPU and graphics fixes | ✅ Liverpool | 🟢 Liverpool | 🟢 Liverpool | 🟢 Liverpool | 🟢 Gladius | 🟢 Gladius |
-| HDMI picture and sound | ✅ | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
-| Internal drive | ✅ | 🟢 | 🟢 | 🟡 Baikal port | 🟢 | 🟡 Baikal port |
-| USB | ✅ | 🟢 | 🟢 | 🟡 Baikal port | 🟢 | 🟡 Baikal port |
-| Wi-Fi and Bluetooth | ✅ Marvell 88W8797 | 🟢 Marvell 88W8897 | 🟢 88W8897 or MT7668 | 🟡 Baikal port | 🟢 88W8897 or MT7668 | 🟡 Baikal port |
-| Ethernet | ✅ | 🟢 | 🟢 | 🟡 Baikal port | 🟢 | 🟡 Baikal port |
-| Video playback fix (720p/4K freeze) | ✅ | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
-| Controller as remote, screensaver | ✅ | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 |
+| Starting Linux | ✅ on 13.52, 🧪 other firmware | 🧪 | 🧪 | 🧪 | 🧪 | 🧪 |
+| GPU and graphics fixes | ✅ Liverpool | 🧪 Liverpool | 🧪 Liverpool | 🧪 Liverpool | 🧪 Gladius | 🧪 Gladius |
+| HDMI picture and sound | ✅ | 🧪 | 🧪 | 🧪 | 🧪 | 🧪 |
+| Internal drive | ✅ | 🧪 | 🧪 | ⚠️ Baikal port | 🧪 | ⚠️ Baikal port |
+| USB | ✅ | 🧪 | 🧪 | ⚠️ Baikal port | 🧪 | ⚠️ Baikal port |
+| Wi-Fi and Bluetooth | ✅ Marvell 88W8797 | 🧪 Marvell 88W8897 | 🧪 88W8897 or MT7668 | ⚠️ Baikal port | 🧪 88W8897 or MT7668 | ⚠️ Baikal port |
+| Ethernet | ✅ | 🧪 | 🧪 | ⚠️ Baikal port | 🧪 | ⚠️ Baikal port |
+| Video playback fix (720p/4K freeze) | ✅ | 🧪 | 🧪 | 🧪 | 🧪 | 🧪 |
+| Controller as remote, screensaver | ✅ | 🧪 | 🧪 | 🧪 | 🧪 | 🧪 |
 
 ## What is inside, and what we do with it
 
@@ -64,13 +64,13 @@ Aeolia and Belize consoles use a Marvell Yukon-compatible controller (`sky2` dri
 
 ### Internal drive
 
-Android lives in files on the PS4's internal drive, in its user partition (number 27 on every model). Since 1.1 the drive is found by looking for the non-USB disk that has that partition, so a USB stick left plugged in no longer stops startup.
+Android lives in files on the PS4's internal drive, in its user partition (number 27 on every model). Since 1.1 the drive is found as the disk that has that partition. The internal drive is connected through a USB bridge inside the console, so it can't be picked out by bus type, and a USB stick left plugged in doesn't confuse it.
 
 ## The Baikal port
 
 Baikal is the newest southbridge, in later Slims and Pros. It handles the drive, USB, Wi-Fi bus and Ethernet differently enough that it needs its own kernel changes: southbridge interrupt handling, the drive controller's registers and link start-up, the IOMMU, Bluetooth fixes and a new Ethernet driver.
 
-That work exists in the PS4 Linux community. It is being brought into a **separate Baikal kernel**, which the launcher picks only on Baikal consoles, so fat, Belize and Pro-Belize consoles keep the tested kernel unchanged. Until a Baikal owner reports back, treat Baikal as experimental. If it can't find the internal drive it stops before writing anything, and holding the power button returns the console to normal.
+That work exists in the PS4 Linux community, and 1.1 ships it as a **separate Baikal kernel** (`bzImage-baikal`), which the payload picks only on Baikal consoles. Fat, Belize and Pro-Belize consoles keep the tested kernel. `hardware.txt` says which kernel booted. Until a Baikal owner reports back, treat Baikal as experimental. If it can't find the internal drive it stops before writing anything, and holding the power button returns the console to normal.
 
 ## Firmware versions
 
@@ -80,7 +80,7 @@ Every firmware the Linux loader has kernel offsets for: 5.05, 6.72, 7.00–7.55,
 
 1. Install and open Android TV for PS4, even if you expect it to fail.
 2. Note how far it got and any message on screen.
-3. If you can, copy `launcher-boot.log` and `boot-progress.log` from `/user/app/ps4-android` over GoldHEN FTP. The `Southbridge:`, `GPU:` and `Hardware:` lines describe your console exactly.
+3. Get the logs. If Linux started but Android didn't, plug a FAT32 or exFAT USB stick into the PS4 and they're saved to it. Otherwise copy them from `/user/app/ps4-android` over GoldHEN FTP. `hardware.txt` describes your console exactly: southbridge, kernel, Wi-Fi chip and drivers.
 4. Open a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), or post in [Discussions](https://github.com/odiecay/android-tv-ps4/discussions).
 
 ## Credits for hardware support

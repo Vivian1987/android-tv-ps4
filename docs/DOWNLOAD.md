@@ -38,4 +38,4 @@ Copy the PKG to the top level of an exFAT USB drive and follow the [installation
 
 ## Version 1.0
 
-1.0 was published as two `.pkg.part` files on the [1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) with joining tools ([Windows](../tools/Join-PKG-Windows.cmd), [Linux/macOS](../tools/join-pkg.sh)). The joined 1.0 PKG is 3,108,306,944 bytes with SHA256 `5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25`. 1.1 replaces it.
+1.0 was published as two `.pkg.part` files on the [1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) with joining tools, which are attached to that release page. The joined 1.0 PKG is 3,108,306,944 bytes with SHA256 `5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25`. 1.1 replaces it.

@@ -8,7 +8,51 @@ stage() {
  # A new Android framebuffer ends all console writes from this script.
  if [ ! -f /run/androidtv-ps4/display-ready ]; then printf '%s\n' "$message"; fi
 }
-trap 'status=$?; if [ "$status" -ne 0 ]; then stage "SETUP FAILED (status $status); logs retained, data preserved"; fi' EXIT
+# A start that fails before Android launches explains itself, copies its
+# reports to a USB stick if one is plugged in (the internal drive may be what
+# failed), unmounts cleanly and returns to the PS4 system after a minute, so
+# nobody has to hold the power button. A running Android is never interrupted.
+installation=
+export_reports() {
+ for block in /sys/class/block/sd*; do
+  name=${block##*/}
+  case "$(readlink -f "$block")" in */usb*) ;; *) continue ;; esac
+  mkdir -p /mnt/usb-report
+  mount -t vfat "/dev/$name" /mnt/usb-report 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-report 2>/dev/null || continue
+  folder=/mnt/usb-report/AndroidTV-PS4-report-$(cut -d. -f1 /proc/uptime)
+  if mkdir -p "$folder"; then
+   cp /run/androidtv-ps4/*.txt /run/androidtv-ps4/*.log "$folder/" 2>/dev/null || true
+   dmesg > "$folder/kernel.log" 2>/dev/null || true
+   sync
+   umount /mnt/usb-report
+   stage "Reports saved to the USB stick in ${folder##*/}"
+   return 0
+  fi
+  umount /mnt/usb-report 2>/dev/null || true
+ done
+ stage 'No USB stick found for reports; plug in a FAT or exFAT stick to keep them'
+}
+return_to_ps4() {
+ [ ! -f /run/androidtv-ps4/android-launched ] || return 0
+ export_reports
+ stage 'Android TV could not start. Returning to the PS4 system in 60 seconds.'
+ sync
+ for mount in /mnt/android-bundled-apps /mnt/android-persistent /android /mnt/android-lower /mnt/android-sfs /mnt/android-share /mnt/ps4-user; do
+  umount "$mount" 2>/dev/null || true
+ done
+ cryptsetup close ps4-android-user 2>/dev/null || true
+ sleep 60
+ reboot -f
+}
+on_exit() {
+ status=$?
+ if [ -n "$installation" ] && [ -d "$installation" ]; then save_logs "$status"; fi
+ if [ "$status" -ne 0 ]; then
+  stage "SETUP FAILED (status $status); data preserved"
+  return_to_ps4
+ fi
+}
+trap on_exit EXIT
 touch /run/androidtv-ps4/bootstrap-active
 # The internal drive is the non-USB disk with Sony's partition 27. A USB
 # stick left in from installing the PKG can take the sda name first.
@@ -59,8 +103,6 @@ for report in boot.log kernel.log android-boot.log android-stages.log; do
 done
 # Persist startup output locally for diagnosis without remote access.
 save_logs() {
- status=$?
- [ "$status" = 0 ] || stage "SETUP FAILED (status $status); data preserved"
  cp /run/androidtv-ps4/one-shot.log "$installation/boot.log" 2>/dev/null || true
  dmesg > "$installation/kernel.log" 2>/dev/null || true
  cp /run/androidtv-ps4/progress.log "$installation/boot-progress.log" 2>/dev/null || true
@@ -69,7 +111,6 @@ save_logs() {
  sync
  rm -f /run/androidtv-ps4/bootstrap-active
 }
-trap save_logs EXIT
 [ -f "$installation/ready" ] || { stage 'Package setup incomplete'; exit 1; }
 grep -q '^PS4ANDROID13-SPARSE-V015$' "$installation/ready"
 capacity=$(cat "$installation/data-gib.txt")
@@ -230,6 +271,8 @@ touch /run/androidtv-ps4/allow-console-power
 # No host address, remote server, credentials, or external boot dependency.
 touch /run/androidtv-ps4/host-netns
 mount --bind /proc/self/ns/net /run/androidtv-ps4/host-netns
+# From here a failure must not reboot underneath a running Android.
+touch /run/androidtv-ps4/android-launched
 /usr/sbin/android-supervisor -- /bin/sh /run/androidtv-ps4/android-child.sh </dev/null >/run/androidtv-ps4/android.log 2>&1 &
 echo $! > /run/androidtv-ps4/android-supervisor.pid
 for attempt in $(seq 1 50); do

@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
-index 2973ca867..28835d237 100644
+index 2973ca8..567fe3e 100644
 --- a/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
 +++ b/drivers/gpu/drm/amd/amdgpu/dce_v8_0.c
 @@ -26,6 +26,7 @@
@@ -10,14 +10,15 @@ index 2973ca867..28835d237 100644
  
  #include "amdgpu.h"
  #include "amdgpu_pm.h"
-@@ -2653,16 +2654,61 @@ static const struct drm_plane_helper_funcs dce_v8_0_drm_primary_plane_helper_fun
+@@ -2653,16 +2654,62 @@ static const struct drm_plane_helper_funcs dce_v8_0_drm_primary_plane_helper_fun
  	.panic_flush = dce_v8_0_panic_flush,
  };
  
 +/* Liverpool supports both channel orders in dce_v8_0_crtc_do_set_base().
 + * drm_crtc_init() advertises only XRGB/ARGB, which makes the modern framebuffer
 + * verifier reject Android's XBGR buffers before reaching that hardware code.
-+ * Give this PS4 its own accurate primary-plane formats; retain validation.
++ * Give the PS4 GPUs (Liverpool and the Pro's Gladius, which share this DCE 8
++ * code path) their own accurate primary-plane formats; retain validation.
 + */
 +static const uint32_t liverpool_primary_formats[] = {
 +	DRM_FORMAT_XRGB8888, DRM_FORMAT_ARGB8888,
@@ -60,7 +61,7 @@ index 2973ca867..28835d237 100644
  		return -ENOMEM;
  
 -	drm_crtc_init(adev_to_drm(adev), &amdgpu_crtc->base, &dce_v8_0_crtc_funcs);
-+	if (adev->asic_type == CHIP_LIVERPOOL)
++	if (adev->asic_type == CHIP_LIVERPOOL || adev->asic_type == CHIP_GLADIUS)
 +		ret = liverpool_crtc_init(adev_to_drm(adev), &amdgpu_crtc->base,
 +					 &dce_v8_0_crtc_funcs);
 +	else

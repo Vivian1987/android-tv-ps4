@@ -57,8 +57,6 @@ On the controller, the PS button goes to Android Home. To use the DualShock 4 on
 
 ## Signing in
 
-**Device name:** after setup, check **Settings → Device name** and set it to **PlayStation 4** if it shows a different name. Apps like Spotify Connect show this name on your phone.
-
 **YouTube:** sign in with the QR code or phone flow. Signed-in playback works; guest mode can fail with a secure-decoder error. To control YouTube from your phone, use YouTube's link-with-TV-code option.
 
 **Spotify:** sign in with the QR code, PIN or phone. To play from your phone, pick **PlayStation 4** in Spotify Connect while both are on the same network.

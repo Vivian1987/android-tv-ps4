@@ -61,7 +61,6 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 | --- | --- |
 | Protected video / HDCP | There is no HDCP on this path. 7plus plays audio with no video and reports an HDCP error. Other services with strict DRM may behave the same way. |
 | YouTube guest mode | Guest playback can request a secure decoder that isn't available. Sign in to watch. |
-| Device name | Setup may leave the base device name in place. Set **Device name** to **PlayStation 4** in Settings. Spotify Connect and similar apps show this name. |
 | Setup navigation | Some setup screens have been reported to jump back or repeat. |
 | BinLoader connection (error 61) | The launcher couldn't reach BinLoader. Close the app, toggle BinLoader off and on, and reopen it ([steps](INSTALL.md#troubleshooting)). |
 | Startup memory (error 12) | Linux couldn't get a large enough block of contiguous memory. This happens after the PS4 has been busy, for example straight after copying and installing the 3 GB PKG. Restart the PS4, load GoldHEN and open the app first. Your installation is kept. |

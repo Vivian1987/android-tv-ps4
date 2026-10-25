@@ -219,14 +219,7 @@ int sys_kexec(void *td, struct sys_kexec_args *uap)
 
 
     // Copy in kernel image
-    // The image is a staging copy moved by jmp_to_linux, so prefer RAM above
-    // the VRAM carve-out (4 GiB + vram_mb, up to the 0x27f000000 RAM top) and
-    // keep the crowded low window for the initramfs. Fall back to the low
-    // window if high memory has no contiguous run.
-    image = kernel_alloc_contig_in(uap->image_size,
-            0x100000000ULL + ((u64)vram_mb << 20), 0x27f000000ULL);
-    if (!image)
-        image = kernel_alloc_contig(uap->image_size);
+    image = kernel_alloc_contig(uap->image_size);
     if (!image) {
         kern.printf("Failed to allocate image\n");
         err = ENOMEM;

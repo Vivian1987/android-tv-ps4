@@ -116,7 +116,6 @@ void *kernel_resolve(const char *name);
 
 void *kernel_alloc_contig(size_t size);
 int kernel_set_allocation_range(vm_paddr_t low, vm_paddr_t high);
-void *kernel_alloc_contig_in(size_t size, vm_paddr_t low, vm_paddr_t high);
 void kernel_free_contig(void *addr, size_t size);
 
 void kernel_remap(void *start, void *end, int perm);

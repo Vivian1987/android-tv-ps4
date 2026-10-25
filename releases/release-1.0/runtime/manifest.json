@@ -1,10 +1,10 @@
 {
-  "initramfs_sha256": "c522d8464043a84f5118acc0f466054166b57c5cb473d17abb9e957b0fa898d8",
+  "initramfs_sha256": "eadb427d3c1bf8ad342c45afbebc6a8b766999e9f7f9afab323394f35a485a70",
   "text_files": {
     "init": "e155d51b1ae46d946ef6912e6a1e3b56484c3ee041b749c080e4ba900f661c7d",
-    "usr/sbin/androidtv-ps4-start": "a760b4d7b90685c71f500f7a80e2e80e12a7e462b7a2dbafc917862798503641",
+    "usr/sbin/androidtv-ps4-start": "138ed3b0e2fb299c54b3cfc3cd6f15a608563be94b78e5703bb27def15b74257",
     "opt/androidtv-ps4/android-child.sh": "4a1551aff5ead43e307faf96a8e943eef9234fe5c24f3355d58da253801156b3",
-    "opt/androidtv-ps4/autoboot.sh": "a760b4d7b90685c71f500f7a80e2e80e12a7e462b7a2dbafc917862798503641",
+    "opt/androidtv-ps4/autoboot.sh": "138ed3b0e2fb299c54b3cfc3cd6f15a608563be94b78e5703bb27def15b74257",
     "opt/androidtv-ps4/androidtv-ps4.rc": "bd50600a0616cedcb48a2a6189a45fe25a7d14c6ebf52ced33c7524d2e44dd15",
     "opt/androidtv-ps4/bpfloader.rc": "aef3af91463902a43d4c00c6e8ed641f35e66db69ba04f3ee533c6a4246d0670",
     "opt/androidtv-ps4/init.rc": "a6ab53bde38ceb183068e48ccade1c8aafe68c4b14e904c875c2857d608cc672",

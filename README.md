@@ -84,7 +84,7 @@ These are the known weak spots in 1.1. Reports on any of them help the next rele
 
 ## Help wanted: other consoles
 
-Every console can now try, but only a fat 13.52 console has been tested. If you have a different model or firmware, please give it a go and [send a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Anyone with PS4 Linux experience on Slim, Pro or Baikal hardware is especially welcome; [Hardware support](docs/HARDWARE.md) lists what's built and what still needs testing.
+Every console can now try, but only a fat 13.52 console has been tested. If you have a different model or firmware, please give it a go and [send a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Anyone with PS4 Linux experience on Slim, Pro or Baikal hardware is especially welcome; [Hardware support](docs/HARDWARE.md) lists what's built and what still needs testing. To coordinate with other testers, or start a Discord or Telegram group, head to [this discussion](https://github.com/odiecay/android-tv-ps4/discussions/7).
 
 ## How it works
 

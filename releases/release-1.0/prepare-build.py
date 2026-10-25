@@ -28,7 +28,7 @@ def main():
     for name in ['sce_sys/about/right.sprx','sce_module/libc.prx','sce_module/libSceFios2.prx']:
         shutil.copyfile(sdk/'samples/hello_world'/name,template/name)
     # Minimal product SFO; the package builder fills the same title/version values.
-    values={'APP_TYPE':1,'APP_VER':'1.00','ATTRIBUTE':0,'CATEGORY':'gd','CONTENT_ID':'IV0000-ATVX13001_00-PS4ANDROIDTV0000','DOWNLOAD_DATA_SIZE':0,'SYSTEM_VER':0,'TITLE':'Android TV for PS4','TITLE_ID':'ATVX13001','VERSION':'1.00'}
+    values={'APP_TYPE':1,'APP_VER':'1.10','ATTRIBUTE':0,'CATEGORY':'gd','CONTENT_ID':'IV0000-ATVX13001_00-PS4ANDROIDTV0000','DOWNLOAD_DATA_SIZE':0,'SYSTEM_VER':0,'TITLE':'Android TV for PS4','TITLE_ID':'ATVX13001','VERSION':'1.10'}
     sizes={'APP_VER':8,'CATEGORY':4,'CONTENT_ID':48,'TITLE':128,'TITLE_ID':12,'VERSION':8}
     keys=bytearray();data=bytearray();rows=[]
     for key,value in sorted(values.items()):

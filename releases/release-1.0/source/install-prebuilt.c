@@ -149,6 +149,22 @@ static int installation_ready(void){
  int length=snprintf(expected,sizeof(expected),"PS4ANDROID13-SPARSE-V015\nedition=%d\n",EDITION_GIB);
  return n==length && memcmp(actual,expected,(size_t)length)==0;
 }
+/* Linux saves its progress log to this folder when startup ends. If the last
+ * start failed, show the step it stopped at, so testers can report it without
+ * FTP. A successful start overwrites the log, so this only shows after a failure. */
+static void show_previous_failure(void){
+ char text[4096];int fd=open(ROOT "/boot-progress.log",O_RDONLY|O_NOFOLLOW);if(fd<0)return;
+ off_t size=lseek(fd,0,SEEK_END),start=size>(off_t)sizeof(text)-1?size-(off_t)sizeof(text)+1:0;
+ ssize_t n=size>0?pread(fd,text,sizeof(text)-1,start):-1;close(fd);if(n<=0)return;text[n]=0;
+ char *failed=NULL;for(char *p=text;(p=strstr(p,"SETUP FAILED"));p++)failed=p;
+ if(!failed)return;
+ while(failed>text&&failed[-1]!='\n')failed--;
+ if(failed==text)return;
+ char *line=failed-1;*line=0;while(line>text&&line[-1]!='\n')line--;
+ char *step=strstr(line,"] ");step=step?step+2:line;
+ char message[256];snprintf(message,sizeof(message),"Last start stopped at: %s",step);
+ notice(message);sceKernelUsleep(6000000);
+}
 #include "launch-progress.h"
 static int boot_requested;
 static void request_boot(void){boot_requested=1;notice("Starting Android TV");}
@@ -226,6 +242,7 @@ static void install_or_boot(void *unused){
   if(install_bundled_apps()){failure("Cannot install bundled apps; Android data preserved");return;}
   if(install_graphics()){failure("Cannot update graphics files; Android data preserved");return;}
   if(install_boot()){boot_failure("Boot files need recovery; Android data preserved");return;}
+  show_previous_failure();
   notice("Booting Android TV from the internal HDD");
   request_boot();
   return;

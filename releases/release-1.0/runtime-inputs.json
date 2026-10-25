@@ -1,22 +1,12 @@
 {
   "base_release": "retained-start",
   "base_initramfs_sha256": "b191d815dbbb322b4cedba7ffee89f10a25a8d3e66d2601fb4151bd9d3d52ecb",
-  "initramfs_sha256": "7f784dd96d9fca9afad1346882addffccd8cfe9f32613c0ac359acac09871670",
-  "initramfs_bytes": 9522856,
-  "expanded_sha256": "2c06f8f5db130be5be3de2d4b2df230d884a7982abd3e46554af00cbaf8a866e",
-  "expanded_bytes": 27111248,
+  "initramfs_sha256": "377a29fc6f2516c7eb2225c0430a365af69d8404e00c232a456575bfa99ed065",
+  "initramfs_bytes": 9523524,
+  "expanded_sha256": "a7d0b0d55a3cbc23c9eb571e66447d336ece44348c26726921feb40f32a7cb0c",
+  "expanded_bytes": 27112008,
   "changed_entries": [
-    "opt/androidtv-ps4/android-child.sh",
-    "opt/androidtv-ps4/androidtv-logging.rc",
     "opt/androidtv-ps4/autoboot.sh",
-    "opt/androidtv-ps4/bundled-apps.txt",
-    "opt/androidtv-ps4/device-name.rc",
-    "opt/androidtv-ps4/device-name.sh",
-    "opt/androidtv-ps4/mediaextractor.policy",
-    "opt/androidtv-ps4/product-build.prop",
-    "opt/androidtv-ps4/system-build.prop",
-    "opt/androidtv-ps4/vendor-build.prop",
-    "usr/sbin/android-supervisor",
     "usr/sbin/androidtv-ps4-start"
   ],
   "kernel_composer_gralloc_bluetooth_unchanged": true,
@@ -26,5 +16,8 @@
   "bundled_app_count": 11,
   "app_storage": "Bundled read-only app filesystem, signed APKs and prepared native libraries",
   "userdata_included": false,
-  "console_boot_tested": false
+  "console_boot_tested": false,
+  "parent_initramfs_sha256": "7f784dd96d9fca9afad1346882addffccd8cfe9f32613c0ac359acac09871670",
+  "power_supervisor_sha256": "096db3b060a9d6ba09cd88708d4d79ffac1ac8bec1267aae07d69d2fd70c385b",
+  "power_supervisor_source_sha256": "7335c9c52192543c5c16a1189e026c46c0e67b060d8e60bad3ced402e4127c5a"
 }

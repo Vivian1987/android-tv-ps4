@@ -19,7 +19,9 @@ done
 [ -b /dev/sda27 ] || { stage 'Internal disk did not appear within 60 seconds'; exit 1; }
 stage 'Opening internal PS4 storage (disk encryption and filesystem)'
 [ -r /key/eap_hdd_key.bin ]
-dmesg | grep -qi aeolia
+# Record the southbridge for reports; Belize and Baikal consoles are allowed to try.
+southbridge=$(dmesg | grep -ioE 'aeolia|belize|baikal' | head -1 || true)
+stage "Southbridge: ${southbridge:-unknown}"
 mkdir -p /mnt/ps4-user /mnt/android-share /mnt/android-sfs /mnt/android-lower /mnt/android-persistent /android
 if ! grep -q ' /mnt/ps4-user ' /proc/mounts; then
 cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 --key-file /key/eap_hdd_key.bin /dev/sda27 ps4-android-user
@@ -197,12 +199,17 @@ if [ -z "$child" ]; then
     exit 1
 fi
 # Android owns its DHCP configuration; the host has no management address.
-/usr/sbin/ip link set eth0 up
-hwmac=$(cat /sys/class/net/eth0/address)
-/usr/sbin/ip link add link eth0 name atv0 address "02${hwmac#??}" type macvlan mode bridge
-/usr/sbin/ip link set atv0 netns "$child"
-nsenter -t "$child" -n /usr/sbin/ip link set atv0 name eth0
-nsenter -t "$child" -n /usr/sbin/ip link set eth0 up
+# A console without a recognised Ethernet port still boots, just without it.
+if [ -e /sys/class/net/eth0/address ]; then
+ /usr/sbin/ip link set eth0 up
+ hwmac=$(cat /sys/class/net/eth0/address)
+ /usr/sbin/ip link add link eth0 name atv0 address "02${hwmac#??}" type macvlan mode bridge
+ /usr/sbin/ip link set atv0 netns "$child"
+ nsenter -t "$child" -n /usr/sbin/ip link set atv0 name eth0
+ nsenter -t "$child" -n /usr/sbin/ip link set eth0 up
+else
+ stage 'No Ethernet interface found; continuing without Ethernet'
+fi
 # Move the real Marvell radio into Android.
 if /usr/sbin/iw phy phy0 info >/dev/null 2>&1; then
     radio=$(/usr/sbin/iw dev | awk '$1 == "Interface" {print $2; exit}')

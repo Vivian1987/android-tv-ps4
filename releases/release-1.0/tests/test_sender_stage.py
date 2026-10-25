@@ -23,7 +23,7 @@ int ps4_as_root(void(*fn)(void*),void*a){
 }
 int sceKernelDebugOutText(int x,const char*s){(void)x;(void)s;return 0;}
 unsigned long long sceKernelGetProcessTime(void){return now+=100000;}
-void installer_ui_boot_status(const char*m,const char*d){assert(m&&d);draws++;if(strstr(d,"Untested on this console (Belize southbridge)"))untested_draws++;snprintf(last_message,sizeof(last_message),"%s",m);snprintf(last_detail,sizeof(last_detail),"%s",d);}
+void installer_ui_boot_status(const char*m,const char*d){assert(m&&d);draws++;if(strstr(m,"ntested")||strstr(d,"ntested"))untested_draws++;snprintf(last_message,sizeof(last_message),"%s",m);snprintf(last_detail,sizeof(last_detail),"%s",d);}
 int installer_ui_init(void){return 0;}
 static struct atv_launch_control disk_control(void){
  struct atv_launch_control c;int f=open(ATV_CONTROL_PATH,O_RDONLY);assert(f>=0);
@@ -36,7 +36,7 @@ int installer_ui_close(void){
 }
 static void publish(int stage,int rc,int stale,int truncated){
  struct atv_launch_status s={.magic=ATV_LAUNCH_MAGIC,.stage=stage,.rc=rc,.nonce=control.nonce+(stale?1:0),
-  .firmware=scenario==8?1101:1352,.firmware_base=scenario==8?1100:1352,.southbridge=scenario==9?2:1};
+  .firmware=scenario==8?1101:1352,.firmware_base=scenario==8?1100:1352,.southbridge=scenario==9?0x20200:0x10300};
  int f=open(ATV_RESULT_PATH,O_WRONLY|O_TRUNC);assert(f>=0);
  int len=truncated?12:sizeof(s);assert(write(f,&s,len)==len);close(f);
 }
@@ -66,11 +66,11 @@ int main(void){
    if(scenario!=2){struct atv_launch_control c=disk_control();assert(!c.released&&c.cancelled);}
   }else{
    assert(scenario==0||scenario==4||scenario==5||scenario==9);assert(closed&&draws>2);close_channels();
-   assert(scenario==9?untested_draws>0:untested_draws==0);
+   assert(untested_draws==0);
   }
   assert(delivery==(scenario==2?0:1));
  }
- puts("PASS: visible app; credentials restored; release only after ready and display close; stale/partial reports ignored; refusal/root/payload/close/timeout failures never release; unsupported firmware is named; untested southbridge continues with a report request");
+ puts("PASS: visible app; credentials restored; release only after ready and display close; stale/partial reports ignored; refusal/root/payload/close/timeout failures never release; unsupported firmware is named; other southbridges boot without an on-screen warning");
 }
 ''')
  subprocess.run(['cc','-O2','-DROOT="'+str(d/'install')+'"','-DATV_CONTROL_PATH="'+str(d/'control')+'"','-DATV_RESULT_PATH="'+str(d/'result')+'"','-I'+str(d/'stubs'),'-I'+str(root/'source'),'-I'+str(d),str(d/'test.c'),'-o',str(d/'test')],check=True)

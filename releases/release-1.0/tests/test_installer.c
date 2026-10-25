@@ -5,7 +5,8 @@
 int ps4_launch_local_payload(int log){(void)log;return 0;}
 int ps4_as_root(void(*f)(void*),void*a){f(a);return 0;}
 int installer_ui_init(void){return 0;}
-void installer_ui_status(const char*s){(void)s;}
+static char last_status[320];
+void installer_ui_status(const char*s){snprintf(last_status,sizeof(last_status),"%s",s);}
 void installer_ui_progress(uint64_t a,uint64_t b){assert(a<=b);}
 int installer_ui_close(void){return 0;}
 int atv_launch_with_progress(void){return -1;}
@@ -34,5 +35,11 @@ int main(void){
  }
  completed_bytes=0;assert(!install_bundled_apps());
  put(ROOT "/app-youtube-base.apk","foreign-app!!");completed_bytes=0;assert(install_bundled_apps()!=0);expect(ROOT "/app-youtube-base.apk","foreign-app!!");
- for(int i=0;i<ASSET_COUNT;i++)close(files[i]);puts("PASS: edition guard, v014 state recognition, fresh/repeat boot setup, interrupted boot commit, backup preservation, foreign boot conflict, system-copy resume, mismatch preservation");return 0;
+ last_status[0]=0;show_previous_failure();assert(!last_status[0]);
+ put(ROOT "/boot-progress.log","[Android setup 3.1s] Waiting for internal PS4 disk\n[Android setup 9.0s] Android init launched; diagnostics continue in android-stages.log\n");
+ show_previous_failure();assert(!last_status[0]);
+ put(ROOT "/boot-progress.log","[Android setup 3.1s] Waiting for internal PS4 disk\n[Android setup 63.2s] Internal disk did not appear within 60 seconds\n[Android setup 63.3s] SETUP FAILED (status 1); data preserved\n");
+ show_previous_failure();assert(!strcmp(last_status,"Last start stopped at: Internal disk did not appear within 60 seconds"));
+ put(ROOT "/boot-progress.log","[Android setup 0.5s] SETUP FAILED (status 1); data preserved\n");last_status[0]=0;show_previous_failure();assert(!last_status[0]);
+ for(int i=0;i<ASSET_COUNT;i++)close(files[i]);puts("PASS: previous failed start is named, successful or empty logs stay quiet, edition guard, v014 state recognition, fresh/repeat boot setup, interrupted boot commit, backup preservation, foreign boot conflict, system-copy resume, mismatch preservation");return 0;
 }

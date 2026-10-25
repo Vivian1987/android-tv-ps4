@@ -8,13 +8,11 @@
 #define ATV_CONTROL_PATH "/data/atv-launch-control.bin"
 /* Runner result codes the launcher explains to the user. */
 #define ATV_RC_UNSUPPORTED_FIRMWARE (-120)
-#define ATV_SB_AEOLIA 1
 #endif
 #ifndef ATV_RESULT_PATH
 #define ATV_RESULT_PATH "/data/atv-payload-result.bin"
 /* Runner result codes the launcher explains to the user. */
 #define ATV_RC_UNSUPPORTED_FIRMWARE (-120)
-#define ATV_SB_AEOLIA 1
 #endif
 #ifndef ATV_BOOT_DIR
 #define ATV_BOOT_DIR "/user/app/ps4-android/boot"
@@ -43,5 +41,4 @@ static inline int atv_status_valid(const struct atv_launch_status *s,unsigned lo
 }
 /* Runner result codes the launcher explains to the user. */
 #define ATV_RC_UNSUPPORTED_FIRMWARE (-120)
-#define ATV_SB_AEOLIA 1
 #endif

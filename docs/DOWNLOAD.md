@@ -5,7 +5,7 @@ The 1.1 PKG is a single 3.12 GB file on Google Drive. GitHub doesn't accept file
 It must be **3,122,855,936 bytes** with this SHA256:
 
 ```text
-c0f27a665fe1046a64baaf1cef568ae454c23194837bb5dcaac04202362b123d
+66605cf2ce3e8cfb2fa62e90af6b9ca8d5b2c1270900de74a624c53f0e39b69d
 ```
 
 Google Drive shows a "can't scan this file for viruses" page for large files. That's normal; choose **Download anyway**. If Drive says the download quota has been exceeded, too many people downloaded it today. Try again later.

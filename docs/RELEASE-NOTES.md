@@ -6,7 +6,7 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 [Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-`Android-TV-for-PS4-1.1.pkg`, 3,122,855,936 bytes, SHA256 `c0f27a665fe1046a64baaf1cef568ae454c23194837bb5dcaac04202362b123d`
+`Android-TV-for-PS4-1.1.pkg`, 3,122,855,936 bytes, SHA256 `66605cf2ce3e8cfb2fa62e90af6b9ca8d5b2c1270900de74a624c53f0e39b69d`
 
 ### What's new
 
@@ -26,7 +26,7 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 ### Tested
 
-On a CUH-1102A on 13.52: video, controller, screensaver and the bundled apps. Everything else is waiting on [test reports](COMPATIBILITY.md#reporting-a-result).
+Fresh install over FTP and first boot to Android TV with this exact package on a CUH-1102A on 13.52, plus video, controller, screensaver, Spotify Connect and the bundled apps. Everything else is waiting on [test reports](COMPATIBILITY.md#reporting-a-result).
 
 ### Updating
 

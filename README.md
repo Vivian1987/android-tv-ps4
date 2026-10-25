@@ -56,10 +56,10 @@ Confirmed on the test console (fat CUH-1102A, firmware 13.52):
 - HDMI picture and sound, and video playback in YouTube, Kodi, Kayo and the NBA app
 - Wi-Fi, Ethernet and Bluetooth
 - DualShock 4 and Google TV Streamer remote. The PS button goes Home, X selects and Circle goes back.
-- Google sign-in, YouTube (signed in) and Spotify, with the device named "PlayStation 4"
+- Google sign-in, YouTube (signed in), and Spotify including Spotify Connect, where the console shows up as "PlayStation 4"
 - Screensaver when idle, Restart to the PS4 system, and Shut down
 
-Known limitations: this isn't a Google-certified device and there's no HDCP, so some protected streams won't play (7plus is one). YouTube needs you to sign in. Details are in [Compatibility](docs/COMPATIBILITY.md#known-issues).
+Known limitations: this isn't a Google-certified device and there's no HDCP, so some protected streams won't play (7plus is one). YouTube needs you to sign in. The first Android setup may jump back to the start two or three times; keep going and it finishes. Details are in [Compatibility](docs/COMPATIBILITY.md#known-issues).
 
 ## Help wanted: other consoles
 

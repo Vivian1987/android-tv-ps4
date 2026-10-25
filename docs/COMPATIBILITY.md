@@ -60,6 +60,7 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 | Issue | Details |
 | --- | --- |
 | Protected video / HDCP | There is no HDCP on this path. 7plus plays audio with no video and reports an HDCP error. Other services with strict DRM may behave the same way. |
+| First setup restarts | Google's setup app can crash and start again two or three times during the first setup. Keep going; it completes and doesn't happen again afterwards. |
 | YouTube guest mode | Guest playback can request a secure decoder that isn't available. Sign in to watch. |
 | Setup navigation | Some setup screens have been reported to jump back or repeat. |
 | BinLoader connection (error 61) | The launcher couldn't reach BinLoader. Close the app, toggle BinLoader off and on, and reopen it ([steps](INSTALL.md#troubleshooting)). |

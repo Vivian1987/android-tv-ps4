@@ -37,6 +37,10 @@
       "sha256": "05a619651517ee481ccfa3ed2cd11bd33f497967802233e6f81085036e0ec9d5",
       "source": "github.com/noob404yt/mt7668-wifi-bt-firmware 6603884561c1b6b9fdc181504ed4a1188227ca6f"
     },
+    "lib/modules/6.15.4-androidtv-ps4-aeolia/extra/psx_mts_net.ko": {
+      "sha256": "7f66b19e9cb89acd13f4a17b1efab148ead05446273b1e54fa8f45ac750ee3d3",
+      "source": "kernel/baikal/psx_mts_net.c (linux-psx Baikal Ethernet), built against the Baikal kernel"
+    },
     "lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko": {
       "sha256": "1eb6fd92288c945ba3f052ade9a5ed53ecf757564e00817008f53db6163dbae2",
       "source": "MT7668 Wi-Fi driver from the ps4-linux tree (drivers/net/wireless/mediatek/mt76x8), built as a module for 6.15.4-androidtv-ps4-aeolia with kernel/mt7668-proc-copy-bound.patch, debug symbols stripped"

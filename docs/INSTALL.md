@@ -54,7 +54,7 @@ The first launch after installing or updating takes longer, because the launcher
 
 In Android, **Restart** returns the console to the PS4 system, where GoldHEN needs to be loaded again. **Shut down** powers the console off. Android unmounts its storage cleanly before either one.
 
-Reinstalling the same PKG keeps your existing Android data. It doesn't reset anything.
+Reinstalling the same PKG keeps your existing Android data. It doesn't reset anything. If the Package Installer says the package is already installed, delete Android TV for PS4 from the home screen first, then install again; your Android data stays.
 
 ## Updating from 1.0
 
@@ -102,6 +102,8 @@ Why it happens: to start Linux, the loader needs two unbroken blocks of memory, 
 To avoid it, restart the PS4 after installing or updating the PKG, then load GoldHEN and open the app. If it happens on a launch where you didn't install or update anything, report it with `launcher-boot.log`.
 
 **"Could not add project quota support; continuing without it."** The one-time storage upgrade didn't finish, so Android starts as it did in 1.0. Some apps may not get their storage folders and Google setup may restart itself. Please report it with `quota-upgrade.log` from `/user/app/ps4-android`.
+
+**Stuck on the Android animation?** On the very first boot it can sit there for 3–4 minutes while Android prepares its apps, and setup may take another moment to appear. Once the animation is showing, Linux and Android have started; give it time before assuming something's wrong.
 
 **"Firmware X isn't supported yet."** The Linux loader has no kernel offsets for your firmware, so nothing was loaded and nothing was changed. The supported list is in [Compatibility](COMPATIBILITY.md#firmware).
 

@@ -2,15 +2,15 @@
 
 ## What you need
 
-- A **CUH-1102A (Aeolia) PS4 on firmware 13.52** running GoldHEN. Other models and firmware aren't supported yet, and the boot payload checks the firmware version.
-- The joined `Android-TV-for-PS4.pkg` ([download and join guide](DOWNLOAD.md)).
+- A PS4 running GoldHEN on one of the [firmware versions the loader supports](COMPATIBILITY.md#firmware). It has been tested on a fat CUH-1102A on 13.52; other models and firmware are untested, so please [report how it goes](COMPATIBILITY.md#reporting-a-result).
+- `Android-TV-for-PS4-1.1.pkg` ([download](DOWNLOAD.md)).
 - An exFAT-formatted USB drive.
 - Free space on the PS4's internal drive. Android starts small and grows as you use it. If you fill all 32 GiB and keep the PKG on the console, allow about **43 GiB** ([how that's calculated](STORAGE.md)).
 - A controller. USB is easiest for setup; Bluetooth devices can be paired once Android is running.
 
 ## First installation
 
-1. Copy `Android-TV-for-PS4.pkg` to the top level of the USB drive and plug it into the PS4.
+1. Copy `Android-TV-for-PS4-1.1.pkg` to the top level of the USB drive and plug it into the PS4.
 2. Load GoldHEN and install the PKG with the **Package Installer**.
 3. In **GoldHEN → Servers**, enable **BinLoader** on port **9090**.
 4. Open **Android TV for PS4** from the home screen.
@@ -39,6 +39,10 @@ Load GoldHEN, make sure BinLoader is on, and open **Android TV for PS4**. Your a
 In Android, **Restart** returns the console to the PS4 system, where GoldHEN needs to be loaded again. **Shut down** powers the console off. Android unmounts its storage cleanly before either one.
 
 Reinstalling the same PKG keeps your existing Android data. It doesn't reset anything.
+
+## Updating from 1.0
+
+Install the 1.1 PKG over 1.0 with the Package Installer and open the app. The installer reuses your existing Android files and data, so your apps and logins stay. 1.1 keeps its boot files in `/user/app/ps4-android/boot` instead of `/data/linux/boot`; the old 1.0 copies in `/data/linux/boot` are no longer used (see [Removing Android](#removing-android)).
 
 ## Network and controllers
 
@@ -71,11 +75,15 @@ On the controller, the PS button goes to Android Home. To use the DualShock 4 on
 
 You don't need to reinstall, because a completed installation is reused. Don't test port 9090 with a port scanner or `nc`: an empty connection can disrupt BinLoader.
 
-**Error 12 during startup.** Linux couldn't get a large enough block of memory. This happened once during testing and didn't recur after a fresh install. Restart the console, load GoldHEN and try again. If it keeps happening, report it with `launcher-boot.log`.
+**Error 12 during startup ("Not enough free memory to start Linux right now").** Linux needs one large block of free memory, and the PS4 may not have one after it's been busy, especially straight after copying and installing the PKG. Restart the console, load GoldHEN and open the app before doing anything else. Your installation is kept. If it keeps happening, report it with `launcher-boot.log`.
+
+**"Firmware X isn't supported yet."** The Linux loader has no kernel offsets for your firmware, so nothing was loaded and nothing was changed. The supported list is in [Compatibility](COMPATIBILITY.md#firmware).
+
+**"Last start stopped at: ..."** The previous Linux start didn't finish, and this shows the last step it reached. The launcher carries on and tries again. If it keeps stopping at the same step, include that line in your report.
 
 **GoldHEN says the payload was received, but nothing happens.** "Received" only means the payload arrived, not that it ran. Restart the console, reload GoldHEN and try again. If GoldHEN shows "failed to launch payload", include that in your report.
 
-**Blank screen for a long time.** Note how long it's been and the last thing you saw on screen, then restart the console and try again.
+**Blank screen for a long time.** Note how long it's been and the last thing you saw on screen, then hold the power button to turn the console off and start it again. On consoles other than the tested one, this is the most likely way a start fails.
 
 ## Logs and reporting problems
 
@@ -85,10 +93,10 @@ The console keeps install and boot logs in `/user/app/ps4-android`. You can reac
 - `boot-progress.log`, `kernel.log`: Linux startup
 - `android-stages.log`: Android startup
 
-When reporting a problem, include your console model, firmware, the PKG SHA256, whether it was a first install or a later launch, and the last thing on screen. Remove account names, Wi-Fi names and IP addresses from logs first.
+When reporting a problem, include your console model, firmware, the southbridge line from `launcher-boot.log` if you have it, the PKG SHA256, whether it was a first install or a later launch, and the last thing on screen. Remove account names, Wi-Fi names and IP addresses from logs first.
 
 Network ADB is enabled on port 5555 and requires you to approve each computer on the TV. No debugging keys ship with the release.
 
 ## Removing Android
 
-There's no one-click uninstall yet. Android's files are in `/user/app/ps4-android` and its boot files are in `/data/linux/boot`. Deleting the app from the home screen doesn't remove them. Other Linux setups on the console may share `/data/linux/boot`, so check before deleting anything there. Never format the PS4 drive to remove Android.
+There's no one-click uninstall yet. All of Android's files, including its boot files, are in `/user/app/ps4-android`. Deleting the app from the home screen doesn't remove them; delete that folder over FTP instead. If you installed 1.0, it also left boot files in `/data/linux/boot`. Other Linux setups on the console may use that folder too, so check before deleting anything there. Never format the PS4 drive to remove Android.

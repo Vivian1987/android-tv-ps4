@@ -10,7 +10,7 @@ Start with [Architecture](docs/DEVELOPMENT.md), then [Build](docs/BUILD.md). The
 | --- | --- | --- |
 | Installation and recovery | `source/install-prebuilt.c`, `image-copy.c` | Interrupted copies, storage checks, update/uninstall design. |
 | Boot reliability | `source/boot-stage.c`, `boot-payload.c`, `loader-source/` | Receiver readiness, memory preparation, explicit handoff states. |
-| Another firmware or PS4 revision | Loader offsets/checks, kernel, runtime disk/radio checks | Establish each hardware assumption and publish a model-specific test report. |
+| Another firmware or PS4 revision | `build-kexec.py`, `loader-source/`, kernel, runtime disk/radio setup | Test on real hardware and send a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml); find where Belize/Baikal or other firmware differ. |
 | Graphics and video | `patches/`, `runtime-source/patch-mesa-raster.py`, composer/gralloc inputs | Rebuildable driver adaptations, 32-bit raster testing, codec and frame-presentation diagnostics. |
 | Wi-Fi and Bluetooth | `connectivity/`, `source/bluetooth*`, runtime interface handoff | Reconnection, pairing, hardware variants, Android network policy. |
 | Controller input | `runtime/opt/androidtv-ps4/controller-home.sh` | Keylayout coverage, latency and remote mappings. |

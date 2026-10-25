@@ -2,27 +2,39 @@
 
 ## Supported hardware
 
-| Component | Version 1.0 |
+| Component | Version 1.1 |
 | --- | --- |
-| Console | PlayStation 4 CUH-1102A (Aeolia southbridge) |
-| Firmware | 13.52 with GoldHEN; the payload checks for `13.520.001` |
+| Console | Any PS4 model. Tested on a CUH-1102A (fat, Aeolia southbridge). |
+| Firmware | Any GoldHEN firmware listed below. Tested on 13.52. |
 | Android | Android TV 13 (API 33), based on BRTDTV Android TV x86 |
 | Kernel | PS4 Linux 6.15.4 |
 | Graphics memory | 2048 MiB reserved for the GPU |
 | Android storage | 32 GiB, allocated as used |
 | Boot | GoldHEN BinLoader on port 9090 (local only) |
 
-Other PS4 models and firmware versions haven't been tested. Supporting them requires porting work; changing the firmware check alone won't do it. Reports from other consoles are welcome, even when they fail ([how to report](#reporting-a-result)).
+## Firmware
+
+The boot payload reads the console's firmware and picks the matching build of the [ps4-linux-loader](https://github.com/ps4-linux/ps4-linux-loader) kexec (v25.1). The package contains one for each firmware the loader has kernel offsets for:
+
+**5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52**
+
+Point releases that share kernel offsets use the same build (for example 9.51 uses the 9.60 one). On a firmware with no offsets, the launcher shows "Firmware X isn't supported yet" and stops before anything is loaded. Only 13.52 has been tested on a real console so far.
+
+## Console models
+
+Nothing is blocked by model. The launcher records the southbridge (Aeolia on fat models, Belize or Baikal on later fat, Slim and Pro models) in `launcher-boot.log` and boots anyway. The kernel includes drivers for all three, but only Aeolia has been tested. Expect problems on other hardware, most likely a black screen or freeze after the switch to Linux; holding the power button returns the console to normal.
+
+Reports from other consoles are welcome, even when they fail ([how to report](#reporting-a-result)).
 
 ## Release package
 
-`Android-TV-for-PS4.pkg`: **3,108,306,944 bytes** (3.11 GB)
+`Android-TV-for-PS4-1.1.pkg`: **3,108,634,624 bytes** (3.11 GB)
 
 ```text
-SHA256  5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25
+SHA256  bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e
 ```
 
-This exact package was installed fresh on the test console and booted to Android TV. Allow 5–10 minutes for the first boot and about 2 minutes after that.
+This exact package was installed fresh on the test console (CUH-1102A, 13.52) and booted to Android TV. Allow 5–10 minutes for the first boot and about 2 minutes after that.
 
 ## Tested and working
 
@@ -51,7 +63,7 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 | Device name | Setup may leave the base device name in place. Set **Device name** to **PlayStation 4** in Settings. Spotify Connect and similar apps show this name. |
 | Setup navigation | Some setup screens have been reported to jump back or repeat. |
 | BinLoader connection (error 61) | The launcher couldn't reach BinLoader. Close the app, toggle BinLoader off and on, and reopen it ([steps](INSTALL.md#troubleshooting)). |
-| Startup memory (error 12) | One test boot failed to reserve memory for the kernel. A later fresh install booted normally; the cause isn't known. |
+| Startup memory (error 12) | Linux couldn't get a large enough block of contiguous memory. This happens after the PS4 has been busy, for example straight after copying and installing the 3 GB PKG. Restart the PS4, load GoldHEN and open the app first. Your installation is kept. |
 | Payload received but not run | GoldHEN may show the payload as received but then report "failed to launch payload". The launcher keeps waiting. Restart the console and try again. |
 | Not certified | This isn't a Google-certified Android TV device. Some apps and services may refuse to run or limit playback. |
 | App updates | Play Store updates can change how an app behaves. The bundled versions are listed in [Apps](APPS.md). |
@@ -59,6 +71,6 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 
 ## Reporting a result
 
-Include your console model, firmware, the PKG SHA256, and whether it was a first install or a later launch. For startup problems, add the last thing on screen and any error message. For video problems, say whether the app refused to play, played audio only, or showed broken video. Keep account names, codes and private logs out of public reports.
+Include your console model, firmware, southbridge (from `launcher-boot.log`, if you can get it), the PKG SHA256, and whether it was a first install or a later launch. For startup problems, add the last thing on screen and any error message. For video problems, say whether the app refused to play, played audio only, or showed broken video. Keep account names, codes and private logs out of public reports.
 
-The [testing checklist](RELEASE-CHECKLIST.md) covers everything worth checking.
+The quickest way is the [console report form](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml). The [testing checklist](RELEASE-CHECKLIST.md) covers everything worth checking.

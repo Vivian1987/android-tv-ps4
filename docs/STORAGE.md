@@ -16,16 +16,16 @@ Android uses files on the PS4's existing internal filesystem. Installation does 
   data-ready                  userdata creation completion marker
   device-id                   random identifier generated on this installation
   *.log                       console-local diagnostics
-/data/linux/boot/
-  bzImage
-  initramfs.cpio.xz
-  bootargs.txt
-  vram.txt
+  boot/
+    bzImage
+    initramfs.cpio.xz
+    bootargs.txt
+    vram.txt
 ```
 
 `system.sfs` contains `system.img`, mounted read-only as ext4. An OverlayFS RAM layer holds the PS4 adaptations. The data image contains directories bound to Android's `/data` and `/metadata`; accounts, app data, downloads and pairings persist there.
 
-The installed launcher retains its original assets. Copies under `/user/app/ps4-android` and `/data/linux/boot` therefore add to the installed application's space. A downloaded PKG kept in internal storage is another copy.
+The installed launcher retains its original assets. Copies under `/user/app/ps4-android` therefore add to the installed application's space. A downloaded PKG kept in internal storage is another copy.
 
 ## Capacity versus allocated space
 
@@ -33,17 +33,17 @@ The first-boot script uses `truncate -s` and `mke2fs` to create a **32 GiB logic
 
 The file grows in physical allocation as Android writes data. It still has a fixed 32 GiB filesystem capacity, and the PS4's physical free space is shared with games and other files. Android's apparent free space inside its image does not reserve that space on the PS4 drive.
 
-## Storage accounting for release 1.0
+## Storage accounting for release 1.1
 
-These figures describe the package SHA256 `5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25`.
+These figures describe the package SHA256 `bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e`.
 
 | Item | Bytes | GiB |
 | --- | ---: | ---: |
 | Userdata, fully allocated | 34,359,738,368 | 32.000 |
-| Copied system, apps, graphics and boot files | 3,087,238,389 | 2.875 |
-| Installed PKG size used as an estimate | 3,108,306,944 | 2.895 |
-| Combined estimate with full userdata | 40,555,283,701 | 37.770 |
-| Also retaining the download and a 2 GiB margin | 45,811,074,293 | 42.665 |
+| Copied system, apps, graphics and boot files | 3,087,239,057 | 2.875 |
+| Installed PKG size used as an estimate | 3,108,634,624 | 2.895 |
+| Combined estimate with full userdata | 40,555,612,049 | 37.770 |
+| Also retaining the download and a 2 GiB margin | 45,811,730,321 | 42.665 |
 
 Allow approximately **43 GiB** for that full-use scenario. Initial allocation is lower. Filesystem overhead, logs, updates, interrupted copies and development backups consume additional space. The installed PKG estimate is not a measured PS4 allocation figure.
 

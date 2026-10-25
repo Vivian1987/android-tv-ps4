@@ -4,21 +4,22 @@
 
 Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. Install one PKG, open it from the home screen, and the console boots straight into Android TV from its internal drive. Your apps, accounts and settings are kept between launches.
 
-[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Release notes](docs/RELEASE-NOTES.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
+[Download](https://archive.org/details/android-tv-for-ps4-1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Release notes](docs/RELEASE-NOTES.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
 
-## Version 1.0
+## Version 1.1
 
 - **Android TV 13**, with 32 GiB of Android storage
-- **3.11 GB** download, split into two parts for GitHub
-- For original "fat" PS4s (**CUH-10xx / CUH-11xx, Aeolia**) on **firmware 13.52 with GoldHEN**. Tested on a CUH-1102A.
+- **One 3.11 GB PKG**, hosted on the Internet Archive. No joining needed.
+- Runs on **any firmware with GoldHEN that the Linux loader has offsets for**: 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52
+- No console model is blocked. Tested on a fat CUH-1102A on 13.52; everything else is waiting on test reports.
 
 The 32 GiB is how much Android can store. It is not the download size, and space on the PS4 drive is only used as Android fills it. Nothing is repartitioned: Android lives in ordinary files on the existing PS4 filesystem.
 
-On other firmware, the launcher stops with an error before loading anything. Slim and Pro models aren't supported; they use different hardware and need their own porting work.
+Slim and Pro models use a different southbridge. The kernel has drivers for them, but nobody has reported a boot yet. If you try one, please [report how far it got](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails.
 
 ## Quick start
 
-1. Download both `.pkg.part` files and the joining tool from the [release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0). On Windows, double-click **Join-PKG-Windows.cmd**. On Linux or macOS, run `sh join-pkg.sh`. Either tool rebuilds and verifies `Android-TV-for-PS4.pkg` ([details](docs/DOWNLOAD.md)).
+1. Download **[Android-TV-for-PS4-1.1.pkg](https://archive.org/download/android-tv-for-ps4-1.1/Android-TV-for-PS4-1.1.pkg)** ([checksum and other options](docs/DOWNLOAD.md)).
 2. Copy the PKG to an exFAT USB drive and install it with GoldHEN's **Package Installer**.
 3. Enable **GoldHEN → Servers → BinLoader** (port 9090).
 4. Open **Android TV for PS4**.
@@ -29,7 +30,7 @@ To launch again later, load GoldHEN, make sure BinLoader is on, and open the app
 
 Booting needs no PC, network or internet connection. The app hands its payload to GoldHEN on the console itself. Once Android is running, it manages Wi-Fi and Ethernet on its own.
 
-If the launcher reports that BinLoader is unavailable, close the app, turn BinLoader off and on again, and reopen it. More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting).
+If the launcher reports that BinLoader is unavailable, close the app, turn BinLoader off and on again, and reopen it. If startup stops with error 12, restart the PS4 and open the app before doing anything else. More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting).
 
 ## What's included
 
@@ -63,11 +64,9 @@ Android runs on a Linux kernel booted directly on the console, with full access 
 
 The Android system image is read-only. PS4-specific changes are applied in memory at each boot, and your data lives in a separate ext4 image. The [architecture guide](docs/DEVELOPMENT.md) walks through the code, and [Storage](docs/STORAGE.md) explains disk usage.
 
-## Help wanted: more consoles
+## Help wanted: test reports
 
-Other firmware is the next goal. The Linux loader this is built on already has kernel offsets for 20 firmware versions (5.05 to 13.52). What's needed is building the loader for each version, having the launcher pick the right one, and **testers on those firmwares**. Slim and Pro support would need someone with that hardware and PS4 Linux experience.
-
-If you can help, or want to say which console and firmware you're on, please [open an issue](https://github.com/odiecay/android-tv-ps4/issues).
+1.1 lets every console try, so what's needed now is people running it on other models and firmware. If you test it, [open a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) with your model, firmware and how far it got. "Black screen after the Linux text" is useful too. Anyone with PS4 Linux experience on Slim or Pro hardware is especially welcome.
 
 ## Development
 

@@ -4,6 +4,7 @@
 !/.gitignore
 !/README.md
 !/CONTRIBUTING.md
+!/.github/ISSUE_TEMPLATE/*.yml
 !/tools/Join-PKG-Windows.cmd
 !/tools/join-pkg.sh
 !/docs/*.md

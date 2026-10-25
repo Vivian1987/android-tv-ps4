@@ -1,10 +1,37 @@
-# Android TV for PS4 1.0
+# Release notes
+
+## 1.1
+
+More consoles and a single download. Thanks to everyone who commented and opened issues on 1.0; most of this release came from those reports.
+
+[Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
+
+`Android-TV-for-PS4-1.1.pkg`, 3,108,634,624 bytes, SHA256 `bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e`
+
+### What's new
+
+- **Every firmware the Linux loader supports.** The package now contains a kexec build for each firmware [ps4-linux-loader](https://github.com/ps4-linux/ps4-linux-loader) has kernel offsets for (5.05 to 13.52, [full list](COMPATIBILITY.md#firmware)), and picks the right one at launch. 1.0 only ran on 13.52.
+- **No console model is blocked.** 1.0 stopped on anything but the Aeolia southbridge, both in the launcher and in the Linux start script. 1.1 records the southbridge in the log and carries on. Slim, Pro and Belize/Baikal fat models are untested; reports are very welcome.
+- **Boots without Ethernet hardware.** A console with no Ethernet interface used to stop the Linux start; now it continues without it.
+- **Single-file download** from the Internet Archive. No more joining parts.
+- **Clearer errors.** Unsupported firmware, low memory (error 12) and boot-file problems now say what happened and what to do. If the previous Linux start didn't finish, the launcher shows the last step it reached.
+- **Own boot folder.** Boot files now live in `/user/app/ps4-android/boot` instead of `/data/linux/boot`, so 1.1 can't collide with another PS4 Linux setup. That is the likely cause of the errno 13 install error reported on 1.0.
+
+### Tested
+
+Fresh install and boot to Android TV on a CUH-1102A on 13.52 with this exact package. Everything else is waiting on [test reports](COMPATIBILITY.md#reporting-a-result).
+
+### Updating
+
+Install the 1.1 PKG over 1.0. Your Android apps and data are kept ([details](INSTALL.md#updating-from-10)).
+
+## 1.0
 
 The first public release: Android TV 13 on PlayStation 4, installed from a single PKG and booted from the console's internal drive.
 
-[Download 1.0](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) · [Join the download](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
+[1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0)
 
-## Highlights
+### Highlights
 
 - **Android TV 13** with Google Play services and the Play Store
 - **One-PKG install** from the PS4 home screen. Nothing is repartitioned, and Android lives in ordinary files on the internal drive.
@@ -15,14 +42,14 @@ The first public release: Android TV 13 on PlayStation 4, installed from a singl
 - **Wi-Fi and Ethernet**, managed by Android
 - **Restart and Shut down** in Android return to the PS4 system or power the console off
 
-## Requirements
+### Requirements
 
 - PS4 **CUH-1102A (Aeolia)** on firmware **13.52** with GoldHEN. Other models and firmware aren't supported yet.
 - GoldHEN **BinLoader** enabled on port **9090**
 - An exFAT USB drive to install the PKG
 - About 8 GiB of free internal space to install. Usage grows as Android fills its storage, up to about 43 GiB if all 32 GiB is used ([Storage](STORAGE.md)).
 
-## Install
+### Install
 
 1. Download both PKG parts and the joining tool from the release page.
 2. Windows: double-click **Join-PKG-Windows.cmd**. Linux/macOS: run `sh join-pkg.sh`. Wait for **READY**.
@@ -31,7 +58,7 @@ The first public release: Android TV 13 on PlayStation 4, installed from a singl
 
 The **first launch takes 5–10 minutes**. Later launches take about **2 minutes**.
 
-## Known issues
+### Known issues
 
 - No HDCP, and this isn't a Google-certified device. Some DRM-protected video won't play (7plus, for example).
 - YouTube needs you to sign in; guest playback can fail.
@@ -41,6 +68,6 @@ The **first launch takes 5–10 minutes**. Later launches take about **2 minutes
 
 See [Compatibility](COMPATIBILITY.md) for the full list.
 
-## Credits
+### Credits
 
 Built on **BRTDTV's Android TV x86**, with work from the PS4 Linux community, GoldHEN, OpenOrbis, Scene-Collective, sleirsgoevy, Ps3itaTeam, Android-x86, AOSP, Linux, Mesa and the app developers. [Full credits](CREDITS.md).

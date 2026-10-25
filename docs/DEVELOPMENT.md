@@ -2,7 +2,7 @@
 
 Android TV for PS4 has three execution environments: the native Orbis installer, the GoldHEN payload receiver, and Linux running Android. The launcher is an installer and boot controller. Linux takes over the hardware; Android runs on that kernel in its own namespaces.
 
-The source links below describe the 1.0 implementation. [`runtime/`](../releases/release-1.0/runtime/) contains text exported from the packaged initramfs and a hash manifest. [`runtime-source/`](../releases/release-1.0/runtime-source/) and `prepare-runtime.py` describe changes applied to the accepted base runtime. [Build](BUILD.md) identifies the external binaries and the boundaries of reproducibility.
+The source links below describe the 1.1 implementation (the source folder is still named `release-1.0`). [`runtime/`](../releases/release-1.0/runtime/) contains text exported from the packaged initramfs and a hash manifest. [`runtime-source/`](../releases/release-1.0/runtime-source/) and `prepare-runtime.py` describe changes applied to the accepted base runtime. [Build](BUILD.md) identifies the external binaries and the boundaries of reproducibility.
 
 ## 1. Native installation
 
@@ -20,7 +20,7 @@ The `stat` ABI shim in [`ps4-stat-abi.h`](../releases/release-1.0/source/ps4-sta
 
 [`boot-stage.c`](../releases/release-1.0/source/boot-stage.c) sends the bundled flat payload to **127.0.0.1:9090**. GoldHEN executes it in its receiver context. The launcher does not execute the kernel loader in its own process, and no external host supplies the payload.
 
-The receiver is [`boot-payload.c`](../releases/release-1.0/source/boot-payload.c). It requires firmware `13.520.001`, reads the kernel and XZ initramfs from `/data/linux/boot`, requests a 2048 MiB graphics reservation, and prepares Linux using the modified kexec loader.
+The receiver is [`boot-payload.c`](../releases/release-1.0/source/boot-payload.c). It reads the console firmware with the loader's own `get_firmware`, maps point releases to the base version that shares kernel offsets, and selects the matching kexec build from a table embedded in the payload ([`build-kexec.py`](../releases/release-1.0/build-kexec.py) builds one per firmware defined in the loader's `magic.h`). An unknown firmware returns `-120` before anything is loaded. It records the firmware and southbridge in the status record, reads the kernel and XZ initramfs from `/user/app/ps4-android/boot`, requests a 2048 MiB graphics reservation, and prepares Linux using the modified kexec loader.
 
 Preparation and handoff are separate operations:
 
@@ -41,7 +41,7 @@ Source: [`launch-protocol.h`](../releases/release-1.0/source/launch-protocol.h),
 
 The initramfs [`init`](../releases/release-1.0/runtime/init) creates the basic Linux mounts and starts [`androidtv-ps4-start`](../releases/release-1.0/runtime/usr/sbin/androidtv-ps4-start).
 
-This implementation checks for Aeolia and expects the internal user-storage block device at `/dev/sda27`. It uses the console-specific key supplied in the boot environment to open a dm-crypt mapping, then mounts the existing UFS2 filesystem. That key is not a release-package asset.
+The script logs the southbridge it finds (Aeolia, Belize or Baikal) but doesn't require a particular one, and continues without Ethernet if no interface exists. It expects the internal user-storage block device at `/dev/sda27`. It uses the console-specific key supplied in the boot environment to open a dm-crypt mapping, then mounts the existing UFS2 filesystem. That key is not a release-package asset.
 
 The installation directory appears as `/mnt/ps4-user/app/ps4-android` in Linux. A fresh start creates `data.img.part` with `truncate`, formats that file as ext4 with lazy initialization, checks it, and commits `data.img` plus `data-ready`. An existing uncommitted data image stops for recovery; it is not silently reformatted.
 

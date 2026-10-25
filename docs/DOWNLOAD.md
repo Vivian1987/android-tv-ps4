@@ -1,58 +1,43 @@
-# Downloading Android TV for PS4 1.0
+# Downloading Android TV for PS4 1.1
 
-GitHub limits release files to 2 GiB, so the 3.11 GB PKG is split into two parts. Download both from the [1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) into the same folder, then join them using one of the methods below. Joining restores the original PKG exactly. You'll need about 6.3 GB free for the parts and the finished file.
+The 1.1 PKG is a single 3.11 GB file hosted on the Internet Archive. GitHub doesn't accept files over 2 GiB, so the GitHub release page links here instead of attaching the PKG.
 
-## Windows
+**[Android-TV-for-PS4-1.1.pkg](https://archive.org/download/android-tv-for-ps4-1.1/Android-TV-for-PS4-1.1.pkg)** · [Internet Archive page](https://archive.org/details/android-tv-for-ps4-1.1)
 
-1. Download `Android-TV-for-PS4.pkg.part1`, `Android-TV-for-PS4.pkg.part2` and [Join-PKG-Windows.cmd](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/Join-PKG-Windows.cmd) into one folder.
-2. Double-click **Join-PKG-Windows.cmd**.
-3. Wait for **READY: Android-TV-for-PS4.pkg**.
+It must be **3,108,634,624 bytes** with this SHA256:
 
-The tool checks the SHA256 of the finished PKG. It works on Windows 10 and 11 with nothing extra to install and no admin rights. Your downloaded parts are kept, and an existing PKG is checked rather than overwritten. If a part is incomplete or the checksum is wrong, you'll get an error instead of a PKG. [Tool source](../tools/Join-PKG-Windows.cmd).
-
-## Linux or macOS
-
-Download both parts and [join-pkg.sh](https://github.com/odiecay/android-tv-ps4/releases/download/v1.0/join-pkg.sh) into one folder, open a terminal there, and run:
-
-```sh
-sh join-pkg.sh
+```text
+bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e
 ```
 
-Wait for **READY**. [Script source](../tools/join-pkg.sh).
-
-## Joining manually
+## Checking the download
 
 Windows (Command Prompt):
 
 ```bat
-copy /b Android-TV-for-PS4.pkg.part1+Android-TV-for-PS4.pkg.part2 Android-TV-for-PS4.pkg
-certutil -hashfile Android-TV-for-PS4.pkg SHA256
+certutil -hashfile Android-TV-for-PS4-1.1.pkg SHA256
 ```
 
 Windows (PowerShell):
 
 ```powershell
-cmd /c "copy /b Android-TV-for-PS4.pkg.part1+Android-TV-for-PS4.pkg.part2 Android-TV-for-PS4.pkg"
-Get-FileHash .\Android-TV-for-PS4.pkg -Algorithm SHA256
+Get-FileHash .\Android-TV-for-PS4-1.1.pkg -Algorithm SHA256
 ```
 
 Linux or macOS:
 
 ```sh
-cat Android-TV-for-PS4.pkg.part1 Android-TV-for-PS4.pkg.part2 > Android-TV-for-PS4.pkg
-shasum -a 256 Android-TV-for-PS4.pkg
+shasum -a 256 Android-TV-for-PS4-1.1.pkg
 ```
 
-The result must be **3,108,306,944 bytes** with this SHA256:
+If it doesn't match, don't install it. Delete it and download it again.
 
-```text
-5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25
-```
-
-If it doesn't match, don't install it. Check each part against `SHA256SUMS` on the release page, re-download the bad one and join again.
+The Internet Archive page also offers a torrent, which can be faster and resumes cleanly if the connection drops.
 
 ## Next steps
 
-Install the joined **`Android-TV-for-PS4.pkg`**, not the `.part` files. The **Source code** ZIP/TAR on the release page is the repository, not the installer.
+Copy the PKG to the top level of an exFAT USB drive and follow the [installation guide](INSTALL.md). The **Source code** ZIP/TAR on the GitHub release page is the repository, not the installer.
 
-Copy the PKG to the top level of an exFAT USB drive and follow the [installation guide](INSTALL.md).
+## Version 1.0
+
+1.0 was published as two `.pkg.part` files on the [1.0 release](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.0) with joining tools ([Windows](../tools/Join-PKG-Windows.cmd), [Linux/macOS](../tools/join-pkg.sh)). The joined 1.0 PKG is 3,108,306,944 bytes with SHA256 `5564ccb30329123407ad03769732c0c4fc4e63084b1795d7fc7faf04dcf8ff25`. 1.1 replaces it.

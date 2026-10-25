@@ -1,0 +1,80 @@
+name: Console test report
+description: Tell us how Android TV for PS4 went on your console, whether it worked or not.
+title: "[Report] CUH-____ on __.__"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing. Failed starts are just as useful as working ones.
+        Please leave out account names, Wi-Fi names and IP addresses.
+  - type: input
+    id: model
+    attributes:
+      label: Console model
+      description: On the label on the back or bottom of the console.
+      placeholder: CUH-2115A
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware and GoldHEN version
+      placeholder: 11.00, GoldHEN 2.4b18
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Android TV for PS4 version
+      options:
+        - "1.1"
+        - "1.0"
+        - Other / own build
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: First install or later launch?
+      options:
+        - First install
+        - Later launch
+        - Updated from an earlier version
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: How far did it get?
+      options:
+        - Stopped with a message in the launcher
+        - Black screen after the launcher closed
+        - Linux text appeared, then stopped or froze
+        - Android boot animation, but never reached setup
+        - Android setup or home screen
+    validations:
+      required: true
+  - type: textarea
+    id: message
+    attributes:
+      label: Messages on screen
+      description: The exact text of any error, including codes. For a freeze, the last few lines of Linux text (a photo is fine).
+  - type: checkboxes
+    id: working
+    attributes:
+      label: What works? (if Android started)
+      options:
+        - label: Picture and sound over HDMI
+        - label: Wi-Fi
+        - label: Ethernet
+        - label: Bluetooth controller or remote
+        - label: Video playback (say which app below)
+        - label: Restart / Shut down from Android
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and notes
+      description: |
+        If you can reach the console over GoldHEN FTP, the logs are in /user/app/ps4-android:
+        launcher-boot.log (includes the southbridge line), boot-progress.log, kernel.log and android-stages.log.
+        Attach them or paste the relevant part.

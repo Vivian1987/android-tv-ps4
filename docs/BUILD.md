@@ -95,11 +95,11 @@ python3 releases/release-1.0/build-release.py \
   --output build/dist
 ```
 
-The builder compiles the kexec blob and local payload runner, embeds the bundled payload, builds the native launcher, packages four raw slideshow images, generates the PKG and validates its structure and signatures. It checks SFO/content-ID agreement and verifies the final copied output.
+The builder compiles a kexec blob for every firmware in the loader's `magic.h` (20 in total; the 13.52 build must match the console-confirmed hash), the local payload runner, embeds the bundled payload, builds the native launcher, packages four raw slideshow images, generates the PKG and validates its structure and signatures. It checks SFO/content-ID agreement and verifies the final copied output.
 
 Outputs are `Android-TV-for-PS4.pkg`, `SHA256SUMS`, `release.json` and `validation.txt`. The manifest records runtime, source, artwork, helper and payload hashes. Package validation is not a console boot test.
 
-The title is **Android TV for PS4**, title ID **ATVX13001**, application version **1.00**, and content ID **IV0000-ATVX13001_00-PS4ANDROIDTV0000**. Rebuilds keep this product identity.
+The title is **Android TV for PS4**, title ID **ATVX13001**, application version **1.10**, and content ID **IV0000-ATVX13001_00-PS4ANDROIDTV0000**. Rebuilds keep this product identity.
 
 ## Host regression tests
 

@@ -57,8 +57,8 @@ static int fail_with_detail(const char *message,const char *explanation,int code
  }
  if(code==ENOMEM){
   /* Linux needs one large contiguous block; long PS4 sessions fragment memory. */
-  message="Not enough free memory to start Linux right now";
-  snprintf(detail,sizeof(detail),"Common right after installing. Restart the PS4, load GoldHEN and open Android TV first. Nothing was changed. (code %d)",code);
+  message="Restart your PS4, then open Android TV again";
+  snprintf(detail,sizeof(detail),"There wasn't enough free memory to start Linux. This is common right after installing or updating. Nothing was changed. (code %d)",code);
  }
  /* Everything the PS4 side can stop on is explained here, so a report says
   * what happened rather than only a number. Nothing below changes the PS4. */
@@ -86,7 +86,7 @@ static int fail_with_detail(const char *message,const char *explanation,int code
  }
  if(advice)snprintf(detail,sizeof(detail),"%s (code %d)",advice,code);
  if(controlfd>=0)(void)flag_at(offsetof(struct atv_launch_control,cancelled));
- (void)installer_ui_init();installer_ui_boot_status(message,detail);close_channels();return -1;
+ (void)installer_ui_init();installer_ui_boot_error(message,detail);close_channels();return -1;
 }
 static int fail(const char *message,int code){return fail_with_detail(message,NULL,code);}
 /* get_sb_id returns the raw ID (0x10300 on a CUH-1102A); the family is the top byte. */

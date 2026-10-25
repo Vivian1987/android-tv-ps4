@@ -27,6 +27,8 @@ static int slide_fds[INSTALLER_SLIDE_COUNT]={-1,-1,-1,-1};
 static char status[256]="Checking installation and free space";
 static uint64_t done_bytes,total_bytes;
 static int boot_mode;
+/* Set once startup has stopped: the bar stops moving and the detail wraps. */
+static int failed;
 static char boot_detail[160];
 static void rectangle(int x,int y,int w,int h,uint32_t color){
  for(int row=y;row<y+h&&row<HEIGHT;row++){
@@ -72,13 +74,20 @@ static void render(void){
   * allocations, file reads or mapped artwork remain in the boot phase. */
  rectangle(0,538,WIDTH,182,0xff080f1d);
  rectangle(0,538,WIDTH,1,0xff3a5274);
- char line[85];const char *p=status;int y=550;
+ char line[96];const char *p=status;int y=550;
  while(*p&&y<607){size_t n=strlen(p);if(n>79){n=79;while(n>0&&p[n]!=' ')n--;if(!n)n=79;}
   memcpy(line,p,n);line[n]=0;text(64,y,2,line,0xfff4f8fa);p+=n;while(*p==' ')p++;y+=28;}
  int percent=total_bytes?(int)(done_bytes*100/total_bytes):0;if(percent>100)percent=100;
  char detail[180];
  if(total_bytes){snprintf(detail,sizeof(detail),"%d%%",percent);text(1100,552,3,detail,0xfff4f8fa);}
  rectangle(64,620,1152,7,0xff253951);
+ if(failed){
+  /* A stopped start shows no activity, and its instruction gets the full width. */
+  const char *q=boot_detail;int fy=648;
+  while(*q&&fy<=676){size_t n=strlen(q);if(n>92){n=92;while(n>0&&q[n]!=' ')n--;if(!n)n=92;}
+   memcpy(line,q,n);line[n]=0;text(64,fy,2,line,0xffd8e6f5);q+=n;while(*q==' ')q++;fy+=28;}
+  goto flip;
+ }
  if(total_bytes)rectangle(64,620,1152*percent/100,7,0xff75bdff);
  else {int pos=(int)((seconds()-opened)*45)%1032;rectangle(64+pos,620,120,7,0xff75bdff);}
  if(total_bytes)snprintf(detail,sizeof(detail),"%.2f / %.2f GiB processed",(double)done_bytes/1073741824.,(double)total_bytes/1073741824.);
@@ -92,7 +101,8 @@ static void render(void){
    text(480,648,2,detail,0xffa6bed9);
   }
  }
- snprintf(detail,sizeof(detail),"%d GiB  /  1.0",EDITION_GIB);text(1030,648,2,detail,0xffa6bed9);
+ snprintf(detail,sizeof(detail),"%d GiB  /  1.1",EDITION_GIB);text(1030,648,2,detail,0xffa6bed9);
+ flip:;
  int id=++frame_id;
  int rc=sceVideoOutSubmitFlip(video,buffer_index,ORBIS_VIDEO_OUT_FLIP_VSYNC,id);
  if(rc<0){log_result("submit flip",rc);return;}
@@ -105,7 +115,7 @@ static void render(void){
 }
 int installer_ui_init(void){
  if(video>=0)return 0;
- buffer_index=frame_id=boot_mode=splash_hidden=0;
+ buffer_index=frame_id=boot_mode=splash_hidden=failed=0;
  done_bytes=total_bytes=initial_bytes=0;started=last_draw=0;displayed_percent=-1;
  opened=seconds();
  video=sceVideoOutOpen(ORBIS_VIDEO_USER_MAIN,ORBIS_VIDEO_OUT_BUS_MAIN,0,NULL);
@@ -142,6 +152,12 @@ void installer_ui_boot_status(const char *message,const char *detail){
  snprintf(status,sizeof(status),"%s",message);
  snprintf(boot_detail,sizeof(boot_detail),"%s",detail);
  render();
+}
+void installer_ui_boot_error(const char *message,const char *detail){
+ failed=1;installer_ui_boot_status(message,detail);
+}
+void installer_ui_failed(const char *detail){
+ failed=1;snprintf(boot_detail,sizeof(boot_detail),"%s",detail);render();
 }
 int installer_ui_close(void){
  if(video>=0){int rc=sceVideoOutClose(video);if(rc<0){log_result("close VideoOut",rc);return rc;}video=-1;}

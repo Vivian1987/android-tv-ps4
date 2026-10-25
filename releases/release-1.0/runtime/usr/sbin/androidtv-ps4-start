@@ -175,13 +175,22 @@ case "$capacity" in 32|64|128) ;; *) stage 'Invalid data capacity'; exit 1;; esa
 # Keep spare physical disk space for both operating systems.
 available=$(df -Pk "$installation" | tail -1 | awk '{print $4}')
 [ "$available" -gt 2097152 ] || { stage 'Less than 2 GiB physical storage remains'; exit 1; }
+# ext4 quota features need both CONFIG_QUOTA and CONFIG_QFMT_V2; an image
+# with them will not mount on a kernel without both. Check the running kernel.
+kernel_has_quota() {
+ zcat /proc/config.gz 2>/dev/null | grep -q '^CONFIG_QUOTA=y' &&
+ zcat /proc/config.gz 2>/dev/null | grep -q '^CONFIG_QFMT_V2=y'
+}
+quota_features=
+if kernel_has_quota; then quota_features='-O quota,project'; quota_type=',quotatype=usrquota:grpquota:prjquota'; else quota_type=; fi
 if [ ! -f "$installation/data-ready" ]; then
  [ ! -e "$installation/data.img" ] || { stage 'Uncommitted data image preserved; recovery needed'; exit 1; }
  [ ! -e "$installation/data.img.part" ] || { stage 'Interrupted creation preserved; recovery needed'; exit 1; }
  stage "Creating fresh $capacity GiB Android storage"
  truncate -s "$((capacity * 1073741824))" "$installation/data.img.part"
  # Project quotas let Android tag each app's shared-storage folder (vold).
- /usr/sbin/mke2fs -t ext4 -F -m 0 -O quota,project -E nodiscard,lazy_itable_init=1,lazy_journal_init=1,quotatype=usrquota:grpquota:prjquota "$installation/data.img.part"
+ # shellcheck disable=SC2086
+ /usr/sbin/mke2fs -t ext4 -F -m 0 $quota_features -E nodiscard,lazy_itable_init=1,lazy_journal_init=1$quota_type "$installation/data.img.part"
  /usr/sbin/e2fsck -fn "$installation/data.img.part"
  sync
  mv "$installation/data.img.part" "$installation/data.img"
@@ -202,7 +211,7 @@ mount -t overlay overlay -o lowerdir=/mnt/android-lower,upperdir=/run/android-ov
 # app folders and apps were refused their Android/data folder. Add the
 # feature once, offline, checking the image before and after. If anything
 # fails, carry on without it; the data itself is never reformatted.
-if ! /usr/sbin/tune2fs -l "$installation/data.img" 2>/dev/null | grep -q '^Filesystem features:.* project'; then
+if [ -n "$quota_features" ] && ! /usr/sbin/tune2fs -l "$installation/data.img" 2>/dev/null | grep -q '^Filesystem features:.* project'; then
  stage 'Adding project quota support to Android storage (one time)'
  if /usr/sbin/e2fsck -fy "$installation/data.img" >/run/androidtv-ps4/quota-upgrade.log 2>&1 &&
     /usr/sbin/tune2fs -O quota,project -Q usrquota,grpquota,prjquota "$installation/data.img" >>/run/androidtv-ps4/quota-upgrade.log 2>&1 &&

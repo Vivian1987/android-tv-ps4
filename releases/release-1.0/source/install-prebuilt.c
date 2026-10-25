@@ -70,21 +70,31 @@ static const char *names[BASE_ASSET_COUNT]={DATA_ASSET,"bzImage","initramfs.cpio
  * boot arguments. The payload picks the kernel for the console's southbridge. */
 static const int boot_assets[]={1,2,3,4,9};
 static void notice(const char *s){char log[320];snprintf(log,sizeof(log),"[PS4ATV] %s\n",s);sceKernelDebugOutText(0,log);installer_ui_status(s);}
-static void failure(const char *s){int saved=errno;char message[256];snprintf(message,sizeof(message),"%s (errno %d)",s,saved);notice(message);}
+static void failure(const char *s){int saved=errno;char message[256];snprintf(message,sizeof(message),"%s (errno %d)",s,saved);notice(message);
+ installer_ui_failed("Setup stopped. Your Android data is kept. See the message above, or report it with launcher-boot.log.");}
 static uint64_t completed_bytes;
 static const uint64_t install_bytes=SYSTEM_BYTES+BUNDLED_APP_BYTES;
 static void progress(uint64_t done,uint64_t total){
  (void)total;installer_ui_progress(completed_bytes+done,install_bytes);
 }
 /* Comparing installed files byte for byte reads about 1.5 GB, which made every
- * launch take up to two minutes after a restart. Once a file matches this
- * package, a marker records the package's asset ID and the file's size and
- * modification time; later launches trust it while all three are unchanged.
- * A new package or a changed file gets the full comparison again. Files
+ * launch take up to two minutes after a restart and fragmented memory just
+ * before Linux needed it. Once a file matches, a marker records that file's
+ * package ID and its installed size and modification time; later launches
+ * trust it while all three are unchanged. A file that changes in a new
+ * package gets the full comparison again; unchanged files are skipped. Files
  * the launcher has just copied from the package are recorded the same way. */
+/* The ID of the package file installed at this path. Unchanged files keep
+ * their ID across builds, so an update doesn't re-read them. */
+static const char *asset_id(const char *path){
+ static const struct { const char *name, *id; } ids[]=ATV_ASSET_IDS;
+ const char *base=strrchr(path,'/');base=base?base+1:path;
+ for(unsigned i=0;i<sizeof(ids)/sizeof(ids[0]);i++)if(!strcmp(ids[i].name,base))return ids[i].id;
+ return ATV_ASSET_SET_ID;
+}
 static void verified_marker(const char *path,const struct stat *st,char *marker,size_t marker_size,char *line,size_t line_size){
  snprintf(marker,marker_size,"%s.verified",path);
- snprintf(line,line_size,"%s %lld %lld\n",ATV_ASSET_SET_ID,(long long)st->st_size,(long long)st->st_mtime);
+ snprintf(line,line_size,"%s %lld %lld\n",asset_id(path),(long long)st->st_size,(long long)st->st_mtime);
 }
 static int verified_before(const char *path){
  struct stat st;char marker[224],line[128],seen[128]={0};

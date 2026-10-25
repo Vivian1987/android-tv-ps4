@@ -5,5 +5,8 @@ int installer_ui_init(void);
 void installer_ui_status(const char *message);
 void installer_ui_progress(uint64_t written, uint64_t total);
 void installer_ui_boot_status(const char *message, const char *detail);
+/* Startup stopped: show the message, stop the activity bar, wrap the detail. */
+void installer_ui_boot_error(const char *message, const char *detail);
+void installer_ui_failed(const char *detail);
 int installer_ui_close(void);
 #endif

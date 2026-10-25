@@ -6,6 +6,7 @@
 !/CONTRIBUTING.md
 !/.github/ISSUE_TEMPLATE/*.yml
 !/docs/*.md
+!/docs/reference-logs/*.txt
 !/branding/repository-banner.svg
 !/branding/*-official-assets-v6.svg
 !/branding/*-official-assets-v6.png

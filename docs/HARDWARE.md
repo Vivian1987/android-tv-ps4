@@ -106,6 +106,14 @@ Maintainers update the page from reports. You can also edit this file yourself: 
 3. Get the logs. If Linux started but Android didn't, plug a FAT32 or exFAT USB stick into the PS4 and they're saved to it. Otherwise copy them from `/user/app/ps4-android` over GoldHEN FTP. `hardware.txt` describes your console exactly: southbridge, kernel, Wi-Fi chip and drivers.
 4. Open a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), or post in [Discussions](https://github.com/odiecay/android-tv-ps4/discussions).
 
+## Reading a black screen
+
+A black screen after the handover can mean three different things, and `kernel.log` (saved to `/user/app/ps4-android` and to a USB stick) tells them apart. Compare it with [a known-good fat PS4](reference-logs/fat-aeolia-gpu.txt); the first line that's missing shows where it stopped:
+
+- **No `initializing kernel modesetting` line, or no `kernel.log` at all:** Linux stopped before the GPU driver ran.
+- **`LIVERPOOL` or `GLADIUS` appears but there's no `Initialized amdgpu`:** the GPU driver failed. The lines just before say which part (firmware, memory or rings).
+- **`amdgpudrmfb` appears:** the GPU is up and drawing, so the problem is the HDMI output or the TV.
+
 ## Credits for hardware support
 
 The model-specific work builds on the PS4 Linux community: the [ps4-linux-loader](https://github.com/ps4-linux/ps4-linux-loader) developers, the Liverpool and Gladius kernel work, [crashniels](https://github.com/crashniels/linux) for the 6.15 PS4 and Baikal kernels, [feeRnt's ps4-linux-12xx](https://github.com/feeRnt/ps4-linux-12xx) for the 88W8897 and MT7668 work, [noob404's MT7668 firmware collection](https://github.com/noob404yt/mt7668-wifi-bt-firmware), and [linux-psx](https://github.com/meerzulee/linux-psx) for the Baikal storage, SDIO and Ethernet research.

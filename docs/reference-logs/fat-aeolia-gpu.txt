@@ -1,0 +1,55 @@
+# Known-good GPU bring-up: fat PS4 CUH-1102A, Aeolia, firmware 13.52, Android TV for PS4 1.1 (26 Oct build)
+# Kernel log lines from 'initializing kernel modesetting' to the first framebuffer.
+# Compare a failing console's kernel.log against this: the first line that differs shows where it stopped.
+
+[    2.212979] [drm] initializing kernel modesetting (LIVERPOOL 0x1002:0x9920 0x1002:0x9920 0x00).
+[    2.213021] [drm] register mmio base: 0xE4800000
+[    2.213028] [drm] register mmio size: 262144
+[    2.213193] amdgpu 0000:00:01.0: amdgpu: detected ip block number 0 <cik_common>
+[    2.213207] amdgpu 0000:00:01.0: amdgpu: detected ip block number 1 <gmc_v7_0>
+[    2.213218] amdgpu 0000:00:01.0: amdgpu: detected ip block number 2 <cik_ih>
+[    2.213227] amdgpu 0000:00:01.0: amdgpu: detected ip block number 3 <dce_v8_0>
+[    2.213236] amdgpu 0000:00:01.0: amdgpu: detected ip block number 4 <gfx_v7_0>
+[    2.213246] amdgpu 0000:00:01.0: amdgpu: detected ip block number 5 <cik_sdma>
+[    2.249259] amdgpu 0000:00:01.0: amdgpu: Fetched VBIOS from ROM BAR
+[    2.249271] amdgpu: ATOM BIOS: 113-C37700-021
+[    2.249398] amdgpu 0000:00:01.0: vgaarb: deactivate vga console
+[    2.249411] amdgpu 0000:00:01.0: amdgpu: Trusted Memory Zone (TMZ) feature not supported
+[    2.249558] i2c_dev: adapter [AMDGPU i2c bit bus 0x90] registered as minor 1
+[    2.249576] i2c i2c-1: adapter [AMDGPU i2c bit bus 0x90] registered
+[    2.249672] i2c_dev: adapter [AMDGPU i2c bit bus 0x91] registered as minor 2
+[    2.249686] i2c i2c-2: adapter [AMDGPU i2c bit bus 0x91] registered
+[    2.249767] [drm] vm size is 64 GB, 2 levels, block size is 10-bit, fragment size is 9-bit
+[    2.249783] amdgpu 0000:00:01.0: amdgpu: VRAM: 2048M 0x0000000F00000000 - 0x0000000F7FFFFFFF (2048M used)
+[    2.249797] amdgpu 0000:00:01.0: amdgpu: GART: 512M 0x0000000000000000 - 0x000000001FFFFFFF
+[    2.249814] [drm] Detected VRAM RAM=2048M, BAR=2048M
+[    2.249821] [drm] RAM width 64bits UNKNOWN
+[    2.250153] [drm] amdgpu: 2048M of VRAM memory ready
+[    2.250163] [drm] amdgpu: 2953M of GTT memory ready.
+[    2.250203] [drm] GART: num cpu pages 131072, num gpu pages 131072
+[    2.250218] amdgpu 0000:00:01.0: amdgpu: Done gart
+[    2.250237] amdgpu 0000:00:01.0: amdgpu: Done init
+[    2.250270] [drm] PCIE GART of 512M enabled (table at 0x0000000F00100000).
+[    2.251167] [drm] AMDGPU Display Connectors
+[    2.251186] [drm] Connector 0:
+[    2.251192] [drm]   HDMI-A-1
+[    2.251197] [drm]   HPD1
+[    2.251202] [drm]   DDC: 0x194c 0x194c 0x194d 0x194d 0x194e 0x194e 0x194f 0x194f
+[    2.251213] [drm]   Encoders:
+[    2.251217] [drm]     DFP1: INTERNAL_UNIPHY
+[    2.257480] amdgpu 0000:00:01.0: amdgpu: SE 2, SH per SE 1, CU per SH 9, active_cu_number 17
+[    2.257612] amdgpu 0000:00:01.0: amdgpu: Runtime PM not available
+[    2.258071] i2c_dev: adapter [card0-HDMI-A-1] registered as minor 3
+[    2.258091] i2c i2c-3: adapter [card0-HDMI-A-1] registered
+[    2.258106] [drm] Initialized amdgpu 3.63.0 for 0000:00:01.0 on minor 0
+[    2.282284] mmc0: new UHS-I speed SDR50 SDIO card at address 0001
+[    2.283347] Bluetooth: vendor=0x2df, device=0x912a, class=255, fn=2
+[    2.288221] fbcon: amdgpudrmfb (fb0) is primary device
+[    2.456603] scsi 0:0:0:0: Direct-Access     SCEI     USB-SATA Bridge  0001 PQ: 0 ANSI: 6
+[    2.456891] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    2.458964] sd 0:0:0:0: [sda] 937703088 512-byte logical blocks: (480 GB/447 GiB)
+[    2.459293] sd 0:0:0:0: [sda] Write Protect is off
+[    2.459298] sd 0:0:0:0: [sda] Mode Sense: 33 00 00 08
+[    2.459516] sd 0:0:0:0: [sda] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[    2.478380] Console: switching to colour frame buffer device 240x67
+[    2.486600] amdgpu 0000:00:01.0: [drm] fb0: amdgpudrmfb frame buffer device

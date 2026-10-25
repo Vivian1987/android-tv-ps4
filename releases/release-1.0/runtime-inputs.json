@@ -1,10 +1,10 @@
 {
   "base_release": "retained-start",
   "base_initramfs_sha256": "b191d815dbbb322b4cedba7ffee89f10a25a8d3e66d2601fb4151bd9d3d52ecb",
-  "initramfs_sha256": "eadb427d3c1bf8ad342c45afbebc6a8b766999e9f7f9afab323394f35a485a70",
-  "initramfs_bytes": 11180700,
-  "expanded_sha256": "c2978b01cff1514ba33a83821bd7537eaf6ae1b9a0e0ada2a6c28eab694234a7",
-  "expanded_bytes": 32014956,
+  "initramfs_sha256": "0ca054f3c35d5b07e36c5f19fb44633cfabf3b54c44b98580595b6e0c3f26f80",
+  "initramfs_bytes": 11183884,
+  "expanded_sha256": "22463b420ccf58ae8ca013481f2a8e0969b38ba7c5d17bf9650d5e1c4da43af8",
+  "expanded_bytes": 32015036,
   "changed_entries": [
     "opt/androidtv-ps4/autoboot.sh",
     "usr/sbin/androidtv-ps4-start"
@@ -17,7 +17,7 @@
   "app_storage": "Bundled read-only app filesystem, signed APKs and prepared native libraries",
   "userdata_included": false,
   "console_boot_tested": false,
-  "parent_initramfs_sha256": "c522d8464043a84f5118acc0f466054166b57c5cb473d17abb9e957b0fa898d8",
+  "parent_initramfs_sha256": "eadb427d3c1bf8ad342c45afbebc6a8b766999e9f7f9afab323394f35a485a70",
   "power_supervisor_sha256": "096db3b060a9d6ba09cd88708d4d79ffac1ac8bec1267aae07d69d2fd70c385b",
   "power_supervisor_source_sha256": "7335c9c52192543c5c16a1189e026c46c0e67b060d8e60bad3ced402e4127c5a"
 }

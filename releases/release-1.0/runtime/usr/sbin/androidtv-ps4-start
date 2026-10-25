@@ -45,10 +45,8 @@ stop_safely() {
  # Keep watching for a USB stick so reports can still be saved after the fact.
  if ! export_reports; then
   stage 'To keep the reports, plug in a FAT or exFAT USB stick now'
-  for attempt in $(seq 1 180); do
-   sleep 5
-   export_reports && break
-  done
+  # Wait for as long as it takes; the console is idle until it is turned off.
+  until export_reports; do sleep 5; done
  fi
 }
 on_exit() {

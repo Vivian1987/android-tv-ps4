@@ -42,7 +42,7 @@ Reinstalling the same PKG keeps your existing Android data. It doesn't reset any
 
 ## Updating from 1.0
 
-Install the 1.1 PKG over 1.0 with the Package Installer and open the app. The installer reuses your existing Android files and data, so your apps and logins stay. 1.1 keeps its boot files in `/user/app/ps4-android/boot` instead of `/data/linux/boot`; the old 1.0 copies in `/data/linux/boot` are no longer used (see [Removing Android](#removing-android)).
+Delete **Android TV for PS4** from the PS4 home screen, then install the 1.1 PKG with the Package Installer and open it. Deleting the app only removes the launcher: Android itself, with your apps, accounts and settings, is stored separately in `/user/app/ps4-android` and is kept. The launcher finds it, updates the startup files and boots straight in, without the 5–10 minute first install. 1.1 keeps its boot files in `/user/app/ps4-android/boot` instead of `/data/linux/boot`; the old 1.0 copies in `/data/linux/boot` are no longer used (see [Removing Android](#removing-android)).
 
 ## Network and controllers
 

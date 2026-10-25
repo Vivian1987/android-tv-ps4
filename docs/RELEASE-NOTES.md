@@ -30,7 +30,7 @@ On a CUH-1102A on 13.52: video, controller, screensaver and the bundled apps. Ev
 
 ### Updating
 
-Install the 1.1 PKG over 1.0. Your Android apps and data are kept ([details](INSTALL.md#updating-from-10)).
+Delete Android TV for PS4 from the PS4 home screen, then install the 1.1 PKG. Your Android apps and data are stored separately and are kept ([details](INSTALL.md#updating-from-10)). If you had renamed the device, it's set to PlayStation 4 once; rename it again in Settings.
 
 ## 1.0
 

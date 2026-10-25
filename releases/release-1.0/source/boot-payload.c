@@ -56,6 +56,9 @@ int _main(void){
  size_t first=(sizeof(local_payload_image)+16383)&~(size_t)16383;
  size_t bytes=first+((ATV_KEXEC_MAX_BYTES+16383)&~(size_t)16383);
  void *memory=0,*kernel=0,*initrd=0;
+ /* Baikal consoles boot their own kernel; the others keep the tested one. */
+ const char *kernel_path=ATV_BOOT_DIR "/bzImage";
+ size_t kernel_bytes=ATV_KERNEL_BYTES;unsigned kernel_crc=ATV_KERNEL_CRC32;
  out.rc=mapmem(0,bytes,7,0x1002,-1,0,&memory);if(out.rc){save();close(control_fd);return -1;}
  copybytes(memory,local_payload_image,sizeof(local_payload_image));
  /* One loader per firmware, built from the same source. Firmware without
@@ -78,7 +81,8 @@ int _main(void){
  if(save()){out.rc=-114;goto done;}
  /* The small foreground app has already released its file-backed artwork.
   * Prepare Linux now; ARM still requires an explicit display release below. */
- out.rc=image(ATV_BOOT_DIR "/bzImage",&kernel,ATV_KERNEL_BYTES);if(out.rc)goto done;
+ if((sb>>16)==ATV_SB_FAMILY_BAIKAL){kernel_path=ATV_BOOT_DIR "/bzImage-baikal";kernel_bytes=ATV_KERNEL_BAIKAL_BYTES;kernel_crc=ATV_KERNEL_BAIKAL_CRC32;}
+ out.rc=image(kernel_path,&kernel,kernel_bytes);if(out.rc)goto done;
  out.rc=image(ATV_BOOT_DIR "/initramfs.cpio.xz",&initrd,ATV_INITRD_BYTES);if(out.rc)goto done;
  char args[1024]={0};int fd=open(ATV_BOOT_DIR "/bootargs.txt",O_RDONLY,0);
  if(fd<0){out.rc=-104;goto done;}ssize_t got=read(fd,args,sizeof(args)-1);close(fd);
@@ -91,12 +95,12 @@ int _main(void){
  out.rc=VAR(errno,int);if(out.rc)goto done;
  out.stage=4;save();unsigned long long start=sceKernelGetProcessTime();
  int packed=FN(pack_kexec_args,int(*)(int,unsigned short,int))(2048,fwver,sb);
- out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(kernel,ATV_KERNEL_BYTES,initrd,ATV_INITRD_BYTES,args,packed);
+ out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(kernel,kernel_bytes,initrd,ATV_INITRD_BYTES,args,packed);
  out.elapsed=sceKernelGetProcessTime()-start;out.stage=5;save();
  if(out.rc)goto done;
  out.rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_QUERY,&out.report,sizeof(out.report),0,0);
  out.stage=6;save();
- if(!out.rc&&(out.report.magic!=ATV_BOOT_REPORT_MAGIC||out.report.state!=1||out.report.image_crc32!=ATV_KERNEL_CRC32||out.report.initrd_crc32!=ATV_INITRD_CRC32))out.rc=-106;
+ if(!out.rc&&(out.report.magic!=ATV_BOOT_REPORT_MAGIC||out.report.state!=1||out.report.image_crc32!=kernel_crc||out.report.initrd_crc32!=ATV_INITRD_CRC32))out.rc=-106;
  if(out.rc){out.cancel_rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_CANCEL,0,0,0,0);goto done;}
  int event=FN(evf_open,int(*)(char*))("SceSysCoreReboot");
  if(event<0){out.rc=event;out.cancel_rc=FN(kexec_load,int(*)(void*,unsigned long long,void*,unsigned long long,void*,int))(0,ATV_BOOT_CANCEL,0,0,0,0);goto done;}
@@ -114,7 +118,7 @@ int _main(void){
  out.rc=FN(kill,int(*)(int,int))(1,30);
  out.stage=11;save();
  done:save();notice_failure();
- if(kernel)unmapmem(kernel,(ATV_KERNEL_BYTES+16383)&~(size_t)16383);
+ if(kernel)unmapmem(kernel,(kernel_bytes+16383)&~(size_t)16383);
  if(initrd)unmapmem(initrd,(ATV_INITRD_BYTES+16383)&~(size_t)16383);
  unmapmem(memory,bytes);close(control_fd);return out.rc;
 }

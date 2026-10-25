@@ -50,7 +50,7 @@ static int commit_file(const char *from,const char *to){
  return rename(from,to);
 }
 #include <bundled-apps.h>
-#define BASE_ASSET_COUNT 9
+#define BASE_ASSET_COUNT 10
 #define ASSET_COUNT (BASE_ASSET_COUNT+BUNDLED_APP_COUNT)
 static int files[ASSET_COUNT];
 #ifdef RAW_IMAGES
@@ -64,7 +64,10 @@ static int files[ASSET_COUNT];
 #define SYSTEM_OPERATION "Extracting the bundled Android system image"
 #define DATA_OPERATION "Extracting your preformatted data.img from its supplied ZIP"
 #endif
-static const char *names[BASE_ASSET_COUNT]={DATA_ASSET,"bzImage","initramfs.cpio.xz","bootargs.txt","vram.txt","linux.elf",SYSTEM_ASSET,"libgallium-baseline.so","ndk-translation.tar.gz"};
+static const char *names[BASE_ASSET_COUNT]={DATA_ASSET,"bzImage","initramfs.cpio.xz","bootargs.txt","vram.txt","linux.elf",SYSTEM_ASSET,"libgallium-baseline.so","ndk-translation.tar.gz","bzImage-baikal"};
+/* Boot files copied to BOOT_ROOT: both kernels, the shared initramfs and the
+ * boot arguments. The payload picks the kernel for the console's southbridge. */
+static const int boot_assets[]={1,2,3,4,9};
 static void notice(const char *s){char log[320];snprintf(log,sizeof(log),"[PS4ATV] %s\n",s);sceKernelDebugOutText(0,log);installer_ui_status(s);}
 static void failure(const char *s){int saved=errno;char message[256];snprintf(message,sizeof(message),"%s (errno %d)",s,saved);notice(message);}
 static uint64_t completed_bytes;
@@ -119,20 +122,23 @@ static int install_boot(void){
  if(mkdir(BOOT_PARENT,0755)&&errno!=EEXIST)return -1;
  BOOT_STEP("create %s",BOOT_ROOT);
  if(mkdir(BOOT_ROOT,0755)&&errno!=EEXIST)return -1;
- /* Each boot file commits atomically. Android is launched only after all four
+ /* Each boot file commits atomically. Android is launched only after every boot file
   * match this package. A retry completes interrupted commits without touching data. */
- for(int i=0;i<4;i++){
+ for(unsigned i=0;i<sizeof(boot_assets)/sizeof(boot_assets[0]);i++){
+  int asset=boot_assets[i];
   char target[128],stage[160],backup[160];struct stat st;
-  snprintf(target,sizeof(target),BOOT_ROOT "/%s",names[i+1]);
+  snprintf(target,sizeof(target),BOOT_ROOT "/%s",names[asset]);
   snprintf(stage,sizeof(stage),"%s.ps4android-next",target);
   snprintf(backup,sizeof(backup),"%s.before-sparse-v015",target);
   BOOT_STEP("check %s",target);
-  if(file_equal(files[i+1],target))continue;
+  if(file_equal(files[asset],target))continue;
   int exists=path_stat(target,&st)==0;
   if(!exists&&errno!=ENOENT)return -1;
-  if(exists){if(path_stat(backup,&st)==0){errno=EEXIST;return -1;}if(errno!=ENOENT)return -1;}
+  /* Keep one backup: the copy being replaced. An older backup is from a previous update. */
+  BOOT_STEP("remove old backup %s",backup);
+  if(exists&&unlink(backup)&&errno!=ENOENT)return -1;
   BOOT_STEP("write %s",stage);
-  if(copy_file(files[i+1],stage))return -1;
+  if(copy_file(files[asset],stage))return -1;
   BOOT_STEP("back up %s",target);
   if(exists&&rename(target,backup))return -1;
   BOOT_STEP("replace %s",target);

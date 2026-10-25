@@ -6,7 +6,7 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 [Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-`Android-TV-for-PS4-1.1.pkg`, 3,122,855,936 bytes, SHA256 `66605cf2ce3e8cfb2fa62e90af6b9ca8d5b2c1270900de74a624c53f0e39b69d`
+`Android-TV-for-PS4-1.1.pkg`, 3,123,052,544 bytes, SHA256 `57cfbaffa8b5e5a894bebfa15b4e61745cefe6a6ab25847d62916c4d88b30ff5`
 
 ### What's new
 

@@ -14,9 +14,11 @@ stage() {
 # A running Android is never interrupted.
 installation=
 export_reports() {
+ internal=${userpart:-/dev/sda27}; internal=${internal#/dev/}; internal=${internal%27}
  for block in /sys/class/block/sd*; do
   name=${block##*/}
-  case "$(readlink -f "$block")" in */usb*) ;; *) continue ;; esac
+  # Never write to the console's own drive; some of its partitions are FAT.
+  case "$name" in "$internal"*) continue ;; esac
   mkdir -p /mnt/usb-report
   mount -t vfat "/dev/$name" /mnt/usb-report 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-report 2>/dev/null || continue
   folder=/mnt/usb-report/AndroidTV-PS4-report-$(cut -d. -f1 /proc/uptime)
@@ -30,17 +32,24 @@ export_reports() {
   fi
   umount /mnt/usb-report 2>/dev/null || true
  done
- stage 'No USB stick found for reports; plug in a FAT or exFAT stick to keep them'
+ return 1
 }
 stop_safely() {
  [ ! -f /run/androidtv-ps4/android-launched ] || return 0
- export_reports
  sync
  for mount in /mnt/android-bundled-apps /mnt/android-persistent /android /mnt/android-lower /mnt/android-sfs /mnt/android-share /mnt/ps4-user; do
   umount "$mount" 2>/dev/null || true
  done
  cryptsetup close ps4-android-user 2>/dev/null || true
  stage 'Android TV could not start. It is now safe to hold the power button to restart the PS4.'
+ # Keep watching for a USB stick so reports can still be saved after the fact.
+ if ! export_reports; then
+  stage 'To keep the reports, plug in a FAT or exFAT USB stick now'
+  for attempt in $(seq 1 180); do
+   sleep 5
+   export_reports && break
+  done
+ fi
 }
 on_exit() {
  status=$?
@@ -52,12 +61,11 @@ on_exit() {
 }
 trap on_exit EXIT
 touch /run/androidtv-ps4/bootstrap-active
-# The internal drive is the non-USB disk with Sony's partition 27. A USB
-# stick left in from installing the PKG can take the sda name first.
+# The internal drive is the disk with Sony's partition 27; no USB stick has
+# one. A stick left in from installing the PKG can take the sda name first.
 internal_disk() {
  for disk in /sys/block/sd*; do
   [ -b "/dev/${disk##*/}27" ] || continue
-  case "$(readlink -f "$disk/device")" in */usb*) continue ;; esac
   echo "/dev/${disk##*/}27"; return 0
  done
  return 1

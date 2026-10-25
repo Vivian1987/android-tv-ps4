@@ -1,27 +1,52 @@
 #!/system/bin/sh
-# Boot-time Android defaults for the PS4. Runs once Android reports boot
-# completion, so SettingsProvider is available.
-set -eu
+# Boot-time Android defaults for the PS4. Runs on every boot once Android
+# reports boot completion. On a fresh install, Android TV setup is still
+# starting at that point and an early write can fail, so each setting is
+# retried and read back for up to five minutes. Every step is logged:
+# logcat -s androidtv-defaults
+note() { log -p i -t androidtv-defaults "$*"; }
+
+# ensure TABLE KEY VALUE: write the setting until reading it back matches.
+ensure() {
+    attempt=1
+    while [ "$attempt" -le 60 ]; do
+        if [ "$(settings get "$1" "$2" 2>&1)" = "$3" ]; then
+            note "$1 $2=$3 (attempt $attempt)"
+            return 0
+        fi
+        result=$(settings put "$1" "$2" "$3" 2>&1) || note "$1 $2: write failed: $result"
+        if [ "$(settings get "$1" "$2" 2>&1)" = "$3" ]; then
+            note "$1 $2=$3 (attempt $attempt)"
+            return 0
+        fi
+        attempt=$((attempt + 1))
+        sleep 5
+    done
+    note "$1 $2: gave up, still $(settings get "$1" "$2" 2>&1)"
+    return 1
+}
+
+note "applying PS4 defaults"
 
 # Android sleep locks up PS4 Linux, so idle time runs the screensaver instead
-# and never goes to sleep. A screensaver chosen in Settings is kept. This runs
-# first so a later failure cannot skip it.
+# and never goes to sleep. A screensaver chosen in Settings is kept.
 backdrop=com.google.android.apps.tv.dreamx/com.google.android.apps.tv.dreamx.service.Backdrop
-case "$(settings get secure screensaver_components)" in
+case "$(settings get secure screensaver_components 2>&1)" in
     ''|null)
-        settings put secure screensaver_components "$backdrop"
-        settings put secure screensaver_default_component "$backdrop"
+        ensure secure screensaver_components "$backdrop"
+        ensure secure screensaver_default_component "$backdrop"
         ;;
 esac
-settings put secure screensaver_enabled 1
-settings put secure screensaver_activate_on_sleep 1
-settings put secure sleep_timeout -1
+ensure secure screensaver_enabled 1
+ensure secure screensaver_activate_on_sleep 1
+ensure secure sleep_timeout -1
 
-# Name the device "PlayStation 4" without altering Build.MODEL. The stock
-# default is derived from the certified phone model, so the name is set once
-# per installation; a name chosen later in setup or Settings is kept.
+# Name the device "PlayStation 4" without altering Build.MODEL. The overlay
+# makes it the setup default; this also renames a 1.0 install once. A name
+# chosen later in Settings is kept.
 if [ "$(getprop persist.vendor.androidtv.named)" != 1 ]; then
-    if settings put global device_name 'PlayStation 4'; then
-        setprop persist.vendor.androidtv.named 1 || true
+    if ensure global device_name 'PlayStation 4'; then
+        setprop persist.vendor.androidtv.named 1 || note "could not record that the name was set"
     fi
 fi
+note "done"

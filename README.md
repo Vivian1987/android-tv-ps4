@@ -66,6 +66,7 @@ These are the known weak spots in 1.1. Reports on any of them help the next rele
 - **Firmware other than 13.52 is untested.** The loader has offsets for 20 versions, but only 13.52 has been run.
 - **MT7668 Wi-Fi** (many later Slims and Pros) is included but has never been run on real hardware.
 - **No HDCP,** so some protected streams won't play, and YouTube needs you to sign in.
+- **First setup can jump back to the start,** usually once. Keep going and it finishes. 1.1 removed one cause; the other isn't known yet.
 - **The handover to Linux** usually takes 30 seconds to a minute, longer on the first launch after installing or updating.
 
 ## Questions

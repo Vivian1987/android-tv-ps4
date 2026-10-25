@@ -60,9 +60,8 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 | Issue | Details |
 | --- | --- |
 | Protected video / HDCP | There is no HDCP on this path. 7plus plays audio with no video and reports an HDCP error. Other services with strict DRM may behave the same way. |
-| First setup restarts | Google's setup app can crash and start again two or three times during the first setup. Keep going; it completes and doesn't happen again afterwards. |
+| First setup restarts | The first Android setup can jump back to the start, usually once. 1.1 removed one cause (apps being refused their storage folders), which used to make it happen two or three times; the remaining cause isn't known yet. Keep going and it completes. It only happens during first setup. |
 | YouTube guest mode | Guest playback can request a secure decoder that isn't available. Sign in to watch. |
-| Setup navigation | Some setup screens have been reported to jump back or repeat. |
 | BinLoader connection (error 61) | The launcher couldn't reach BinLoader. Close the app, toggle BinLoader off and on, and reopen it ([steps](INSTALL.md#troubleshooting)). |
 | Startup memory (code 12) | The launcher shows "Restart your PS4, then open Android TV again". Linux needs two unbroken blocks of memory (about 12 MB and 10 MB), and heavy disk activity in the same session, such as installing the PKG or the first launch after an update, can leave none that large. Restart the PS4, load GoldHEN and open the app first. Nothing is changed. ([details](INSTALL.md#troubleshooting)) |
 | Payload received but not run | GoldHEN may show the payload as received but then report "failed to launch payload". The launcher keeps waiting. Restart the console and try again. |

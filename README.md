@@ -4,7 +4,7 @@
 
 Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. Install one PKG, open it from the home screen, and the console boots straight into Android TV from its internal drive. Your apps, accounts and settings are kept between launches.
 
-[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
+[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [Roadmap](docs/ROADMAP.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md)
 
 ## What's new in 1.1
 
@@ -59,7 +59,7 @@ Known limitations: this isn't a Google-certified device and there's no HDCP, so 
 
 ## Still rough: help us test
 
-These are the known weak spots in 1.1. Reports on any of them help the next release.
+These are the known weak spots in 1.1. Reports on any of them help the next release, and the [roadmap](docs/ROADMAP.md) has what's known about fixing each one.
 
 - **The first launch after installing often needs a restart.** It stops with "Restart your PS4, then open Android TV again" (code 12). Copying a 3 GB PKG fragments the PS4's memory, and Linux needs two unbroken blocks of about 10–12 MB. A restart fixes it, though occasionally it takes two, a bit like running the exploit. The proper fix is reserving that memory before the copying starts, planned for the next release. Would you rather it restarted automatically? [Tell us](https://github.com/odiecay/android-tv-ps4/discussions).
 - **Slim, Pro and Baikal are untested.** The support is built in, but no one has reported on it yet. Baikal is the most experimental, and its USB support is the biggest unknown. See [Hardware support](docs/HARDWARE.md).
@@ -113,4 +113,4 @@ The source is in [`releases/release-1.0/`](releases/release-1.0/): native launch
 - **Ps3itaTeam**: the Liverpool raster configuration used in the graphics fix.
 - **Android-x86, AOSP, Linux, Mesa** and the app developers.
 
-[Full credits](docs/CREDITS.md) · [Artwork sources](docs/ASSETS.md). Android TV and PlayStation are trademarks of their respective owners. This is an independent homebrew project and is not affiliated with Google or Sony.
+[Full credits and artwork sources](docs/CREDITS.md). Android TV and PlayStation are trademarks of their respective owners. This is an independent homebrew project and is not affiliated with Google or Sony.

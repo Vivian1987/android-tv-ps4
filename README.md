@@ -13,7 +13,8 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 - **More reliable video.** Some video, including YouTube and the NBA app, could freeze after a few seconds while the sound kept playing. That's fixed.
 - **Controller works like a TV remote in every app.** X selects and Circle goes back everywhere. Before, a few apps ignored the controller on some screens, such as Kayo's sign-in button and going back in the NBA app.
 - **Screensaver instead of sleep.** When idle, Android shows a screensaver and keeps running. Android's sleep mode froze PS4 Linux.
-- **Named "PlayStation 4"** on your network and in casting apps, instead of a phone model name.
+- **Named "PlayStation 4"** on your network, so Spotify Connect and casting find it by name.
+- **More stable, faster launches.** Apps get their storage folders properly (no more setup restarting itself), a background crash loop is gone, and the app no longer re-reads every installed file on each launch.
 - **One 3.12 GB PKG** from Google Drive. No joining parts.
 - **Failed starts explain themselves** and save their logs to a USB stick.
 

@@ -10,8 +10,8 @@ stage() {
 }
 # A start that fails before Android launches explains itself, copies its
 # reports to a USB stick if one is plugged in (the internal drive may be what
-# failed), unmounts cleanly and returns to the PS4 system after a minute, so
-# nobody has to hold the power button. A running Android is never interrupted.
+# failed) and unmounts cleanly, so holding the power button is then safe.
+# A running Android is never interrupted.
 installation=
 export_reports() {
  for block in /sys/class/block/sd*; do
@@ -32,24 +32,22 @@ export_reports() {
  done
  stage 'No USB stick found for reports; plug in a FAT or exFAT stick to keep them'
 }
-return_to_ps4() {
+stop_safely() {
  [ ! -f /run/androidtv-ps4/android-launched ] || return 0
  export_reports
- stage 'Android TV could not start. Returning to the PS4 system in 60 seconds.'
  sync
  for mount in /mnt/android-bundled-apps /mnt/android-persistent /android /mnt/android-lower /mnt/android-sfs /mnt/android-share /mnt/ps4-user; do
   umount "$mount" 2>/dev/null || true
  done
  cryptsetup close ps4-android-user 2>/dev/null || true
- sleep 60
- reboot -f
+ stage 'Android TV could not start. It is now safe to hold the power button to restart the PS4.'
 }
 on_exit() {
  status=$?
  if [ -n "$installation" ] && [ -d "$installation" ]; then save_logs "$status"; fi
  if [ "$status" -ne 0 ]; then
   stage "SETUP FAILED (status $status); data preserved"
-  return_to_ps4
+  stop_safely
  fi
 }
 trap on_exit EXIT
@@ -271,7 +269,7 @@ touch /run/androidtv-ps4/allow-console-power
 # No host address, remote server, credentials, or external boot dependency.
 touch /run/androidtv-ps4/host-netns
 mount --bind /proc/self/ns/net /run/androidtv-ps4/host-netns
-# From here a failure must not reboot underneath a running Android.
+# From here a failure leaves Android running; no clean-up stops it.
 touch /run/androidtv-ps4/android-launched
 /usr/sbin/android-supervisor -- /bin/sh /run/androidtv-ps4/android-child.sh </dev/null >/run/androidtv-ps4/android.log 2>&1 &
 echo $! > /run/androidtv-ps4/android-supervisor.pid

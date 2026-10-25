@@ -97,7 +97,7 @@ A [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template
 - A report that something didn't work turns the mark into ⚠️ or ❌, with a note on what failed, until it's fixed.
 - `hardware.txt` decides which column a console belongs in, because the model number alone doesn't tell Belize 2 from Baikal.
 
-Maintainers update the page from reports. You can also open a pull request that edits this file yourself: add your row to **Tested consoles**, link your report, and change only the marks your report shows.
+Maintainers update the page from reports. You can also edit this file yourself: add your row to **Tested consoles**, link your report, and change only the marks your report shows. [Editing a page without Git](../CONTRIBUTING.md#editing-a-page-without-git) takes about a minute.
 
 ## Reporting your console
 

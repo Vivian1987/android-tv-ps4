@@ -4,6 +4,10 @@ This project brings Android TV to PS4 hardware through a native launcher and a P
 
 Start with [Architecture](docs/DEVELOPMENT.md), then [Build](docs/BUILD.md). The active source is `releases/release-1.0`. Older installer experiments in Git history explain how the project developed; they are not the release build path.
 
+## Editing a page without Git
+
+You can fix a doc or add your console to [Hardware support](docs/HARDWARE.md#tested-consoles) from the browser. Open the file on GitHub, click the **pencil icon** (Edit this file), make your change, and choose **Propose changes**. GitHub copies the repository to your account and opens a pull request for you. No Git or command line needed.
+
 ## Where to work
 
 | Area | Entry point | Useful work |

@@ -13,6 +13,7 @@ stage() {
 hardware_report() {
  {
   echo "Android TV for PS4 hardware report (uptime $(cut -d' ' -f1 /proc/uptime)s)"
+  echo "Build: $(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)"
   echo "Southbridge: ${southbridge:-unknown}"
   # Only the Baikal kernel registers the baikal_pcie driver.
   if [ -d /sys/bus/pci/drivers/baikal_pcie ]; then echo "Kernel image: bzImage-baikal (Baikal kernel)"
@@ -469,6 +470,27 @@ fi
 echo "Android network attached to namespace owned by PID $child"
 
 stage 'Android init launched; diagnostics continue in android-stages.log'
+# Keep logging while Android runs, for faults that only show up later (Wi-Fi,
+# apps, the display). Every minute: the kernel log, Android's Wi-Fi interface
+# and its recent Wi-Fi and network messages. Stops at restart or shut down.
+running_logs() {
+ set +e
+ while [ ! -f /run/androidtv-ps4/power-request ]; do
+  sleep 60
+  {
+   echo "Running log at $(cut -d' ' -f1 /proc/uptime) s, build $(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)"
+   echo; echo "Wi-Fi in Android:"
+   timeout 5 nsenter -t "$child" -n /usr/sbin/iw dev
+   timeout 5 nsenter -t "$child" -n /usr/sbin/ip addr show wlan0
+   echo; echo "Recent Android Wi-Fi and network messages:"
+   timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system -t 2000 2>/dev/null | grep -iE 'wifi|wpa|supplicant|dhcp|connectivity|netd|wlan' | tail -200
+  } > "$installation/running.log.part" 2>&1
+  mv "$installation/running.log.part" "$installation/running.log"
+  dmesg > "$installation/kernel-running.log" 2>/dev/null
+  sync
+ done
+}
+running_logs </dev/null >/dev/null 2>&1 &
 # These logs are created on this console, never included in the release package.
 # Android init owns the rotating collector in /data/misc/logd; it survives setup.
 for attempt in $(seq 1 120); do

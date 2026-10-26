@@ -10,6 +10,7 @@
 #include "boot-control.h"
 #include "launch-protocol.h"
 #include "display-release.h"
+#include "build-id.h"
 #define FN(name,type) ((type)((char*)memory+PAYLOAD_##name))
 #define VAR(name,type) (*(type*)((char*)memory+PAYLOAD_##name))
 struct result { unsigned int magic; int stage,rc,cancel_rc; unsigned long long elapsed,nonce; unsigned short firmware,firmware_base; int southbridge; struct atv_boot_report report; };
@@ -88,7 +89,7 @@ int _main(void){
  if(fd<0){out.rc=-104;goto done;}ssize_t got=read(fd,args,sizeof(args)-1);close(fd);
  if(got<=0){out.rc=-105;goto done;}
  for(ssize_t i=0;i<got;i++)if(args[i]=='\n'||args[i]=='\r')args[i]=0;
- size_t used=0;while(args[used])used++;const char tag[]=" androidtv.boot_id=release-110";
+ size_t used=0;while(args[used])used++;const char tag[]=" androidtv.boot_id=" ATV_BUILD_ID;
  if(used+sizeof(tag)>sizeof(args)){out.rc=-108;goto done;}copybytes(args+used,tag,sizeof(tag));
  out.stage=3;save();VAR(errno,int)=0;
  FN(kexec,void(*)(void*,void*))((char*)memory+PAYLOAD_kernel_main,0);

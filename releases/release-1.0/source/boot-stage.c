@@ -2,6 +2,7 @@
  * Only the receiver executes the handoff. This app releases its display when
  * preparation is verified, then acknowledges that condition to the receiver. */
 #include "../loader-source/linux/ps4-kexec-common/boot-control.h"
+#include "build-id.h"
 #include "ps4-stat-abi.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -130,6 +131,7 @@ int atv_launch_with_progress(void){
  /* Open descriptors while privileged, then restore credentials BEFORE delivery. */
  int root_rc=ps4_as_root(open_channels,NULL);
  if(root_rc||access_error)return fail("Cannot open Android TV startup controls",root_rc?root_rc:access_error);
+ marker("Android TV for PS4 " ATV_BUILD_ID "\n");
  marker("Android TV: keeping the app visible during GoldHEN loopback startup\n");
  marker("Destination 127.0.0.1:9090; payload SHA256 " ATV_PAYLOAD_SHA256 "\n");
  installer_ui_boot_status("Starting Android TV","Preparing to start Linux on this console.");

@@ -120,6 +120,25 @@ internal_disk() {
  done
  return 1
 }
+# Once the internal drive is known, leave a note on any USB stick. A start
+# that later hangs or runs without a picture still leaves this behind, so a
+# stick with no note at all means the kernel never reached this script.
+early_usb_note() {
+ internal=${userpart#/dev/}; internal=${internal%27}
+ for attempt in $(seq 1 20); do
+  for block in /sys/class/block/sd*; do
+   name=${block##*/}
+   case "$name" in "$internal"*) continue ;; esac
+   mkdir -p /mnt/usb-early
+   mount -t vfat "/dev/$name" /mnt/usb-early 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-early 2>/dev/null || continue
+   { echo "Linux started and found the internal drive ($userpart) after $(cut -d' ' -f1 /proc/uptime) s."
+     cat /run/androidtv-ps4/progress.log 2>/dev/null; } > /mnt/usb-early/AndroidTV-PS4-linux-started.txt
+   dmesg > /mnt/usb-early/AndroidTV-PS4-early-kernel.log 2>/dev/null
+   sync; umount /mnt/usb-early; return 0
+  done
+  sleep 1
+ done
+}
 stage 'Waiting for internal PS4 disk'
 userpart=
 for attempt in $(seq 1 60); do
@@ -129,6 +148,7 @@ for attempt in $(seq 1 60); do
  sleep 1
 done
 [ -n "$userpart" ] || { stage 'Internal disk did not appear within 60 seconds'; exit 1; }
+early_usb_note &
 stage 'Opening internal PS4 storage (disk encryption and filesystem)'
 [ -r /key/eap_hdd_key.bin ]
 # Record the southbridge for reports; Belize and Baikal consoles are allowed to try.

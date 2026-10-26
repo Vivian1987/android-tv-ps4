@@ -26,6 +26,9 @@ static struct atv_launch_control control;
 static int regular_file(int fd){struct stat st;return fd>=0&&!fstat(fd,&st)&&S_ISREG(st.st_mode);}
 static void open_channels(void *unused){
  (void)unused;
+ /* Keep the previous attempt's log: after a black screen the next launch
+  * would otherwise overwrite the only record of how far it got. */
+ (void)rename(ROOT "/launcher-boot.log",ROOT "/launcher-boot.prev.log");
  logfd=open(ROOT "/launcher-boot.log",O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);
  controlfd=open(ATV_CONTROL_PATH,O_RDWR|O_CREAT|O_NOFOLLOW,0600);
  resultfd=open(ATV_RESULT_PATH,O_RDWR|O_CREAT|O_NOFOLLOW,0600);

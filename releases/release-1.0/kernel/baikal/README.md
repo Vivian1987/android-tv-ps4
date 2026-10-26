@@ -33,4 +33,4 @@ The Baikal kernel has `CONFIG_CMDLINE="pci=nocrs intremap=off video=HDMI-A-1:192
 
 ## Status
 
-Built, not yet run on a Baikal console. The upstream results are on Baikal Slims; Baikal Pros haven't been confirmed working on any 6.x kernel. Starting with the build that includes this kernel, Linux also copies its log to a USB stick every few seconds (see `AndroidTV-PS4-blackbox` in [INSTALL](../../../../docs/INSTALL.md#logs-and-reporting-problems)), so a Baikal start with no picture still reports how far it got.
+Built, not yet run on a Baikal console. The upstream results are on Baikal Slims; Baikal Pros haven't been confirmed working on any 6.x kernel. Starting with the build that includes this kernel, Linux also copies its log to a USB stick every few seconds (the `AndroidTV-PS4-startup-logs` folder, see [INSTALL](../../../../docs/INSTALL.md#logs-and-reporting-problems)), so a Baikal start with no picture still reports how far it got.

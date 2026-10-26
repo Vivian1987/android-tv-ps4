@@ -30,12 +30,12 @@ for d in /sys/bus/pci/devices/*; do
     echo "$d $(cat "$d/vendor") $(cat "$d/device") $(cat "$d/class")"
 done > /run/androidtv-ps4/pci.txt
 echo 'Reports are in /run/androidtv-ps4. Reboot returns to the PS4 operating system.'
-# Black box for starts with no picture: until Android is running, copy the
-# kernel log and setup progress to any USB stick every few seconds, so the
-# last copy shows where a hang happened. The PS4's own drive is the disk with
-# partition 27 and is never touched. A stick with no AndroidTV-PS4-blackbox
-# folder at all means Linux never got this far.
-blackbox() {
+# Until Android is running, copy the kernel log and setup progress to any USB
+# stick every few seconds, so a start with no picture still shows where it
+# stopped. The PS4's own drive is the disk with partition 27 and is never
+# touched. A stick with no AndroidTV-PS4-startup-logs folder at all means
+# Linux never got this far.
+usb_startup_logs() {
     round=0
     while [ ! -f /run/androidtv-ps4/android-launched ] && [ "$round" -lt 120 ]; do
         round=$((round + 1))
@@ -43,9 +43,9 @@ blackbox() {
             [ -e "$block" ] || continue
             name=${block##*/}; disk=${name%%[0-9]*}
             [ -b "/dev/${disk}27" ] && continue
-            mkdir -p /mnt/blackbox
-            mount -t vfat "/dev/$name" /mnt/blackbox 2>/dev/null || mount -t exfat "/dev/$name" /mnt/blackbox 2>/dev/null || continue
-            out=/mnt/blackbox/AndroidTV-PS4-blackbox
+            mkdir -p /mnt/usb-logs
+            mount -t vfat "/dev/$name" /mnt/usb-logs 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-logs 2>/dev/null || continue
+            out=/mnt/usb-logs/AndroidTV-PS4-startup-logs
             # Keep the previous start's copy, e.g. one that hung before this one worked.
             if [ "$round" = 1 ] && [ -d "$out" ]; then
                 rm -rf "$out.previous"; mv "$out" "$out.previous"
@@ -67,12 +67,12 @@ blackbox() {
                 cp /run/androidtv-ps4/progress.log /run/androidtv-ps4/one-shot.log /run/androidtv-ps4/pci.txt "$out/" 2>/dev/null
                 sync
             fi
-            umount /mnt/blackbox 2>/dev/null
+            umount /mnt/usb-logs 2>/dev/null
         done
         sleep 5
     done
 }
-blackbox &
+usb_startup_logs &
 if [ -x /usr/sbin/androidtv-ps4-start ]; then
     echo '[Android TV] Linux payload running; Android will start automatically.'
     (/usr/sbin/androidtv-ps4-start 2>&1 | tee /run/androidtv-ps4/one-shot.log) &

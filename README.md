@@ -4,9 +4,9 @@
 
 Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. Install one PKG, open it from the home screen, and the console boots straight into Android TV from its internal drive. Your apps, accounts and settings are kept between launches.
 
-Questions, testing, or just want to follow along? Join the **[Telegram group](https://t.me/+LfLbi-jwludkZDJi)**.
+Questions, testing, or just want to follow along? Join the **[Discord server](https://discord.gg/UxC8kx6Eh5)**.
 
-[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [Roadmap](docs/ROADMAP.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Telegram](https://t.me/+LfLbi-jwludkZDJi)
+[Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [Roadmap](docs/ROADMAP.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Discord](https://discord.gg/UxC8kx6Eh5)
 
 ## What's new in 1.1
 
@@ -44,7 +44,7 @@ For anything else, please report it, because failed starts are how other console
 2. **If it stopped in the launcher**, copy the logs from `/user/app/ps4-android` with GoldHEN's FTP server.
 3. Open a **[console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml)** with your model, firmware and how far it got, and drag the logs (or a ZIP of the report folder) into the **Logs** box.
 
-More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting). Stuck? Ask in the [Telegram group](https://t.me/+LfLbi-jwludkZDJi).
+More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting). Stuck? Ask in the [Discord server](https://discord.gg/UxC8kx6Eh5).
 
 ## What works
 
@@ -87,7 +87,7 @@ These are the known weak spots in 1.1. Reports on any of them help the next rele
 
 ## Help wanted: other consoles
 
-Every console can now try, but only a fat 13.52 console has been tested. If you have a different model or firmware, please give it a go and [send a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Anyone with PS4 Linux experience on Slim, Pro or Baikal hardware is especially welcome; [Hardware support](docs/HARDWARE.md) lists what's built and what still needs testing. To chat with other testers and follow test builds, join the [Telegram group](https://t.me/+LfLbi-jwludkZDJi); for longer write-ups, there's [this discussion](https://github.com/odiecay/android-tv-ps4/discussions/7).
+Every console can now try, but only a fat 13.52 console has been tested. If you have a different model or firmware, please give it a go and [send a console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), even if it fails. Anyone with PS4 Linux experience on Slim, Pro or Baikal hardware is especially welcome; [Hardware support](docs/HARDWARE.md) lists what's built and what still needs testing. To chat with other testers and follow test builds, join the [Discord server](https://discord.gg/UxC8kx6Eh5); for longer write-ups, there's [this discussion](https://github.com/odiecay/android-tv-ps4/discussions/7).
 
 ## How it works
 

@@ -45,6 +45,21 @@ static void marker(const char *s){
  sceKernelDebugOutText(0,s);
  if(logfd>=0){ssize_t n=write(logfd,s,strlen(s));if(n>=0)(void)fsync(logfd);}
 }
+/* Linux can't log anything if it stops before its startup script runs (for
+ * example a kernel that hangs on unsupported hardware). Catch that here: if
+ * the last launch handed over to Linux but Linux's progress.log is older than
+ * that launch's log, Linux never got as far as writing it. */
+static void previous_start_note(void *unused){
+ (void)unused;
+ char text[8192];struct stat last,linux_log;
+ int fd=open(ROOT "/logs/previous/launcher.log",O_RDONLY|O_NOFOLLOW);if(fd<0)return;
+ ssize_t n=read(fd,text,sizeof(text)-1);int ok=fstat(fd,&last);close(fd);
+ if(n<=0||ok)return;text[n]=0;
+ if(!strstr(text,"authorizing the prepared Linux handoff"))return;
+ if(stat(ROOT "/logs/progress.log",&linux_log)||linux_log.st_mtime<last.st_mtime)
+  marker("Previous start: handed over to Linux, but Linux never wrote its logs, so it stopped before its startup (kernel, southbridge or display).\n");
+ else marker("Previous start: Linux ran; its logs are in this folder.\n");
+}
 static int flag_at(off_t offset){
  unsigned int flag=1;
  return pwrite(controlfd,&flag,sizeof(flag),offset)==sizeof(flag)&&!fsync(controlfd)?0:-1;
@@ -136,7 +151,8 @@ int atv_launch_with_progress(void){
  marker("Android TV for PS4 " ATV_BUILD_ID "\n");
  marker("Android TV: keeping the app visible during GoldHEN loopback startup\n");
  marker("Destination 127.0.0.1:9090; payload SHA256 " ATV_PAYLOAD_SHA256 "\n");
- installer_ui_boot_status("Starting Android TV","Preparing to start Linux on this console.");
+ (void)ps4_as_root(previous_start_note,NULL);
+ installer_ui_boot_status("Starting Android TV","Preparing to start Linux. Plug in a USB stick now to save the logs to it.");
  size_t sent=0;int rc=atv_send_payload(atv_bundled_payload,sizeof(atv_bundled_payload),&sent),saved=errno;
  char line[256];snprintf(line,sizeof(line),"Payload delivery result=%d bytes=%zu/%zu errno=%d. Delivery alone does not confirm Linux boot.\n",rc,sent,sizeof(atv_bundled_payload),rc?saved:0);marker(line);
  if(rc)return fail(saved==ECONNREFUSED?"Enable GoldHEN > Servers > BinLoader, then open Android TV again.":"Android TV payload could not be sent",saved);

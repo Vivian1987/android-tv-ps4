@@ -96,6 +96,8 @@ export_reports() {
 }
 stop_safely() {
  [ ! -f /run/androidtv-ps4/android-launched ] || return 0
+ # Stop the background log copy before the drive is unmounted.
+ kill "$(cat /run/androidtv-ps4/keep-logs.pid 2>/dev/null)" 2>/dev/null || true
  sync
  for mount in /mnt/android-bundled-apps /mnt/android-persistent /android /mnt/android-lower /mnt/android-sfs /mnt/android-share /mnt/ps4-user; do
   umount "$mount" 2>/dev/null || true
@@ -211,6 +213,38 @@ save_logs() {
  copy_logs "$installation/logs"
  rm -f /run/androidtv-ps4/bootstrap-active
 }
+# From here until the console is restarted or shut down, keep the logs folder
+# current: every 10 seconds while Android starts, so a hang still leaves its
+# logs, then every minute. Once Android runs, running.log also records its
+# Wi-Fi interface and recent Wi-Fi and network messages.
+keep_logs() {
+ set +e
+ while [ ! -f /run/androidtv-ps4/power-request ]; do
+  if [ -f /run/androidtv-ps4/android.pid ]; then sleep 60; else sleep 10; fi
+  grep -q ' /mnt/ps4-user ' /proc/mounts || break
+  child=$(cat /run/androidtv-ps4/android-init.pid 2>/dev/null)
+  if [ -n "$child" ]; then
+   {
+    echo "Running log at $(cut -d' ' -f1 /proc/uptime) s, build $(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)"
+    echo; echo "Wi-Fi in Android:"
+    timeout 5 nsenter -t "$child" -n /usr/sbin/iw dev
+    timeout 5 nsenter -t "$child" -n /usr/sbin/ip addr show wlan0
+    echo; echo "Recent Android Wi-Fi and network messages:"
+    timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system -t 2000 2>/dev/null | grep -iE 'wifi|wpa|supplicant|dhcp|connectivity|netd|wlan' | tail -200
+   } > /run/androidtv-ps4/running.log.part 2>&1
+   mv /run/androidtv-ps4/running.log.part /run/androidtv-ps4/running.log
+   # Android's own log, for app and Google sign-in problems. Email addresses
+   # are blanked because these files get posted in public reports.
+   timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system,crash -t 3000 2>/dev/null |
+    sed -E 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<email>/g' > /run/androidtv-ps4/android.log.part
+   mv /run/androidtv-ps4/android.log.part /run/androidtv-ps4/android-logcat.log
+  fi
+  hardware_report
+  copy_logs "$installation/logs"
+ done
+}
+keep_logs </dev/null >/dev/null 2>&1 &
+echo $! > /run/androidtv-ps4/keep-logs.pid
 [ -f "$installation/ready" ] || { stage 'Package setup incomplete'; exit 1; }
 grep -q '^PS4ANDROID13-SPARSE-V015$' "$installation/ready"
 capacity=$(cat "$installation/data-gib.txt")
@@ -460,26 +494,6 @@ fi
 echo "Android network attached to namespace owned by PID $child"
 
 stage 'Android init launched; diagnostics continue in android-stages.log'
-# Keep logging while Android runs, for faults that only show up later (Wi-Fi,
-# apps, the display). Every minute: the kernel log, Android's Wi-Fi interface
-# and its recent Wi-Fi and network messages. Stops at restart or shut down.
-running_logs() {
- set +e
- while [ ! -f /run/androidtv-ps4/power-request ]; do
-  sleep 60
-  {
-   echo "Running log at $(cut -d' ' -f1 /proc/uptime) s, build $(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)"
-   echo; echo "Wi-Fi in Android:"
-   timeout 5 nsenter -t "$child" -n /usr/sbin/iw dev
-   timeout 5 nsenter -t "$child" -n /usr/sbin/ip addr show wlan0
-   echo; echo "Recent Android Wi-Fi and network messages:"
-   timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system -t 2000 2>/dev/null | grep -iE 'wifi|wpa|supplicant|dhcp|connectivity|netd|wlan' | tail -200
-  } > /run/androidtv-ps4/running.log.part 2>&1
-  mv /run/androidtv-ps4/running.log.part /run/androidtv-ps4/running.log
-  copy_logs "$installation/logs"
- done
-}
-running_logs </dev/null >/dev/null 2>&1 &
 # These logs are created on this console, never included in the release package.
 # Android init owns the rotating collector in /data/misc/logd; it survives setup.
 for attempt in $(seq 1 120); do

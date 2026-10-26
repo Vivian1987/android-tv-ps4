@@ -6,7 +6,7 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 [Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-`Android-TV-for-PS4-1.1.pkg`, 3,123,380,224 bytes, SHA256 `9f2fded56ae998624d169fb41ada606b399489c739d5aefdc3ddde3c5b5d42d0`
+`Android-TV-for-PS4-1.1.pkg`, 3,123,380,224 bytes, SHA256 `1446d78046bd64fb0faa215b5b52b3431191ebaa7037270f5002c25c250048dd`
 
 **Updated 26 Oct:** fixes "There wasn't enough free memory to start Linux" (code 12), including on consoles where restarting didn't help. The loader used to need two unbroken blocks of memory of about 12 MB and 10 MB; it now copies Linux in pieces of 2 MB or less and puts them together at handover. `launcher-boot.log` records how many pieces it took and whether the old method would have worked. To update, delete Android TV for PS4 from the home screen (your Android data is kept), then install the new PKG. The first 1.1 build was 3,123,052,544 bytes, SHA256 `57cfbaff…30ff5`.
 

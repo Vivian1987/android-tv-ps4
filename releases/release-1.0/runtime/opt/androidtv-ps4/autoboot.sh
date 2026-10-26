@@ -416,6 +416,21 @@ if grep -q '^SDIO_ID=02DF:912A$' /sys/class/bluetooth/hci0/device/uevent 2>/dev/
 fi
 chmod 644 /android/system/vendor/etc/init/android.hardware.graphics.composer@2.1-drmfb-service.rc
 printf '%s\n' 'none /cache tmpfs noatime,nosuid,nodev,mode=0770,uid=1000,gid=2001 defaults' > /android/fstab.mustang
+# USB sticks show up in Android as USB storage. The PS4's own drive can sit
+# behind the USB controller too (it does on fat Aeolia consoles), and Android
+# must never offer to format it, so the port it's on is left out: every other
+# USB port gets a rule, and that hub only gets the other ports.
+internal_port=$(readlink -f "/sys/class/block/${userpart#/dev/}" | grep -oE '/usb[0-9]+/[0-9]+-[0-9]+' | head -1)
+for root in /sys/bus/usb/devices/usb*; do
+ hub=${root##*/usb}
+ case "$internal_port" in
+  "/usb$hub/$hub-"[0-9]) rule="/devices/*/usb$hub/$hub-[!${internal_port##*-}]*" ;;
+  "/usb$hub/"*) continue ;;
+  *) rule="/devices/*/usb$hub/*" ;;
+ esac
+ printf '%s\t\tauto\tauto\tdefaults\tvoldmanaged=usb:auto,noemulatedsd\n' "$rule" >> /android/fstab.mustang
+done
+stage "USB storage for Android: $(grep -c voldmanaged /android/fstab.mustang) USB hubs; PS4 drive port ${internal_port:-not on USB} left out"
 cp "$assets/android-child.sh" /run/androidtv-ps4/android-child.sh
 cp "$assets/binder-devices" /run/androidtv-ps4/binder-devices
 cp "$assets/xt_quota2.ko" /run/androidtv-ps4/xt_quota2.ko

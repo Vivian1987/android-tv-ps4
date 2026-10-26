@@ -6,6 +6,8 @@ Android TV 13 on a PlayStation 4, based on **BRTDTV's Android TV x86** build. In
 
 Questions, testing, or just want to follow along? Join the **[Discord server](https://discord.gg/UxC8kx6Eh5)**.
 
+> **This is a work in progress by one developer with one PS4.** It's been tested properly on a fat PS4. Every other model is being made to work right now, with the help of people who try it and send their logs. If it doesn't work on your console yet, that's expected, and your report is exactly what gets it fixed. See [Where it's at](#where-its-at).
+
 [Download](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) · [Installation](docs/INSTALL.md) · [Compatibility](docs/COMPATIBILITY.md) · [Hardware support](docs/HARDWARE.md) · [Release notes](docs/RELEASE-NOTES.md) · [Roadmap](docs/ROADMAP.md) · [How it works](docs/DEVELOPMENT.md) · [Build it](docs/BUILD.md) · [Contribute](CONTRIBUTING.md) · [Discord](https://discord.gg/UxC8kx6Eh5)
 
 ## What's new in 1.1
@@ -32,6 +34,28 @@ To launch again later, load GoldHEN, make sure BinLoader is on, and open the app
 **Updating from 1.0:** delete Android TV for PS4 from the PS4 home screen first, then install the 1.1 PKG and open it. Your Android apps, accounts and settings are stored separately in `/user/app/ps4-android`, so deleting the app doesn't remove them.
 
 Android gets 32 GiB of storage. That isn't the download size: PS4 drive space is only used as Android fills it, and nothing is repartitioned.
+
+## Where it's at
+
+| Console | Status |
+| --- | --- |
+| Fat CUH-10xx / CUH-11xx | Works. This is the console it's developed on |
+| Slim and Pro with a Belize southbridge, fat CUH-12xx | Reaches Android since the 26 Oct update. Wi-Fi doesn't turn on yet on consoles with the MediaTek Wi-Fi chip; a fix is being tested. Ethernet should work |
+| Slim and Pro with a Baikal southbridge | Black screen or no signal after the handover. A fix is being tested |
+
+[Hardware support](docs/HARDWARE.md) has the details by model, and how to tell which southbridge you have.
+
+### Why you might get a black screen
+
+When you open the app, the PS4 hands the whole console over to Linux, which then starts Android. The PS4 system isn't running underneath any more, so there's nothing to fall back to. If Linux can't drive some part of your console, most often the display on Baikal models, the screen stays black or the TV says no signal.
+
+It's not a crash you can back out of, so the only way out is to **hold the power button until the console turns off**. That's expected while support for your model is being built. When you turn the PS4 back on it may say it wasn't turned off properly and check its storage; let it finish. Your Android apps and data are kept.
+
+### What helps
+
+- **Send your logs.** Plug a FAT32 or exFAT USB stick into the PS4 before opening the app and leave it in; logs are saved to it. Post them in the Discord's #test-reports, or in a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) with your model and firmware. Reports with logs are what fixed the Slim and Pro storage problem in a day.
+- **Make sure you have the latest download.** Check its SHA256 against the [release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1). Several reports turned out to be from an older build.
+- **Build it or dig in yourself.** Everything is in this repository: [how it works](docs/DEVELOPMENT.md), [how to build it](docs/BUILD.md) and [how to contribute](CONTRIBUTING.md). PS4 Linux experience, especially on Baikal, is very welcome.
 
 ## If it doesn't work
 

@@ -15,6 +15,15 @@ hardware_report() {
   echo "Android TV for PS4 hardware report (uptime $(cut -d' ' -f1 /proc/uptime)s)"
   echo "Build: $(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)"
   echo "Southbridge: ${southbridge:-unknown}"
+  sdio_ids=" $(for d in /sys/bus/sdio/devices/*; do [ -r "$d/vendor" ] && printf '%s:%s ' "$(cat "$d/vendor")" "$(cat "$d/device")"; done 2>/dev/null) "
+  case "$sdio_ids" in
+   *' 0x037a:0x7608 '*) echo "Wi-Fi chip: MediaTek MT7668";;
+   *' 0x02df:0x912d '*) echo "Wi-Fi chip: Marvell 88W8897";;
+   *' 0x02df:0x9129 '*) echo "Wi-Fi chip: Marvell 88W8797";;
+   *) echo "Wi-Fi chip: not recognised (see SDIO devices below)";;
+  esac
+  handover=$(grep -E 'handed to Android|could not be handed|No Wi-Fi interface' /run/androidtv-ps4/progress.log 2>/dev/null | tail -1 | sed 's/^\[[^]]*\] //')
+  echo "Wi-Fi handed to Android: ${handover:-not yet (Android hadn't started when this was written)}"
   # Only the Baikal kernel registers the baikal_pcie driver.
   if [ -d /sys/bus/pci/drivers/baikal_pcie ]; then echo "Kernel image: bzImage-baikal (Baikal kernel)"
   else echo "Kernel image: bzImage (standard kernel)"; fi

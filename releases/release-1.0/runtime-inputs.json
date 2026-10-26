@@ -1,10 +1,10 @@
 {
   "base_release": "retained-start",
   "base_initramfs_sha256": "b191d815dbbb322b4cedba7ffee89f10a25a8d3e66d2601fb4151bd9d3d52ecb",
-  "initramfs_sha256": "1b2dbef189e50c937062c192fb9652e0fa208d5ecc98d99c57fa9cab624faacb",
-  "initramfs_bytes": 10120184,
-  "expanded_sha256": "884f14bc4537c52118821b1c7c0da0b0a914be61fbe0514db06e0676d55a2074",
-  "expanded_bytes": 28225144,
+  "initramfs_sha256": "102afb55a28d000bc7281389173ec1e34bcc2e205b52a2244c47525a642d837f",
+  "initramfs_bytes": 10122448,
+  "expanded_sha256": "2d7519a287b08e33124bb320a6d11e19ed18e47f9f7e8a60a5205c239910e257",
+  "expanded_bytes": 28228824,
   "changed_entries": [
     "init",
     "opt/androidtv-ps4/autoboot.sh",

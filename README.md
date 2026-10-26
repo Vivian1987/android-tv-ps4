@@ -13,7 +13,7 @@ Questions, testing, or just want to follow along? Join the **[Discord server](ht
 - **Support added for every GoldHEN firmware the Linux loader covers** (tested on 13.52 so far): 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52.
 - **No console model is blocked.** Slim, Pro and Baikal support is built in but untested. See [Hardware support](docs/HARDWARE.md).
 - **Fixes you'll notice:** video no longer freezes, the controller works like a TV remote in every app, a screensaver replaces the sleep mode that froze the console, and it shows up as "PlayStation 4" for Spotify Connect.
-- **One 3.12 GB PKG** from Google Drive, and failed starts explain themselves and save their logs to a USB stick.
+- **One 3.12 GB PKG** from MediaFire, and failed starts explain themselves and save their logs to a USB stick.
 - **No more "restart your PS4" after installing (26 Oct update).** Linux used to need two unbroken blocks of memory that a busy PS4 often couldn't find (code 12). It now loads in small pieces and puts them together at handover, and starts straight away. [How it works](docs/RELEASE-NOTES.md#11)
 
 [Everything in 1.1](docs/RELEASE-NOTES.md)

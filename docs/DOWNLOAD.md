@@ -1,14 +1,14 @@
 # Downloading Android TV for PS4 1.1
 
-The 1.1 PKG is a single 3.12 GB file on Google Drive. GitHub doesn't accept files over 2 GiB, so the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) links to it instead of attaching the PKG.
+The 1.1 PKG is a single 3.12 GB file on [MediaFire](https://www.mediafire.com/file_premium/ccfdpu4x127dgti/Android-TV-for-PS4-1.1.pkg/file). GitHub doesn't accept files over 2 GiB, so the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) links to it instead of attaching the PKG.
 
 It must be **3,123,380,224 bytes** with this SHA256:
 
 ```text
-1446d78046bd64fb0faa215b5b52b3431191ebaa7037270f5002c25c250048dd
+f3a4497e5ef2a4814933ede0f05e18f18b847714314bdb83f4b71c7f3fab975e
 ```
 
-Google Drive shows a "can't scan this file for viruses" page for large files. That's normal; choose **Download anyway**. If Drive says the download quota has been exceeded, too many people downloaded it today. Try again later.
+If the PS4 says **CE-36244-9** when installing, the download is usually incomplete. Check the size and SHA256 above and download it again.
 
 ## Checking the download
 

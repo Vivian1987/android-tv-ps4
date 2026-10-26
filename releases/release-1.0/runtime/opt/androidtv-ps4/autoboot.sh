@@ -194,6 +194,17 @@ if ! grep -q ' /mnt/ps4-user ' /proc/mounts; then
  [ -n "$opened" ] || { stage 'Could not open the PS4 user partition with either encryption layout'; exit 1; }
  stage "PS4 storage opened (IV offset $opened)"
 fi
+# Linux starts with the clock at 1 January 1970: the kernel finds no clock it
+# can read. Android only corrects it once it reaches the internet, and Google
+# sign-in fails before then. The launcher wrote logs/launcher.log seconds
+# before the handover, so its timestamp on the PS4 drive is close to the real
+# time; set the clock from it, plus the time Linux has been running since.
+if [ "$(date +%Y)" -lt 2024 ] && [ -f /mnt/ps4-user/app/ps4-android/logs/launcher.log ]; then
+ launched=$(stat -c %Y /mnt/ps4-user/app/ps4-android/logs/launcher.log 2>/dev/null || echo 0)
+ if [ "$launched" -gt 1700000000 ]; then
+  date -s "@$((launched + $(cut -d. -f1 /proc/uptime)))" >/dev/null && stage "Clock set from the PS4: $(date -u '+%Y-%m-%d %H:%M UTC')"
+ fi
+fi
 installation=/mnt/ps4-user/app/ps4-android
 # Later Slim and Pro models (CUH-7215/7216, Belize and Baikal) use a MediaTek
 # MT7668 for Wi-Fi. Its driver only loads when that chip is present. Driver

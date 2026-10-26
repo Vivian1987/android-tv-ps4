@@ -420,8 +420,12 @@ printf '%s\n' 'none /cache tmpfs noatime,nosuid,nodev,mode=0770,uid=1000,gid=200
 # behind the USB controller too (it does on fat Aeolia consoles), and Android
 # must never offer to format it, so the port it's on is left out: every other
 # USB port gets a rule, and that hub only gets the other ports.
-internal_port=$(readlink -f "/sys/class/block/${userpart#/dev/}" | grep -oE '/usb[0-9]+/[0-9]+-[0-9]+' | head -1)
+internal_sys=$(readlink -f "/sys/class/block/${userpart#/dev/}" 2>/dev/null || true)
+internal_port=$(printf '%s' "$internal_sys" | grep -oE '/usb[0-9]+/[0-9]+-[0-9]+' | head -1 || true)
+# If the drive's location can't be read, add no USB rules at all.
+[ -n "$internal_sys" ] && [ -n "$userpart" ] || internal_port=unknown
 for root in /sys/bus/usb/devices/usb*; do
+ [ "$internal_port" != unknown ] || break
  hub=${root##*/usb}
  case "$internal_port" in
   "/usb$hub/$hub-"[0-9]) rule="/devices/*/usb$hub/$hub-[!${internal_port##*-}]*" ;;
@@ -430,6 +434,17 @@ for root in /sys/bus/usb/devices/usb*; do
  esac
  printf '%s\t\tauto\tauto\tdefaults\tvoldmanaged=usb:auto,noemulatedsd\n' "$rule" >> /android/fstab.mustang
 done
+# Check the rules against the PS4 drive's real path, the way vold matches
+# them. If any rule would match it, remove every USB rule.
+internal_dev=${internal_sys#/sys}; internal_dev=${internal_dev%/*}
+while read -r pattern _; do
+ case "$pattern" in /devices/*) ;; *) continue ;; esac
+ case "$internal_dev" in $pattern)
+  sed -i '/voldmanaged/d' /android/fstab.mustang
+  stage 'USB storage for Android turned off: a rule matched the PS4 drive'
+  break ;;
+ esac
+done < /android/fstab.mustang
 stage "USB storage for Android: $(grep -c voldmanaged /android/fstab.mustang) USB hubs; PS4 drive port ${internal_port:-not on USB} left out"
 cp "$assets/android-child.sh" /run/androidtv-ps4/android-child.sh
 cp "$assets/binder-devices" /run/androidtv-ps4/binder-devices

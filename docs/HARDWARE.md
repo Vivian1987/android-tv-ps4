@@ -24,7 +24,7 @@ The southbridge is the chip that connects the drive, USB, Wi-Fi and Ethernet. So
 | CUH-70xx | Pro | Belize |
 | CUH-71xx, CUH-72xx | Pro | Belize 2 or Baikal |
 
-The model number alone can't tell Belize 2 from Baikal. The launcher writes the southbridge to `launcher-boot.log`, and Linux writes it to `boot-progress.log` (`Southbridge: ...`). GoldHEN 2.2.3 and later also shows it.
+The model number alone can't tell Belize 2 from Baikal. The launcher writes the southbridge to `logs/launcher.log`, and Linux writes it to `logs/progress.log` (`Southbridge: ...`). GoldHEN 2.2.3 and later also shows it.
 
 ## Support by model
 
@@ -115,12 +115,12 @@ Maintainers update the page from reports. You can also edit this file yourself: 
 
 1. Install and open Android TV for PS4, even if you expect it to fail.
 2. Note how far it got and any message on screen.
-3. Get the logs. If Linux started but Android didn't, plug a FAT32 or exFAT USB stick into the PS4 and they're saved to it. Otherwise copy them from `/user/app/ps4-android` over GoldHEN FTP. `hardware.txt` describes your console exactly: southbridge, kernel, Wi-Fi chip and drivers.
+3. Get the logs. If Linux started but Android didn't, plug a FAT32 or exFAT USB stick into the PS4 and they're saved to it. Otherwise copy the `logs` folder from `/user/app/ps4-android` over GoldHEN FTP. `hardware.txt` describes your console exactly: southbridge, kernel, Wi-Fi chip and drivers.
 4. Open a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml), or post in [Discussions](https://github.com/odiecay/android-tv-ps4/discussions).
 
 ## Reading a black screen
 
-A black screen after the handover can mean three different things, and `kernel.log` (saved to `/user/app/ps4-android` and to a USB stick) tells them apart. Compare it with [a known-good fat PS4](reference-logs/fat-aeolia-gpu.txt); the first line that's missing shows where it stopped:
+A black screen after the handover can mean three different things, and `kernel.log` (saved to `/user/app/ps4-android/logs` and to a USB stick) tells them apart. Compare it with [a known-good fat PS4](reference-logs/fat-aeolia-gpu.txt); the first line that's missing shows where it stopped:
 
 - **No `initializing kernel modesetting` line, or no `kernel.log` at all:** Linux stopped before the GPU driver ran.
 - **`LIVERPOOL` or `GLADIUS` appears but there's no `Initialized amdgpu`:** the GPU driver failed. The lines just before say which part (firmware, memory or rings).

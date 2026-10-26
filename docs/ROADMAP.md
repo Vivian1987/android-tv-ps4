@@ -7,7 +7,7 @@ Known work after 1.1, with what's already known about each item. Nothing here ha
 **Linux's memory at startup: done in the 26 Oct update.** The loader used to need two unbroken blocks of physical memory, about 12 MB for the kernel and 10 MB for the startup files, and a busy or freshly installed console often had none that large (code 12). It now stages both in pieces of 2 MB down to 64 KB, outside the area Linux will occupy, and the handover stub copies them into place once Orbis has shut down (`loader-source/linux/ps4-kexec-common/kexec.c`, `linux_thunk.S`). Each launch logs the piece counts and whether the old single-block method would have worked. Still worth doing:
 
 - Copy and check the big files without filling the file cache, so our own install leaves memory tidier.
-- Confirm the fix on a Pro and a Slim from their `launcher-boot.log`.
+- Confirm the fix on a Pro and a Slim from their `logs/launcher.log`.
 
 **Automatic restart or not.** When memory is short, the launcher currently asks the user to restart. Whether it should restart the console by itself is an open question for users; answers are welcome in Discussions.
 

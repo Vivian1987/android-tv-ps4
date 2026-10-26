@@ -76,8 +76,7 @@ body:
       label: Logs
       description: |
         Drag the files into this box to attach them. A ZIP is fine.
-        - If a start failed after Linux started, plug a FAT32 or exFAT USB stick into the PS4 (even afterwards).
-          The reports are saved to a folder called AndroidTV-PS4-report-... on it. Attach the whole folder as a ZIP.
-        - Otherwise, copy them from /user/app/ps4-android over GoldHEN FTP: launcher-boot.log, hardware.txt,
-          boot-progress.log, kernel.log and android-stages.log.
+        - All the logs are in one folder: copy /user/app/ps4-android/logs over GoldHEN FTP and attach it as a ZIP.
+        - Black screen or Linux failed? Plug a FAT32 or exFAT USB stick into the PS4 (before opening the app, or afterwards)
+          and attach the AndroidTV-PS4-logs folder from it as a ZIP.
         hardware.txt is the most useful single file.

@@ -71,7 +71,7 @@ static const char *names[BASE_ASSET_COUNT]={DATA_ASSET,"bzImage","initramfs.cpio
 static const int boot_assets[]={1,2,3,4,9};
 static void notice(const char *s){char log[320];snprintf(log,sizeof(log),"[PS4ATV] %s\n",s);sceKernelDebugOutText(0,log);installer_ui_status(s);}
 static void failure(const char *s){int saved=errno;char message[256];snprintf(message,sizeof(message),"%s (errno %d)",s,saved);notice(message);
- installer_ui_failed("Setup stopped. Your Android data is kept. See the message above, or report it with launcher-boot.log.");}
+ installer_ui_failed("Setup stopped. Your Android data is kept. See the message above, or report it with the files in logs.");}
 static uint64_t completed_bytes;
 static const uint64_t install_bytes=SYSTEM_BYTES+BUNDLED_APP_BYTES;
 static void progress(uint64_t done,uint64_t total){
@@ -216,7 +216,7 @@ static int installation_ready(void){
  * start failed, show the step it stopped at, so testers can report it without
  * FTP. A successful start overwrites the log, so this only shows after a failure. */
 static void show_previous_failure(void){
- char text[4096];int fd=open(ROOT "/boot-progress.log",O_RDONLY|O_NOFOLLOW);if(fd<0)return;
+ char text[4096];int fd=open(ROOT "/logs/progress.log",O_RDONLY|O_NOFOLLOW);if(fd<0)return;
  off_t size=lseek(fd,0,SEEK_END),start=size>(off_t)sizeof(text)-1?size-(off_t)sizeof(text)+1:0;
  ssize_t n=size>0?pread(fd,text,sizeof(text)-1,start):-1;close(fd);if(n<=0)return;text[n]=0;
  char *failed=NULL;for(char *p=text;(p=strstr(p,"SETUP FAILED"));p++)failed=p;

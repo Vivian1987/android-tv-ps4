@@ -35,7 +35,7 @@ Preparation and handoff are separate operations:
 5. Only after successful display release does it acknowledge `released` in the control record.
 6. The receiver validates that acknowledgement, issues ARM, queries the armed state, and triggers the Orbis shutdown-to-Linux handoff.
 
-**Staging in pieces.** The loader no longer asks Orbis for one contiguous block per image. `kexec.c` works out the final layout first (protected-mode kernel at `0x6000000`, initramfs on the next 2 MiB boundary after the kernel's `init_size` workspace), then copies the kernel and initramfs into pieces of 2 MiB down to 64 KiB taken from free memory above or below that layout, never inside it. Each piece becomes a `{src, dst, len}` entry in a list kept with the boot parameters in low memory. After the CR3 switch, `jmp_to_linux` in `linux_thunk.S` walks the list with `rep movsb` and jumps to `startup_64`; because no piece overlaps any destination, the order of the copy doesn't matter. The CRC32 values still cover every byte, and every piece is range-checked before ARM. Before staging, the loader also tries the pre-26 Oct single-block request once and releases it, so `launcher-boot.log` can report piece counts and whether the old method would have worked.
+**Staging in pieces.** The loader no longer asks Orbis for one contiguous block per image. `kexec.c` works out the final layout first (protected-mode kernel at `0x6000000`, initramfs on the next 2 MiB boundary after the kernel's `init_size` workspace), then copies the kernel and initramfs into pieces of 2 MiB down to 64 KiB taken from free memory above or below that layout, never inside it. Each piece becomes a `{src, dst, len}` entry in a list kept with the boot parameters in low memory. After the CR3 switch, `jmp_to_linux` in `linux_thunk.S` walks the list with `rep movsb` and jumps to `startup_64`; because no piece overlaps any destination, the order of the copy doesn't matter. The CRC32 values still cover every byte, and every piece is range-checked before ARM. Before staging, the loader also tries the pre-26 Oct single-block request once and releases it, so `logs/launcher.log` can report piece counts and whether the old method would have worked.
 
 A timer never authorizes boot. Timeouts stop preparation. A cancelled record, stale nonce, incomplete status, checksum mismatch or failed display close cannot authorize ARM. A successful socket write proves delivery only; it does not prove Linux booted.
 
@@ -123,7 +123,7 @@ The supervisor removes app and service binds first, then the system overlay and 
 
 ## Diagnostics and development boundaries
 
-Native delivery/progress is in `launcher-boot.log`. Linux milestones are in `boot-progress.log`, `boot.log` and `kernel.log`; Android service transitions are in `android-stages.log`. Android also has bounded rotating logcat output under `/data/misc/logd`.
+All logs are in `logs/` in the install folder, the start before in `logs/previous/`, and a USB stick gets the same files in `AndroidTV-PS4-logs`. Native delivery/progress is in `launcher.log`. Linux milestones are in `progress.log`, `setup.log` and `kernel.log`; Android service transitions are in `android-stages.log`; `running.log` and `kernel.log` are rewritten every minute while Android runs. Android also has bounded rotating logcat output under `/data/misc/logd`.
 
 The runtime currently uses SELinux permissive mode and authenticated TCP ADB. No trusted host keys or user accounts are packaged. These are development choices, not claims of retail-device security or certification.
 

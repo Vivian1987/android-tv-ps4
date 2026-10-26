@@ -27,10 +27,12 @@ static struct atv_launch_control control;
 static int regular_file(int fd){struct stat st;return fd>=0&&!fstat(fd,&st)&&S_ISREG(st.st_mode);}
 static void open_channels(void *unused){
  (void)unused;
- /* Keep the previous attempt's log: after a black screen the next launch
-  * would otherwise overwrite the only record of how far it got. */
- (void)rename(ROOT "/launcher-boot.log",ROOT "/launcher-boot.prev.log");
- logfd=open(ROOT "/launcher-boot.log",O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);
+ /* All logs live in ROOT/logs, the start before in logs/previous: after a
+  * black screen the next launch would otherwise overwrite the only record
+  * of how far it got. Linux moves its own logs the same way. */
+ (void)mkdir(ROOT "/logs",0755);(void)mkdir(ROOT "/logs/previous",0755);
+ (void)rename(ROOT "/logs/launcher.log",ROOT "/logs/previous/launcher.log");
+ logfd=open(ROOT "/logs/launcher.log",O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW,0600);
  controlfd=open(ATV_CONTROL_PATH,O_RDWR|O_CREAT|O_NOFOLLOW,0600);
  resultfd=open(ATV_RESULT_PATH,O_RDWR|O_CREAT|O_NOFOLLOW,0600);
  if(!regular_file(logfd)||!regular_file(controlfd)||!regular_file(resultfd))goto failed;
@@ -54,7 +56,7 @@ static void close_channels(void){
 static int fail_with_detail(const char *message,const char *explanation,int code){
  char detail[160],log[320];
  if(explanation)snprintf(detail,sizeof(detail),"%s (code %d)",explanation,code);
- else snprintf(detail,sizeof(detail),"Startup stopped (code %d). See launcher-boot.log.",code);
+ else snprintf(detail,sizeof(detail),"Startup stopped (code %d). See logs/launcher.log.",code);
  snprintf(log,sizeof(log),"%s: %d\n",message,code);marker(log);
  if(code==ECONNREFUSED){
   message="BinLoader unavailable. Press PS, fully close this app, then toggle BinLoader off and on.";

@@ -36,13 +36,13 @@ Android gets 32 GiB of storage. That isn't the download size: PS4 drive space is
 ## If it doesn't work
 
 - **"BinLoader unavailable" (error 61):** close the app, turn BinLoader off and on again, and reopen it.
-- **"Restart your PS4, then open Android TV again" (code 12):** the PS4 couldn't find memory for Linux. This should be rare since the 26 Oct update; if you downloaded 1.1 before then, delete the app from the home screen (your Android data is kept), download the PKG again and reinstall. If it still happens, restart, load GoldHEN, open the app, and send us `launcher-boot.log`.
+- **"Restart your PS4, then open Android TV again" (code 12):** the PS4 couldn't find memory for Linux. This should be rare since the 26 Oct update; if you downloaded 1.1 before then, delete the app from the home screen (your Android data is kept), download the PKG again and reinstall. If it still happens, restart, load GoldHEN, open the app, and send us `logs/launcher.log`.
 
 For anything else, please report it, because failed starts are how other consoles get fixed:
 
-1. **If Linux started but Android didn't**, plug a FAT32 or exFAT USB stick into the PS4. It can go in after the failure; the console keeps watching for one. The reports are saved to a folder called `AndroidTV-PS4-report-…`.
-2. **If it stopped in the launcher**, copy the logs from `/user/app/ps4-android` with GoldHEN's FTP server.
-3. Open a **[console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml)** with your model, firmware and how far it got, and drag the logs (or a ZIP of the report folder) into the **Logs** box.
+1. **If Linux started but Android didn't**, plug a FAT32 or exFAT USB stick into the PS4. It can go in before you open the app or after the failure. The logs are saved to a folder called `AndroidTV-PS4-logs`.
+2. **If it stopped in the launcher**, copy the `logs` folder from `/user/app/ps4-android` with GoldHEN's FTP server.
+3. Open a **[console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml)** with your model, firmware and how far it got, and drag the logs (or a ZIP of the folder) into the **Logs** box.
 
 More fixes are in the [installation guide](docs/INSTALL.md#troubleshooting). Stuck? Ask in the [Discord server](https://discord.gg/UxC8kx6Eh5).
 
@@ -64,7 +64,7 @@ Known limitations: this isn't a Google-certified device and there's no HDCP, so 
 
 These are the known weak spots in 1.1. Reports on any of them help the next release, and the [roadmap](docs/ROADMAP.md) has what's known about fixing each one.
 
-- **Code 12 after installing, fixed in the 26 Oct update.** The first 1.1 build needed two unbroken blocks of memory of about 10–12 MB, which a fresh install or a busy console often didn't have, and some consoles couldn't get them even after restarting. It now loads Linux in small pieces and puts them together at handover. Tested on a fat PS4; if you still see code 12, please send `launcher-boot.log`, which now says how the memory went.
+- **Code 12 after installing, fixed in the 26 Oct update.** The first 1.1 build needed two unbroken blocks of memory of about 10–12 MB, which a fresh install or a busy console often didn't have, and some consoles couldn't get them even after restarting. It now loads Linux in small pieces and puts them together at handover. Tested on a fat PS4; if you still see code 12, please send `logs/launcher.log`, which says how the memory went.
 - **Slim, Pro and Baikal are untested.** The support is built in, but no one has reported on it yet. Baikal is the most experimental, and its USB support is the biggest unknown. See [Hardware support](docs/HARDWARE.md).
 - **Firmware other than 13.52 is untested.** The loader has offsets for 20 versions, but only 13.52 has been run.
 - **MT7668 Wi-Fi** (many later Slims and Pros) is included but has never been run on real hardware.

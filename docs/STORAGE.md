@@ -17,8 +17,7 @@ Android uses files on the PS4's existing internal filesystem. Installation does 
   data-ready                  userdata creation completion marker
   device-id                   random identifier generated on this installation
   *.verified                  records that a file matched the package (see below)
-  hardware.txt                hardware report from the last start
-  *.log                       console-local diagnostics
+  logs/                       every log from the last start, and previous/ for the one before
   boot/
     bzImage                   kernel for Aeolia and Belize consoles
     bzImage-baikal            kernel for Baikal consoles

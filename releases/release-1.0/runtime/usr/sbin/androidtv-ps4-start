@@ -64,6 +64,19 @@ hardware_report() {
 # failed) and unmounts cleanly, so holding the power button is then safe.
 # A running Android is never interrupted.
 installation=
+# Every log from this start goes in one folder: logs/ in the install folder on
+# the console, or AndroidTV-PS4-logs on a USB stick. The files are kept in
+# /run/androidtv-ps4 while Linux runs and copied from there.
+copy_logs() {
+ mkdir -p "$1" || return 1
+ cp /run/androidtv-ps4/*.log /run/androidtv-ps4/*.txt "$1/" 2>/dev/null || true
+ cp /run/androidtv-ps4/display-ready "$1/display-ready.log" 2>/dev/null || true
+ dmesg > "$1/kernel.log" 2>/dev/null || true
+ if [ -n "$installation" ] && [ "$1" != "$installation/logs" ]; then
+  cp "$installation/logs/launcher.log" "$1/" 2>/dev/null || true
+ fi
+ sync
+}
 export_reports() {
  for block in /sys/class/block/sd*; do
   name=${block##*/}
@@ -72,13 +85,9 @@ export_reports() {
   [ -b "/dev/${name%%[0-9]*}27" ] && continue
   mkdir -p /mnt/usb-report
   mount -t vfat "/dev/$name" /mnt/usb-report 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-report 2>/dev/null || continue
-  folder=/mnt/usb-report/AndroidTV-PS4-report-$(cut -d. -f1 /proc/uptime)
-  if mkdir -p "$folder"; then
-   cp /run/androidtv-ps4/*.txt /run/androidtv-ps4/*.log "$folder/" 2>/dev/null || true
-   dmesg > "$folder/kernel.log" 2>/dev/null || true
-   sync
+  if copy_logs /mnt/usb-report/AndroidTV-PS4-logs; then
    umount /mnt/usb-report
-   stage "Reports saved to the USB stick in ${folder##*/}"
+   stage 'Logs saved to the USB stick in AndroidTV-PS4-logs'
    return 0
   fi
   umount /mnt/usb-report 2>/dev/null || true
@@ -93,9 +102,9 @@ stop_safely() {
  done
  cryptsetup close ps4-android-user 2>/dev/null || true
  stage 'Android TV could not start. It is now safe to hold the power button to restart the PS4.'
- # Keep watching for a USB stick so reports can still be saved after the fact.
+ # Keep watching for a USB stick so the logs can still be saved after the fact.
  if ! export_reports; then
-  stage 'To keep the reports, plug in a FAT or exFAT USB stick now'
+  stage 'To keep the logs, plug in a FAT or exFAT USB stick now'
   # Wait for as long as it takes; the console is idle until it is turned off.
   until export_reports; do sleep 5; done
  fi
@@ -120,24 +129,6 @@ internal_disk() {
  done
  return 1
 }
-# Once the internal drive is known, leave a note on any USB stick. A start
-# that later hangs or runs without a picture still leaves this behind, so a
-# stick with no note at all means the kernel never reached this script.
-early_usb_note() {
- for attempt in $(seq 1 20); do
-  for block in /sys/class/block/sd*; do
-   name=${block##*/}
-   [ -b "/dev/${name%%[0-9]*}27" ] && continue
-   mkdir -p /mnt/usb-early
-   mount -t vfat "/dev/$name" /mnt/usb-early 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-early 2>/dev/null || continue
-   { echo "Linux started and found the internal drive ($userpart) after $(cut -d' ' -f1 /proc/uptime) s."
-     cat /run/androidtv-ps4/progress.log 2>/dev/null; } > /mnt/usb-early/AndroidTV-PS4-linux-started.txt
-   dmesg > /mnt/usb-early/AndroidTV-PS4-early-kernel.log 2>/dev/null
-   sync; umount /mnt/usb-early; return 0
-  done
-  sleep 1
- done
-}
 stage 'Waiting for internal PS4 disk'
 userpart=
 for attempt in $(seq 1 60); do
@@ -147,7 +138,6 @@ for attempt in $(seq 1 60); do
  sleep 1
 done
 [ -n "$userpart" ] || { stage 'Internal disk did not appear within 60 seconds'; exit 1; }
-early_usb_note &
 stage 'Opening internal PS4 storage (disk encryption and filesystem)'
 [ -r /key/eap_hdd_key.bin ]
 # Name the southbridge from its PCI ID. Driver names say "aeolia" on every
@@ -205,20 +195,20 @@ case " $sdio " in
   else stage 'MT7668 Wi-Fi driver failed to load; continuing without Wi-Fi'; fi
   ;;
 esac
-# Rotate only the previous local boot reports.
-for report in boot.log kernel.log android-boot.log android-stages.log; do
- [ ! -f "$installation/$report" ] || mv "$installation/$report" "$installation/$report.previous"
+# The last start's logs move to logs/previous. The launcher has already moved
+# its own launcher.log there before starting Linux.
+mkdir -p "$installation/logs/previous"
+for log in "$installation"/logs/*; do
+ if [ -f "$log" ] && [ "${log##*/}" != launcher.log ]; then mv -f "$log" "$installation/logs/previous/"; fi
 done
-# Persist startup output locally for diagnosis without remote access.
+# Builds before 1.1-b132 left their logs loose in the install folder.
+for old in launcher-boot.log launcher-boot.prev.log boot.log boot.log.previous kernel.log kernel.log.previous \
+ boot-progress.log hardware.txt android-boot.log android-boot.log.previous android-stages.log android-stages.log.previous \
+ quota-upgrade.log display-ready.log display-watch.log animation-display.log running.log running.log.part kernel-running.log; do
+ rm -f "$installation/$old"
+done
 save_logs() {
- cp /run/androidtv-ps4/one-shot.log "$installation/boot.log" 2>/dev/null || true
- dmesg > "$installation/kernel.log" 2>/dev/null || true
- cp /run/androidtv-ps4/progress.log "$installation/boot-progress.log" 2>/dev/null || true
- cp /run/androidtv-ps4/hardware.txt "$installation/hardware.txt" 2>/dev/null || true
- cp /run/androidtv-ps4/quota-upgrade.log "$installation/quota-upgrade.log" 2>/dev/null || true
- cp /run/androidtv-ps4/display-ready "$installation/display-ready.log" 2>/dev/null || true
- cp /run/androidtv-ps4/display-watch.log "$installation/display-watch.log" 2>/dev/null || true
- sync
+ copy_logs "$installation/logs"
  rm -f /run/androidtv-ps4/bootstrap-active
 }
 [ -f "$installation/ready" ] || { stage 'Package setup incomplete'; exit 1; }
@@ -484,10 +474,9 @@ running_logs() {
    timeout 5 nsenter -t "$child" -n /usr/sbin/ip addr show wlan0
    echo; echo "Recent Android Wi-Fi and network messages:"
    timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system -t 2000 2>/dev/null | grep -iE 'wifi|wpa|supplicant|dhcp|connectivity|netd|wlan' | tail -200
-  } > "$installation/running.log.part" 2>&1
-  mv "$installation/running.log.part" "$installation/running.log"
-  dmesg > "$installation/kernel-running.log" 2>/dev/null
-  sync
+  } > /run/androidtv-ps4/running.log.part 2>&1
+  mv /run/androidtv-ps4/running.log.part /run/androidtv-ps4/running.log
+  copy_logs "$installation/logs"
  done
 }
 running_logs </dev/null >/dev/null 2>&1 &
@@ -500,19 +489,19 @@ for attempt in $(seq 1 120); do
  property() { printf '%s\n' "$props" | sed -n "s/^\[$1\]: \[\(.*\)\]$/\1/p"; }
  if [ "$(property init.svc.bootanim)" = running ] && [ ! -f /run/androidtv-ps4/animation-captured ]; then
   touch /run/androidtv-ps4/animation-captured
-  ( timeout 5 nsenter -t "$child" -m -p -n chroot /android /system/bin/dumpsys SurfaceFlinger > "$installation/animation-display.log" 2>&1 || true ) &
+  ( timeout 5 nsenter -t "$child" -m -p -n chroot /android /system/bin/dumpsys SurfaceFlinger > /run/androidtv-ps4/animation-display.log 2>&1 || true ) &
  fi
  if [ ! -f /run/androidtv-ps4/display-ready ]; then
   stage "Android startup: graphics=$(property init.svc.surfaceflinger) animation=$(property init.svc.bootanim) apps=$(property init.svc.zygote); waiting for a display frame"
  fi
- { echo "[$now seconds]"; printf '%s\n' "$props" | grep -E '^\[(sys.boot_completed|init.svc.(zygote|zygote_secondary|surfaceflinger|bootanim|adbd)|service.bootanim.exit|sys.user.0.ce_available)\]' || true; } >> "$installation/android-stages.log"
+ { echo "[$now seconds]"; printf '%s\n' "$props" | grep -E '^\[(sys.boot_completed|init.svc.(zygote|zygote_secondary|surfaceflinger|bootanim|adbd)|service.bootanim.exit|sys.user.0.ce_available)\]' || true; } >> /run/androidtv-ps4/android-stages.log
  if printf '%s\n' "$props" | grep -q '^\[sys.boot_completed\]: \[1\]'; then
-  echo "[$now seconds] Android boot complete" >> "$installation/android-stages.log"
+  echo "[$now seconds] Android boot complete" >> /run/androidtv-ps4/android-stages.log
   echo "$child" > /run/androidtv-ps4/android.pid
   exit 0
  fi
  sleep 2
 done
 stage 'Android startup has not completed. Logs are saved; restarting returns to PS4.'
-echo 'Android boot timeout; check Android /data/misc/logd and android-stages.log' >> "$installation/android-stages.log"
+echo 'Android boot timeout; check Android /data/misc/logd and android-stages.log' >> /run/androidtv-ps4/android-stages.log
 exit 1

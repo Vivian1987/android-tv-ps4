@@ -95,13 +95,13 @@ On the controller, the PS button goes to Android Home. To use the DualShock 4 on
 
 You don't need to reinstall, because a completed installation is reused. Don't test port 9090 with a port scanner or `nc`: an empty connection can disrupt BinLoader.
 
-**"Restart your PS4, then open Android TV again" (code 12).** The PS4 didn't have enough free memory to load Linux. Since the 26 Oct update the loader needs only small pieces of memory, so this should be rare; if you downloaded 1.1 before then, download it again and reinstall (delete the app first, your Android data is kept). If it still happens, restart, load GoldHEN and open the app before doing anything else, and send us `launcher-boot.log`: its `Memory:` line shows how the loader got on. Nothing was changed, and your installation is kept.
+**"Restart your PS4, then open Android TV again" (code 12).** The PS4 didn't have enough free memory to load Linux. Since the 26 Oct update the loader needs only small pieces of memory, so this should be rare; if you downloaded 1.1 before then, download it again and reinstall (delete the app first, your Android data is kept). If it still happens, restart, load GoldHEN and open the app before doing anything else, and send us `logs/launcher.log`: its `Memory:` line shows how the loader got on. Nothing was changed, and your installation is kept.
 
 Why it happens: to start Linux, the loader needs two unbroken blocks of memory, about 12 MB for the kernel and 10 MB for the startup files. Heavy disk activity breaks the PS4's free memory into small pieces, and the blocks may no longer fit. That activity comes from installing a 3 GB PKG (over FTP or from USB), the launcher's first install of Android, and the one-time file check on the first launch after an update. A restart clears it; occasionally it takes a second restart, because even a freshly started PS4 has little room in that memory range. Normal launches, without installing or updating first, rarely hit it.
 
-To avoid it, restart the PS4 after installing or updating the PKG, then load GoldHEN and open the app. If it happens on a launch where you didn't install or update anything, report it with `launcher-boot.log`.
+To avoid it, restart the PS4 after installing or updating the PKG, then load GoldHEN and open the app. If it happens on a launch where you didn't install or update anything, report it with `logs/launcher.log`.
 
-**"Could not add project quota support; continuing without it."** The one-time storage upgrade didn't finish, so Android starts as it did in 1.0. Some apps may not get their storage folders and Google setup may restart itself. Please report it with `quota-upgrade.log` from `/user/app/ps4-android`.
+**"Could not add project quota support; continuing without it."** The one-time storage upgrade didn't finish, so Android starts as it did in 1.0. Some apps may not get their storage folders and Google setup may restart itself. Please report it with `quota-upgrade.log` from `/user/app/ps4-android/logs`.
 
 **Stuck on the Android animation?** On the very first boot it can sit there for 3–4 minutes while Android prepares its apps, and setup may take another moment to appear. Once the animation is showing, Linux and Android have started; give it time before assuming something's wrong.
 
@@ -115,17 +115,18 @@ To avoid it, restart the PS4 after installing or updating the PKG, then load Gol
 
 ## Logs and reporting problems
 
-**If a start fails after Linux has started,** the screen says so and asks for a USB stick. Plug in a FAT32 or exFAT stick, now or later, and the reports are copied to a folder called `AndroidTV-PS4-report-…` on it. The console keeps watching for a stick until it's turned off, and it never writes to its own drive for this.
+Every start keeps its logs in one folder, `/user/app/ps4-android/logs`, which you can reach over GoldHEN's FTP server. The start before is in `logs/previous`.
 
-The console also keeps the logs in `/user/app/ps4-android`, which you can reach over GoldHEN's FTP server:
-
-- `launcher-boot.log`: installation and handing off to Linux, including firmware and southbridge
+- `launcher.log`: installation and handing off to Linux, including build, firmware and southbridge
+- `progress.log`: each step of Linux startup; `setup.log`: everything the startup printed
 - `hardware.txt`: the console's chips, which kernel booted and which drivers loaded
-- `quota-upgrade.log`: the one-time storage upgrade, if it ran
-- `boot-progress.log`, `boot.log`, `kernel.log`: Linux startup
+- `kernel.log`: the Linux kernel log
 - `android-stages.log`: Android startup
+- `running.log`: Wi-Fi state and recent Wi-Fi messages, updated every minute while Android runs (`kernel.log` is updated too)
 
-To report a problem, open a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) and drag the files (or a ZIP of the USB report folder) into the **Logs** box.
+**On a USB stick.** Plug a FAT32 or exFAT stick into the PS4 before opening the app and leave it in: until Android is running, the same files are copied to a folder called `AndroidTV-PS4-logs` on it every few seconds, so a start with no picture still leaves its logs. If a start fails, plug a stick in any time; the console keeps watching for one until it's turned off. The console never writes these to its own drive's other partitions. A stick with no `AndroidTV-PS4-logs` folder at all after a start means Linux never got going.
+
+To report a problem, open a [console report](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml) and drag the files (or a ZIP of the `logs` or `AndroidTV-PS4-logs` folder) into the **Logs** box.
 
 Include your console model, firmware, the PKG SHA256, whether it was a first install or a later launch, and the last thing on screen. Remove account names, Wi-Fi names and IP addresses from logs first.
 

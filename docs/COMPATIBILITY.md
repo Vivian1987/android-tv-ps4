@@ -24,7 +24,7 @@ Point releases that share kernel offsets use the same build (for example 9.51 us
 
 The full per-model breakdown, including Wi-Fi chips and the Baikal port, is in [Hardware support](HARDWARE.md).
 
-Nothing is blocked by model. The launcher records the southbridge (Aeolia on fat models, Belize or Baikal on later fat, Slim and Pro models) in `launcher-boot.log` and boots anyway. The kernel includes drivers for all three. Belize Slims and Pros reach Android since the 26 Oct update (MediaTek MT7668 Wi-Fi still drops out). Baikal consoles get no picture after the switch to Linux; that's being worked on. Holding the power button returns the console to normal. [Hardware support](HARDWARE.md) has the details by model.
+Nothing is blocked by model. The launcher records the southbridge (Aeolia on fat models, Belize or Baikal on later fat, Slim and Pro models) in `logs/launcher.log` and boots anyway. The kernel includes drivers for all three. Belize Slims and Pros reach Android since the 26 Oct update (MediaTek MT7668 Wi-Fi still drops out). Baikal consoles get no picture after the switch to Linux; that's being worked on. Holding the power button returns the console to normal. [Hardware support](HARDWARE.md) has the details by model.
 
 Reports from other consoles are welcome, even when they fail ([how to report](#reporting-a-result)).
 
@@ -63,7 +63,7 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 | First setup restarts | The first Android setup can jump back to the start, usually once. 1.1 removed one cause (apps being refused their storage folders), which used to make it happen two or three times; the remaining cause isn't known yet. Keep going and it completes. It only happens during first setup. |
 | YouTube guest mode | Guest playback can request a secure decoder that isn't available. Sign in to watch. |
 | BinLoader connection (error 61) | The launcher couldn't reach BinLoader. Close the app, toggle BinLoader off and on, and reopen it ([steps](INSTALL.md#troubleshooting)). |
-| Startup memory (code 12) | Should be rare since the 26 Oct update, which loads Linux in pieces of 2 MB or less instead of two unbroken 10–12 MB blocks. The first 1.1 build often needed a restart after installing, and some consoles failed even after restarting. If it still happens, restart, load GoldHEN, open the app, and send `launcher-boot.log`. Nothing is changed. ([details](INSTALL.md#troubleshooting)) |
+| Startup memory (code 12) | Should be rare since the 26 Oct update, which loads Linux in pieces of 2 MB or less instead of two unbroken 10–12 MB blocks. The first 1.1 build often needed a restart after installing, and some consoles failed even after restarting. If it still happens, restart, load GoldHEN, open the app, and send `logs/launcher.log`. Nothing is changed. ([details](INSTALL.md#troubleshooting)) |
 | Payload received but not run | GoldHEN may show the payload as received but then report "failed to launch payload". The launcher keeps waiting. Restart the console and try again. |
 | Not certified | This isn't a Google-certified Android TV device. Some apps and services may refuse to run or limit playback. |
 | App updates | Play Store updates can change how an app behaves. The bundled versions are listed in [Apps](APPS.md). |
@@ -71,6 +71,6 @@ Results may differ on other hardware, accessories, or newer versions of apps.
 
 ## Reporting a result
 
-Include your console model, firmware, the PKG SHA256, and whether it was a first install or a later launch. Attach the logs: if a start fails after Linux has started, plug in a FAT32 or exFAT USB stick and the reports are saved to it (see [Logs and reporting problems](INSTALL.md#logs-and-reporting-problems)); otherwise copy them from `/user/app/ps4-android` over FTP. `hardware.txt` lists the console's southbridge, chips and drivers, so it's the most useful single file. For startup problems, add the last thing on screen and any error message. For video problems, say whether the app refused to play, played audio only, or showed broken video. Keep account names, codes and private logs out of public reports.
+Include your console model, firmware, the PKG SHA256, and whether it was a first install or a later launch. Attach the logs: if a start fails after Linux has started, plug in a FAT32 or exFAT USB stick and the logs are saved to it (see [Logs and reporting problems](INSTALL.md#logs-and-reporting-problems)); otherwise copy the `logs` folder from `/user/app/ps4-android` over FTP. `hardware.txt` lists the console's southbridge, chips and drivers, so it's the most useful single file. For startup problems, add the last thing on screen and any error message. For video problems, say whether the app refused to play, played audio only, or showed broken video. Keep account names, codes and private logs out of public reports.
 
 The quickest way is the [console report form](https://github.com/odiecay/android-tv-ps4/issues/new?template=console-report.yml). The [testing checklist](RELEASE-CHECKLIST.md) covers everything worth checking.

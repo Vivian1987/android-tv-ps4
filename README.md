@@ -13,7 +13,7 @@ Questions, testing, or just want to follow along? Join the **[Discord server](ht
 ## What's new in 1.1
 
 - **Support added for every GoldHEN firmware the Linux loader covers** (tested on 13.52 so far): 5.05, 6.72, 7.00–7.55, 8.00–8.52, 9.00–9.60, 10.00–10.71, 11.00, 11.02, 11.50–11.52, 12.00–12.52 and 13.00–13.52.
-- **No console model is blocked.** Slim, Pro and Baikal support is built in but untested. See [Hardware support](docs/HARDWARE.md).
+- **No console model is blocked.** Belize Slims and Pros reach Android; Baikal is being worked on. See [Hardware support](docs/HARDWARE.md).
 - **Fixes you'll notice:** video no longer freezes, the controller works like a TV remote in every app, a screensaver replaces the sleep mode that froze the console, and it shows up as "PlayStation 4" for Spotify Connect.
 - **One 3.12 GB PKG** from MediaFire, and failed starts explain themselves and save their logs to a USB stick.
 - **No more "restart your PS4" after installing (26 Oct update).** Linux used to need two unbroken blocks of memory that a busy PS4 often couldn't find (code 12). It now loads in small pieces and puts them together at handover, and starts straight away. [How it works](docs/RELEASE-NOTES.md#11)
@@ -22,7 +22,7 @@ Questions, testing, or just want to follow along? Join the **[Discord server](ht
 
 ## Quick start
 
-1. Download **Android-TV-for-PS4-1.1.pkg** from the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) ([checksum and tips](docs/DOWNLOAD.md)).
+1. Download **Android-TV-for-PS4-1.1-b132.pkg** from the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) ([checksum and tips](docs/DOWNLOAD.md)).
 2. Install it with GoldHEN's **Package Installer**, from an exFAT USB drive or [over FTP](docs/INSTALL.md#installing-over-ftp) (put it in `/data/pkg/`).
 3. Enable **GoldHEN → Servers → BinLoader** (port 9090).
 4. Open **Android TV for PS4**.
@@ -89,9 +89,9 @@ Known limitations: this isn't a Google-certified device and there's no HDCP, so 
 These are the known weak spots in 1.1. Reports on any of them help the next release, and the [roadmap](docs/ROADMAP.md) has what's known about fixing each one.
 
 - **Code 12 after installing, fixed in the 26 Oct update.** The first 1.1 build needed two unbroken blocks of memory of about 10–12 MB, which a fresh install or a busy console often didn't have, and some consoles couldn't get them even after restarting. It now loads Linux in small pieces and puts them together at handover. Tested on a fat PS4; if you still see code 12, please send `logs/launcher.log`, which says how the memory went.
-- **Slim, Pro and Baikal are untested.** The support is built in, but no one has reported on it yet. Baikal is the most experimental, and its USB support is the biggest unknown. See [Hardware support](docs/HARDWARE.md).
-- **Firmware other than 13.52 is untested.** The loader has offsets for 20 versions, but only 13.52 has been run.
-- **MT7668 Wi-Fi** (many later Slims and Pros) is included but has never been run on real hardware.
+- **Baikal Slims and Pros get a black screen** after the handover. Build 132 has a fix to test; please send logs either way. See [Hardware support](docs/HARDWARE.md).
+- **MT7668 Wi-Fi** (many later Slims and Pros) turned itself off before build 132, which fixes the cause. Not yet confirmed by a user.
+- **USB drives aren't visible in Android yet.** Linux sees them, but Android doesn't get told when one is plugged in. Being worked on.
 - **Video is decoded on the CPU.** Drawing is GPU-accelerated (OpenGL ES 3.2 and Vulkan 1.1 through Mesa), but the GPU's hardware video decoder isn't used yet, so very high-bitrate 4K may struggle. Hooking it up through VA-API is the biggest playback upgrade available, and help from anyone who knows Mesa would be very welcome.
 - **No HDCP,** so some protected streams won't play, and YouTube needs you to sign in.
 - **First setup can jump back to the start,** usually once. Keep going and it finishes. 1.1 removed one cause; the other isn't known yet.

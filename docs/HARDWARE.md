@@ -75,7 +75,9 @@ Android lives in files on the PS4's internal drive, in its user partition (numbe
 
 Baikal is the newest southbridge, in later Slims and Pros. It handles the drive, USB, Wi-Fi bus and Ethernet differently enough that it needs its own kernel changes: southbridge interrupt handling, the drive controller's registers and link start-up, the IOMMU, Bluetooth fixes and a new Ethernet driver.
 
-That work exists in the PS4 Linux community, and 1.1 ships it as a **separate Baikal kernel** (`bzImage-baikal`), which the payload picks only on Baikal consoles. Fat, Belize and Pro-Belize consoles keep the tested kernel. `hardware.txt` says which kernel booted. Until a Baikal owner reports back, treat Baikal as experimental. If it can't find the internal drive it stops before writing anything, and holding the power button returns the console to normal.
+That work exists in the PS4 Linux community, and 1.1 ships it as a **separate Baikal kernel** (`bzImage-baikal`), which the payload picks only on Baikal consoles. Fat, Belize and Pro-Belize consoles keep the tested kernel. `hardware.txt` says which kernel booted.
+
+Up to build 131, Baikal consoles got a black screen or no signal right after the handover: the southbridge driver gave up when its serial port didn't register, and the GPU waits for the southbridge before it turns on the HDMI output. Build 132 adds the fixes from meerzulee's linux-ps4 (`v60-hdmi-working`, the first 6.15.4 build to show a picture on a Baikal Slim) and boots with `pci=nocrs intremap=off`. It hasn't been run on a Baikal here yet. Plug a USB stick in before launching: Linux copies its logs to it every few seconds, so even a start with no picture shows how far the southbridge and GPU got. The details are in [`kernel/baikal`](../releases/release-1.0/kernel/baikal/README.md).
 
 ## Firmware versions
 

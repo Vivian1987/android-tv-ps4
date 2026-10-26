@@ -1,11 +1,11 @@
 # Downloading Android TV for PS4 1.1
 
-The 1.1 PKG is a single 3.12 GB file on [MediaFire](https://www.mediafire.com/file_premium/ccfdpu4x127dgti/Android-TV-for-PS4-1.1.pkg/file). GitHub doesn't accept files over 2 GiB, so the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) links to it instead of attaching the PKG.
+The 1.1 PKG is a single 3.12 GB file on [MediaFire](https://www.mediafire.com/file/5d0fd8diux8xvii/Android-TV-for-PS4-1.1-b132.pkg/file). GitHub doesn't accept files over 2 GiB, so the [1.1 release page](https://github.com/odiecay/android-tv-ps4/releases/tag/v1.1) links to it instead of attaching the PKG.
 
 It must be **3,123,380,224 bytes** with this SHA256:
 
 ```text
-f3a4497e5ef2a4814933ede0f05e18f18b847714314bdb83f4b71c7f3fab975e
+092b97255e12e6a6fbe4049b170c3a32acf0c9ecf2b6574c46deb48d8ae67286
 ```
 
 If the PS4 says **CE-36244-9** when installing, the download is usually incomplete. Check the size and SHA256 above and download it again.
@@ -15,19 +15,19 @@ If the PS4 says **CE-36244-9** when installing, the download is usually incomple
 Windows (Command Prompt):
 
 ```bat
-certutil -hashfile Android-TV-for-PS4-1.1.pkg SHA256
+certutil -hashfile Android-TV-for-PS4-1.1-b132.pkg SHA256
 ```
 
 Windows (PowerShell):
 
 ```powershell
-Get-FileHash .\Android-TV-for-PS4-1.1.pkg -Algorithm SHA256
+Get-FileHash .\Android-TV-for-PS4-1.1-b132.pkg -Algorithm SHA256
 ```
 
 Linux or macOS:
 
 ```sh
-shasum -a 256 Android-TV-for-PS4-1.1.pkg
+shasum -a 256 Android-TV-for-PS4-1.1-b132.pkg
 ```
 
 If it doesn't match, don't install it. Delete it and download it again.

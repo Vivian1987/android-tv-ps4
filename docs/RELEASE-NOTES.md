@@ -6,7 +6,9 @@ More consoles and a single download. Thanks to everyone who commented and opened
 
 [Download 1.1](DOWNLOAD.md) · [Install](INSTALL.md) · [Compatibility](COMPATIBILITY.md)
 
-`Android-TV-for-PS4-1.1.pkg`, 3,123,380,224 bytes, SHA256 `f3a4497e5ef2a4814933ede0f05e18f18b847714314bdb83f4b71c7f3fab975e`
+`Android-TV-for-PS4-1.1-b132.pkg`, 3,123,380,224 bytes, SHA256 `092b97255e12e6a6fbe4049b170c3a32acf0c9ecf2b6574c46deb48d8ae67286`
+
+**Updated 27 Oct (build 132):** for Baikal Slims and Pros, which get a black screen or no signal after the handover, the Baikal kernel now has the southbridge and display fixes from meerzulee's linux-ps4 (the build that first showed a picture on a Baikal Slim) and boots with `pci=nocrs intremap=off`. It hasn't been run on a Baikal here yet. Wi-Fi on consoles with the MediaTek MT7668 no longer turns itself off: its driver now lets the radio move into Android. All logs now go in one folder, `logs` in the install folder and `AndroidTV-PS4-logs` on a USB stick, which Linux writes to every few seconds from the moment it starts, so a start with no picture still leaves its logs. Every log says which build it came from. The previous build was SHA256 `f3a4497e…7fab975e`.
 
 **Updated again 26 Oct:** Slims, Pros and fat CUH-12xx consoles (the Belize southbridge) stopped with "SETUP FAILED (status 255)" because they couldn't open the PS4's user partition. From the CUH-1200 on, the drive encryption also mixes in the partition number, and 1.1 now tries the right layout for each console. It hasn't been confirmed on a Slim or Pro yet, so reports are welcome. Thanks to everyone who sent logs; ten reports pointed at this one line. Also fixed: on 6.72, sending the Linux payload could give up with error 35 when BinLoader paused. The PKG is now on MediaFire. The previous build was SHA256 `1446d780…048dd`.
 

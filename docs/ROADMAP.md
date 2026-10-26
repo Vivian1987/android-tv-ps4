@@ -21,9 +21,11 @@ Known work after 1.1, with what's already known about each item. Nothing here ha
 
 ## Hardware
 
-**Slim, Pro and Baikal reports.** Support is built in but untested. Real reports decide what gets fixed next; see [Hardware support](HARDWARE.md).
+**Baikal display.** Build 132 has the southbridge and display fixes; Baikal reports decide what's next. If the picture still doesn't come up, the next build saves the logs and restarts the console to the PS4 by itself instead of leaving a black screen.
 
-**Baikal USB.** The Baikal kernel builds on community work that reportedly booted but without working USB. Expect USB to be the first thing Baikal reports need.
+**USB drives in Android.** Linux sees USB sticks, but Android isn't told when one is plugged in, so they don't show up. A small relay in the startup will pass them through.
+
+**Baikal USB.** Build 132 includes the Baikal USB fixes from linux-ps4 (interrupts through the southbridge, settle time, retries). Baikal reports will show whether USB works.
 
 **MT7668 Wi-Fi.** The driver and firmware are included for later Slims and Pros but have never run on real hardware.
 

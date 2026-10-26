@@ -30,13 +30,13 @@ Reports from other consoles are welcome, even when they fail ([how to report](#r
 
 ## Release package
 
-`Android-TV-for-PS4-1.1.pkg`: **3,108,634,624 bytes** (3.11 GB)
+`Android-TV-for-PS4-1.1-b132.pkg`: **3,123,380,224 bytes** (3.12 GB)
 
 ```text
-SHA256  bf1c57e836963efe12347c6a6ce720dd217056c9c731b6bc103293aed23acc9e
+SHA256  092b97255e12e6a6fbe4049b170c3a32acf0c9ecf2b6574c46deb48d8ae67286
 ```
 
-This exact package was installed fresh on the test console (CUH-1102A, 13.52) and booted to Android TV. Allow 5–10 minutes for the first boot and about 2 minutes after that.
+This exact package was installed on the test console (CUH-1102A, 13.52) and booted to Android TV, with Wi-Fi handed to Android and the logs written to the console and a USB stick. Allow 5–10 minutes for the first boot and about 2 minutes after that.
 
 ## Tested and working
 

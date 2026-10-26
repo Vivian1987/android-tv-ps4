@@ -3,14 +3,14 @@
 ## What you need
 
 - A PS4 running GoldHEN on one of the [firmware versions the loader supports](COMPATIBILITY.md#firmware). It has been tested on a fat CUH-1102A on 13.52; other models and firmware are untested, so please [report how it goes](COMPATIBILITY.md#reporting-a-result).
-- `Android-TV-for-PS4-1.1.pkg` ([download](DOWNLOAD.md)).
+- `Android-TV-for-PS4-1.1-b132.pkg` ([download](DOWNLOAD.md)).
 - An exFAT-formatted USB drive, or a computer or phone on the same network to [send it over FTP](#installing-over-ftp).
 - Free space on the PS4's internal drive. Android starts small and grows as you use it. If you fill all 32 GiB and keep the PKG on the console, allow about **43 GiB** ([how that's calculated](STORAGE.md)).
 - A controller. USB is easiest for setup; Bluetooth devices can be paired once Android is running.
 
 ## First installation
 
-1. Copy `Android-TV-for-PS4-1.1.pkg` to the top level of the USB drive and plug it into the PS4.
+1. Copy `Android-TV-for-PS4-1.1-b132.pkg` to the top level of the USB drive and plug it into the PS4.
 2. Load GoldHEN and install the PKG with the **Package Installer**.
 3. In **GoldHEN → Servers**, enable **BinLoader** on port **9090**.
 4. Open **Android TV for PS4** from the home screen.
@@ -28,7 +28,7 @@ No USB drive needed:
 
 1. In **GoldHEN → Servers**, turn on the **FTP server**. GoldHEN shows the console's IP address; the port is **2121**.
 2. On a computer or phone on the same network, connect with any FTP app (FileZilla on a computer, for example) to that IP address on port 2121. No username or password is needed.
-3. Upload `Android-TV-for-PS4-1.1.pkg` into `/data/pkg/`.
+3. Upload `Android-TV-for-PS4-1.1-b132.pkg` into `/data/pkg/`.
 4. Open GoldHEN's **Package Installer**. The PKG is listed there; install it.
 5. Turn on BinLoader and open the app. You don't need to restart first; since the 26 Oct update the launcher copes with the memory a big transfer leaves behind.
 

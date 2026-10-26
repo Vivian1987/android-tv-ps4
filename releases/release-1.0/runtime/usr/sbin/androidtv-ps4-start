@@ -131,6 +131,28 @@ on_exit() {
 }
 trap on_exit EXIT
 touch /run/androidtv-ps4/bootstrap-active
+# If the GPU never gives a picture, the screen stays black and the power button
+# is the only way out. The picture normally appears a few seconds after Linux
+# starts, so after a minute without one: save the logs to the console and any
+# USB stick, flush the PS4 drive, and restart to the PS4 system. A file called
+# test-no-picture in the install folder makes this act as if there were no
+# picture, to test it on a console where the picture works.
+display_watchdog() {
+ set +e
+ sleep 60
+ test_file=/mnt/ps4-user/app/ps4-android/test-no-picture
+ if [ -e /dev/fb0 ] && [ ! -e "$test_file" ]; then return 0; fi
+ rm -f "$test_file"
+ stage 'No picture after 60 seconds; saving the logs and restarting to the PS4'
+ kill "$(cat /run/androidtv-ps4/keep-logs.pid 2>/dev/null)" 2>/dev/null
+ hardware_report
+ if grep -q ' /mnt/ps4-user ' /proc/mounts; then copy_logs /mnt/ps4-user/app/ps4-android/logs; fi
+ export_reports
+ sync
+ sleep 2
+ reboot -f
+}
+display_watchdog </dev/null >/dev/null 2>&1 &
 # The internal drive is the disk with Sony's partition 27; no USB stick has
 # one. A stick left in from installing the PKG can take the sda name first.
 internal_disk() {

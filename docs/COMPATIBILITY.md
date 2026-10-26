@@ -24,7 +24,7 @@ Point releases that share kernel offsets use the same build (for example 9.51 us
 
 The full per-model breakdown, including Wi-Fi chips and the Baikal port, is in [Hardware support](HARDWARE.md).
 
-Nothing is blocked by model. The launcher records the southbridge (Aeolia on fat models, Belize or Baikal on later fat, Slim and Pro models) in `launcher-boot.log` and boots anyway. The kernel includes drivers for all three, but only Aeolia has been tested. Expect problems on other hardware, most likely a black screen or freeze after the switch to Linux; holding the power button returns the console to normal.
+Nothing is blocked by model. The launcher records the southbridge (Aeolia on fat models, Belize or Baikal on later fat, Slim and Pro models) in `launcher-boot.log` and boots anyway. The kernel includes drivers for all three. Belize Slims and Pros reach Android since the 26 Oct update (MediaTek MT7668 Wi-Fi still drops out). Baikal consoles get no picture after the switch to Linux; that's being worked on. Holding the power button returns the console to normal. [Hardware support](HARDWARE.md) has the details by model.
 
 Reports from other consoles are welcome, even when they fail ([how to report](#reporting-a-result)).
 

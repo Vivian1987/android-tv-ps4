@@ -125,7 +125,7 @@ on_exit() {
  hardware_report
  if [ -n "$installation" ] && [ -d "$installation" ]; then save_logs "$status"; fi
  if [ "$status" -ne 0 ]; then
-  stage "SETUP FAILED (status $status); data preserved"
+  stage "SETUP FAILED (status $status, build $(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)); data preserved"
   stop_safely
  fi
 }

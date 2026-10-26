@@ -152,7 +152,7 @@ int atv_launch_with_progress(void){
  marker("Android TV: keeping the app visible during GoldHEN loopback startup\n");
  marker("Destination 127.0.0.1:9090; payload SHA256 " ATV_PAYLOAD_SHA256 "\n");
  (void)ps4_as_root(previous_start_note,NULL);
- installer_ui_boot_status("Starting Android TV","Preparing to start Linux. Plug in a USB stick now to save the logs to it.");
+ installer_ui_boot_status("Starting Android TV " ATV_BUILD_ID,"Preparing to start Linux. Plug in a USB stick now to save the logs to it.");
  size_t sent=0;int rc=atv_send_payload(atv_bundled_payload,sizeof(atv_bundled_payload),&sent),saved=errno;
  char line[256];snprintf(line,sizeof(line),"Payload delivery result=%d bytes=%zu/%zu errno=%d. Delivery alone does not confirm Linux boot.\n",rc,sent,sizeof(atv_bundled_payload),rc?saved:0);marker(line);
  if(rc)return fail(saved==ECONNREFUSED?"Enable GoldHEN > Servers > BinLoader, then open Android TV again.":"Android TV payload could not be sent",saved);

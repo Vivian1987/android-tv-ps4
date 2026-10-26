@@ -10,7 +10,8 @@ mount -t tmpfs tmpfs /run
 mount -t tmpfs tmpfs /tmp
 exec </dev/console >/dev/console 2>&1
 hostname androidtv-ps4
-echo 'PS4 Android TV: standalone installer'
+build=$(sed -n 's/.*androidtv.boot_id=\([^ ]*\).*/\1/p' /proc/cmdline)
+echo "Android TV for PS4 ${build:-unknown build}: standalone installer"
 echo 'Android storage will be prepared on the internal drive.'
 echo 7 > /proc/sys/kernel/printk
 mdev -s
@@ -20,6 +21,8 @@ if [ -f "$quota_module" ]; then
 fi
 ip link set lo up
 mkdir -p /run/androidtv-ps4
+# The build goes first in the logs people send, so an old build is obvious.
+echo "Android TV for PS4 ${build:-unknown build}" > /run/androidtv-ps4/progress.log
 uname -a > /run/androidtv-ps4/uname.txt
 cat /proc/cmdline > /run/androidtv-ps4/cmdline.txt
 cat /proc/meminfo > /run/androidtv-ps4/meminfo.txt
@@ -53,6 +56,7 @@ usb_startup_logs() {
             fi
             if mkdir -p "$out"; then
                 {
+                    echo "Android TV for PS4 ${build:-unknown build}"
                     echo "Copied $round times, last at $(cut -d' ' -f1 /proc/uptime) s after Linux started"
                     echo "Kernel: $(cat /proc/version)"
                     for d in /sys/bus/pci/devices/*; do

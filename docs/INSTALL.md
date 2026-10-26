@@ -111,6 +111,8 @@ To avoid it, restart the PS4 after installing or updating the PKG, then load Gol
 
 **GoldHEN says the payload was received, but nothing happens.** "Received" only means the payload arrived, not that it ran. Restart the console, reload GoldHEN and try again. If GoldHEN shows "failed to launch payload", include that in your report.
 
+**Black screen or no signal right after the handover.** In the PS4's Settings → Sound and Screen → Video Output Settings, turn **HDR** off and set **Deep Colour Output** and **RGB Range** to **Automatic**, then try again. The PS4 sets up the HDMI output before the handover, and Linux expects a plain picture. On Baikal consoles a black screen can also come from the kernel; see [Hardware support](HARDWARE.md#the-baikal-port).
+
 **Blank screen for a long time.** Note how long it's been and the last thing you saw on screen, then hold the power button to turn the console off and start it again. On consoles other than the tested one, this is the most likely way a start fails.
 
 ## Logs and reporting problems

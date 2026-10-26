@@ -49,6 +49,8 @@ Android gets 32 GiB of storage. That isn't the download size: PS4 drive space is
 
 When you open the app, the PS4 hands the whole console over to Linux, which then starts Android. The PS4 system isn't running underneath any more, so there's nothing to fall back to. If Linux can't drive some part of your console, most often the display on Baikal models, the screen stays black or the TV says no signal.
 
+**Try this first:** in the PS4's Settings → Sound and Screen → Video Output Settings, turn **HDR** off and set **Deep Colour Output** and **RGB Range** to **Automatic**. The PS4 sets up the HDMI output before it hands over, and Linux expects a plain picture; a Pro that only ever showed a black screen started fine after this change.
+
 It's not a crash you can back out of, so the only way out is to **hold the power button until the console turns off**. That's expected while support for your model is being built. When you turn the PS4 back on it may say it wasn't turned off properly and check its storage; let it finish. Your Android apps and data are kept.
 
 ### What helps

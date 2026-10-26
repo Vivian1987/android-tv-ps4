@@ -35,7 +35,7 @@ The model number alone can't tell Belize 2 from Baikal. The launcher writes the 
 | HDMI picture and sound | ✅ | ✅ picture | ✅ picture | ⚠️ no signal | ✅ picture | ⚠️ no signal |
 | Internal drive | ✅ | 🧪 fixed in the 26 Oct update | ✅ since the 26 Oct update | ⚠️ Baikal port | 🧪 fixed in the 26 Oct update | ⚠️ Baikal port |
 | USB | ✅ | ✅ | ✅ | ⚠️ Baikal port | ✅ | ⚠️ Baikal port |
-| Wi-Fi and Bluetooth | ✅ Marvell 88W8797 | 🧪 Marvell 88W8897 (firmware loads) | ⚠️ MT7668: connects, then keeps dropping; 🧪 88W8897 (firmware loads) | ⚠️ Baikal port | 🧪 88W8897 or MT7668 | ⚠️ Baikal port |
+| Wi-Fi and Bluetooth | ✅ Marvell 88W8797 | 🧪 Marvell 88W8897 (firmware loads) | ⚠️ MT7668: Bluetooth works, Wi-Fi doesn't turn on yet (fix in the next build); 🧪 88W8897 (firmware loads) | ⚠️ Baikal port | 🧪 88W8897 or MT7668 | ⚠️ Baikal port |
 | Ethernet | ✅ | 🧪 | 🧪 | ⚠️ Baikal port | 🧪 | ⚠️ Baikal port |
 | Video playback fix (720p/4K freeze) | ✅ | 🧪 | 🧪 | 🧪 | 🧪 | 🧪 |
 | Controller as remote, screensaver | ✅ | 🧪 | 🧪 | 🧪 | 🧪 | 🧪 |
@@ -59,7 +59,7 @@ The Wi-Fi and Bluetooth chip sits on the southbridge's SDIO bus. The boot log's 
 | --- | --- | --- | --- |
 | Marvell 88W8797 | `02df:9129` Wi-Fi, `02df:912a` Bluetooth | Fat CUH-10xx/11xx | Kernel driver, firmware and a Bluetooth fix. Tested. |
 | Marvell 88W8897 | `02df:912d` Wi-Fi, `02df:912e` Bluetooth | Fat CUH-12xx, some Slims (e.g. a Baikal CUH-2002A) | Kernel driver plus `mrvl/sd8897_uapsta.bin` from linux-firmware. Reported working on a Baikal Slim in another PS4 Linux project. |
-| MediaTek MT7668 | `037a:7608` Wi-Fi, `037a:7668` Bluetooth | Many later Slims and Pros (e.g. CUH-2208B, CUH-7215B, CUH-7216B, a Belize 2 Slim on 13.50) | Wi-Fi driver loaded only when this chip is present, its firmware, and the MT7668 Bluetooth firmware. On a Belize 2 Slim it loads and connects, then Wi-Fi keeps dropping; being investigated. |
+| MediaTek MT7668 | `037a:7608` Wi-Fi, `037a:7668` Bluetooth | Many later Slims and Pros (e.g. CUH-2208B, CUH-7215B, CUH-7216B, CUH-2215B) | Wi-Fi driver loaded only when this chip is present, its firmware, and the MT7668 Bluetooth firmware. On a Belize 2 CUH-2215B, Bluetooth works but Wi-Fi doesn't turn on: the driver didn't allow its radio to be moved into Android's network namespace. Fixed for the next build. |
 
 Which chip a given Slim or Pro has varies by board, so the boot log's `Hardware:` line is the reliable way to tell.
 
@@ -88,7 +88,7 @@ Every ✅ on this page comes from a console in this list. Failed attempts are li
 | Model | Firmware | Southbridge | Result | Report |
 | --- | --- | --- | --- | --- |
 | CUH-1102A | 13.52 | Aeolia | Works: install, boot, video, Wi-Fi, Ethernet, Bluetooth, controller, screensaver | Maintainer's test console |
-| Slim (model not given) | 13.50 | Belize 2 | Works on the 26 Oct update: Android, picture, internal drive. MT7668 Wi-Fi connects, then keeps dropping | Discord #test-reports |
+| CUH-2215B | 13.50 | Belize 2 | Works on the 26 Oct update: Android, picture, internal drive, USB keyboard and mouse, Bluetooth controller (MT7668). Wi-Fi doesn't turn on: the MT7668 radio isn't handed to Android (fix in the next build) | Discord #test-reports |
 | CUH-7215B (Pro) | 13.52 | Belize | Linux and the Gladius GPU start, picture on screen; stopped at the internal drive before the 26 Oct update | [#14](https://github.com/odiecay/android-tv-ps4/issues/14) |
 | CUH-1216B (fat) | 9.00 | Belize | Linux starts; stopped at the internal drive before the 26 Oct update | [#20](https://github.com/odiecay/android-tv-ps4/issues/20) |
 | CUH-2016A | 10.01 | Belize | Linux starts; stopped at the internal drive before the 26 Oct update | [#13](https://github.com/odiecay/android-tv-ps4/issues/13) |

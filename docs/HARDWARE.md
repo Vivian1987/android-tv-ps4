@@ -58,10 +58,10 @@ The Wi-Fi and Bluetooth chip sits on the southbridge's SDIO bus. The boot log's 
 | Chip | SDIO IDs | Seen in | What Android TV for PS4 includes |
 | --- | --- | --- | --- |
 | Marvell 88W8797 | `02df:9129` Wi-Fi, `02df:912a` Bluetooth | Fat CUH-10xx/11xx | Kernel driver, firmware and a Bluetooth fix. Tested. |
-| Marvell 88W8897 | `02df:912d` Wi-Fi, `02df:912e` Bluetooth | Fat CUH-12xx, some Slims (e.g. a Baikal CUH-2002A) | Kernel driver plus `mrvl/sd8897_uapsta.bin` from linux-firmware. Reported working on a Baikal Slim in another PS4 Linux project. |
+| Marvell 88W8897 | `02df:912d` Wi-Fi, `02df:912e` Bluetooth | Fat CUH-12xx, some Slims (e.g. a Baikal CUH-2002A, a Belize 2 CUH-2216A), some Pros (e.g. a Belize CUH-7115B) | Kernel driver plus `mrvl/sd8897_uapsta.bin` from linux-firmware. Reported working on a Baikal Slim in another PS4 Linux project. |
 | MediaTek MT7668 | `037a:7608` Wi-Fi, `037a:7668` Bluetooth | Many later Slims and Pros (e.g. CUH-2208B, CUH-7215B, CUH-7216B, CUH-2215B) | Wi-Fi driver loaded only when this chip is present, its firmware, and the MT7668 Bluetooth firmware. On a Belize 2 CUH-2215B, Bluetooth works but Wi-Fi doesn't turn on: the driver didn't allow its radio to be moved into Android's network namespace. Fixed for the next build. |
 
-Which chip a given Slim or Pro has varies by board, so the boot log's `Hardware:` line is the reliable way to tell.
+Which chip a given Slim or Pro has varies by board, even within one model: CUH-2216A consoles have been seen with both the Marvell 88W8897 and the MediaTek MT7668. The boot log's `Hardware:` line, or the `Wi-Fi chip:` line in `hardware.txt`, is the reliable way to tell. The startup picks drivers by these IDs, never by model number.
 
 ### Ethernet
 

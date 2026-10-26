@@ -29,11 +29,15 @@ int atv_send_payload(const unsigned char *data,size_t bytes,size_t *sent){
  addr.sin_family=AF_INET;addr.sin_port=htons(9090);
  addr.sin_addr.s_addr=htonl(0x7f000001);
  if(connect(sock,(struct sockaddr*)&addr,sizeof(addr)))goto failed;
+ /* A 10 s send timeout comes back as EAGAIN. BinLoader on some firmware
+  * (6.72) pauses reading partway through, so allow up to a minute of stalls. */
+ unsigned stalls=0;
  while(*sent<bytes){
   ssize_t n=send(sock,data+*sent,bytes-*sent,ATV_SEND_FLAGS);
   if(n<0&&errno==EINTR)continue;
+  if(n<0&&(errno==EAGAIN||errno==EWOULDBLOCK)&&++stalls<6)continue;
   if(n<=0){if(!n)errno=EIO;goto failed;}
-  *sent+=(size_t)n;
+  *sent+=(size_t)n;stalls=0;
  }
  if(shutdown(sock,SHUT_WR))goto failed;
  close(sock);return 0;

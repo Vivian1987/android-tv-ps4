@@ -151,9 +151,16 @@ done
 early_usb_note &
 stage 'Opening internal PS4 storage (disk encryption and filesystem)'
 [ -r /key/eap_hdd_key.bin ]
-# Record the southbridge for reports; Belize and Baikal consoles are allowed to try.
-southbridge=$(dmesg | grep -ioE 'aeolia|belize|baikal' | head -1 || true)
-stage "Southbridge: ${southbridge:-unknown}"
+# Name the southbridge from its PCI ID. Driver names say "aeolia" on every
+# model, so dmesg can't tell them apart.
+southbridge=unknown
+for device in /sys/bus/pci/devices/*; do
+ [ "$(cat "$device/vendor" 2>/dev/null)" = 0x104d ] || continue
+ case "$(cat "$device/device" 2>/dev/null)" in
+  0x908f) southbridge=aeolia;; 0x90c8) southbridge=belize;; 0x90d7) southbridge=baikal;;
+ esac
+done
+stage "Southbridge: $southbridge"
 # One line describing this console's hardware, for test reports.
 sdio=$(for d in /sys/bus/sdio/devices/*; do [ -r "$d/vendor" ] && printf '%s:%s ' "$(cat "$d/vendor")" "$(cat "$d/device")"; done 2>/dev/null || true)
 stage "Hardware: storage=$userpart sdio=[${sdio% }] net=[$(ls /sys/class/net 2>/dev/null | tr '\n' ' ' | sed 's/ $//')]"
@@ -165,9 +172,27 @@ for device in /sys/bus/pci/devices/*; do
  insmod /lib/modules/6.15.4-androidtv-ps4-aeolia/extra/psx_mts_net.ko autoarm=1 || stage 'Baikal Ethernet driver failed to load; continuing without Ethernet'
 done
 mkdir -p /mnt/ps4-user /mnt/android-share /mnt/android-sfs /mnt/android-lower /mnt/android-persistent /android
+# The user partition is AES-XTS with the EAP key. From the CUH-1200 on
+# (Belize and Baikal) the sector tweak also carries the partition index in
+# its upper 32 bits, so cryptsetup needs --skip (27-1)<<32; the first Aeolia
+# fats use plain sector numbers. Try this southbridge's layout first, then the
+# other: with the wrong one the mount just refuses, nothing is written.
+open_user() {
+ cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 --skip "$1" --key-file /key/eap_hdd_key.bin "$userpart" ps4-android-user || return 1
+ mount -t ufs -o ufstype=ufs2,noatime /dev/mapper/ps4-android-user /mnt/ps4-user 2>/dev/null && return 0
+ cryptsetup close ps4-android-user || true
+ return 1
+}
 if ! grep -q ' /mnt/ps4-user ' /proc/mounts; then
-cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --offset 0 --key-file /key/eap_hdd_key.bin "$userpart" ps4-android-user
-mount -t ufs -o ufstype=ufs2,noatime /dev/mapper/ps4-android-user /mnt/ps4-user
+ tweaked=$(( (${userpart##*[!0-9]} - 1) << 32 ))
+ if [ "$southbridge" = aeolia ]; then order="0 $tweaked"; else order="$tweaked 0"; fi
+ opened=
+ for skip in $order; do
+  if open_user "$skip"; then opened=$skip; break; fi
+  stage "PS4 storage did not open with IV offset $skip"
+ done
+ [ -n "$opened" ] || { stage 'Could not open the PS4 user partition with either encryption layout'; exit 1; }
+ stage "PS4 storage opened (IV offset $opened)"
 fi
 installation=/mnt/ps4-user/app/ps4-android
 # Later Slim and Pro models (CUH-7215/7216, Belize and Baikal) use a MediaTek

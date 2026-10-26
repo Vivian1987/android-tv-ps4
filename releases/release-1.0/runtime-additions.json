@@ -49,8 +49,8 @@
       "source": "kernel/baikal/psx_mts_net.c (linux-psx Baikal Ethernet), built against the Baikal kernel"
     },
     "lib/modules/6.15.4-androidtv-ps4-aeolia/extra/wlan_mt76x8_sdio.ko": {
-      "sha256": "1eb6fd92288c945ba3f052ade9a5ed53ecf757564e00817008f53db6163dbae2",
-      "source": "MT7668 Wi-Fi driver from the ps4-linux tree (drivers/net/wireless/mediatek/mt76x8), built as a module for 6.15.4-androidtv-ps4-aeolia with kernel/mt7668-proc-copy-bound.patch, debug symbols stripped",
+      "sha256": "72f8cc01ced56adc8037e78045419e1b225d7a3ef1a924ef7288dedcd56e3640",
+      "source": "MT7668 Wi-Fi driver from the ps4-linux tree (drivers/net/wireless/mediatek/mt76x8), built as a module for 6.15.4-androidtv-ps4-aeolia with kernel/mt7668-proc-copy-bound.patch and kernel/mt7668-netns-ok.patch, debug symbols stripped",
       "location": "drive"
     },
     "opt/androidtv-ps4/AtvDeviceNameOverlay.apk": {

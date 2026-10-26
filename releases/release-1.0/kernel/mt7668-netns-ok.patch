@@ -1,0 +1,21 @@
+--- a/drivers/net/wireless/mediatek/mt76x8/drv_wlan/MT6632/wlan/os/linux/gl_init.c
++++ b/drivers/net/wireless/mediatek/mt76x8/drv_wlan/MT6632/wlan/os/linux/gl_init.c
+@@ -1566,6 +1566,8 @@
+ #if (CFG_SUPPORT_TDLS == 1)
+ 	TDLSEX_WIPHY_FLAGS_INIT(prWiphy->flags);
+ #endif /* CFG_SUPPORT_TDLS */
++	/* Android runs in its own network namespace; the radio is moved there. */
++	prWiphy->flags |= WIPHY_FLAG_NETNS_OK;
+ 	prWiphy->max_remain_on_channel_duration = 5000;
+ 	prWiphy->mgmt_stypes = mtk_cfg80211_ais_default_mgmt_stypes;
+ 
+--- a/drivers/net/wireless/mediatek/mt76x8/drv_wlan/MT6632/wlan/os/linux/gl_p2p.c
++++ b/drivers/net/wireless/mediatek/mt76x8/drv_wlan/MT6632/wlan/os/linux/gl_p2p.c
+@@ -1126,6 +1126,7 @@
+ #endif
+ 	prWiphy->regulatory_flags = REGULATORY_CUSTOM_REG;
+ #endif
++	prWiphy->flags |= WIPHY_FLAG_NETNS_OK;
+ 	prWiphy->ap_sme_capa = 1;
+ 
+ 	prWiphy->max_scan_ssids = MAX_SCAN_LIST_NUM;

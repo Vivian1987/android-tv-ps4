@@ -13,8 +13,7 @@ stage() {
 hardware_report() {
  {
   echo "Android TV for PS4 hardware report (uptime $(cut -d' ' -f1 /proc/uptime)s)"
-  sb=$(dmesg | grep -ioE 'aeolia|belize 2|belize|baikal' | head -1)
-  echo "Southbridge: ${sb:-unknown}"
+  echo "Southbridge: ${southbridge:-unknown}"
   # Only the Baikal kernel registers the baikal_pcie driver.
   if [ -d /sys/bus/pci/drivers/baikal_pcie ]; then echo "Kernel image: bzImage-baikal (Baikal kernel)"
   else echo "Kernel image: bzImage (standard kernel)"; fi
@@ -65,11 +64,11 @@ hardware_report() {
 # A running Android is never interrupted.
 installation=
 export_reports() {
- internal=${userpart:-/dev/sda27}; internal=${internal#/dev/}; internal=${internal%27}
  for block in /sys/class/block/sd*; do
   name=${block##*/}
-  # Never write to the console's own drive; some of its partitions are FAT.
-  case "$name" in "$internal"*) continue ;; esac
+  # Never write to the console's own drive (the disk with partition 27); some
+  # of its partitions are FAT. This holds even when the drive was never found.
+  [ -b "/dev/${name%%[0-9]*}27" ] && continue
   mkdir -p /mnt/usb-report
   mount -t vfat "/dev/$name" /mnt/usb-report 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-report 2>/dev/null || continue
   folder=/mnt/usb-report/AndroidTV-PS4-report-$(cut -d. -f1 /proc/uptime)
@@ -124,11 +123,10 @@ internal_disk() {
 # that later hangs or runs without a picture still leaves this behind, so a
 # stick with no note at all means the kernel never reached this script.
 early_usb_note() {
- internal=${userpart#/dev/}; internal=${internal%27}
  for attempt in $(seq 1 20); do
   for block in /sys/class/block/sd*; do
    name=${block##*/}
-   case "$name" in "$internal"*) continue ;; esac
+   [ -b "/dev/${name%%[0-9]*}27" ] && continue
    mkdir -p /mnt/usb-early
    mount -t vfat "/dev/$name" /mnt/usb-early 2>/dev/null || mount -t exfat "/dev/$name" /mnt/usb-early 2>/dev/null || continue
    { echo "Linux started and found the internal drive ($userpart) after $(cut -d' ' -f1 /proc/uptime) s."
@@ -449,15 +447,24 @@ if [ -n "$mt7668" ]; then
   sleep 0.1
  done
 fi
-# Move the console's Wi-Fi radio into Android.
-if /usr/sbin/iw phy phy0 info >/dev/null 2>&1; then
-    radio=$(/usr/sbin/iw dev | awk '$1 == "Interface" {print $2; exit}')
-    /usr/sbin/ip link set "$radio" down
-    /usr/sbin/iw phy phy0 set netns "$child"
-    if [ "$radio" != wlan0 ]; then
-        nsenter -t "$child" -n /usr/sbin/ip link set "$radio" name wlan0
+# Move the console's Wi-Fi radio into Android: the one that owns the Wi-Fi
+# interface, which isn't always phy0 (the MediaTek MT7668 driver registers a
+# second radio for Wi-Fi Direct). A failure is logged and Android still starts.
+radio=$(/usr/sbin/iw dev 2>/dev/null | awk '$1 == "Interface" && $2 !~ /^p2p/ {print $2; exit}')
+if [ -n "$radio" ]; then
+    wiphy=$(/usr/sbin/iw dev "$radio" info 2>/dev/null | awk '$1 == "wiphy" {print $2}')
+    /usr/sbin/ip link set "$radio" down || true
+    if [ -n "$wiphy" ] && /usr/sbin/iw "phy#$wiphy" set netns "$child" 2>>/run/androidtv-ps4/progress.log; then
+        if [ "$radio" != wlan0 ]; then
+            nsenter -t "$child" -n /usr/sbin/ip link set "$radio" name wlan0 || true
+        fi
+        nsenter -t "$child" -n /usr/sbin/ip link set wlan0 up || true
+        stage "Wi-Fi ($radio on radio $wiphy) handed to Android"
+    else
+        stage "Wi-Fi ($radio on radio ${wiphy:-unknown}) could not be handed to Android; Wi-Fi won't work this start"
     fi
-    nsenter -t "$child" -n /usr/sbin/ip link set wlan0 up
+else
+    stage 'No Wi-Fi interface found; Wi-Fi unavailable this start'
 fi
 echo "Android network attached to namespace owned by PID $child"
 

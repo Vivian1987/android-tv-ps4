@@ -46,6 +46,10 @@ blackbox() {
             mkdir -p /mnt/blackbox
             mount -t vfat "/dev/$name" /mnt/blackbox 2>/dev/null || mount -t exfat "/dev/$name" /mnt/blackbox 2>/dev/null || continue
             out=/mnt/blackbox/AndroidTV-PS4-blackbox
+            # Keep the previous start's copy, e.g. one that hung before this one worked.
+            if [ "$round" = 1 ] && [ -d "$out" ]; then
+                rm -rf "$out.previous"; mv "$out" "$out.previous"
+            fi
             if mkdir -p "$out"; then
                 {
                     echo "Snapshot $round at $(cut -d' ' -f1 /proc/uptime) s after Linux started"

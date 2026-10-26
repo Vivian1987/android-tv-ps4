@@ -233,11 +233,14 @@ keep_logs() {
     timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system -t 2000 2>/dev/null | grep -iE 'wifi|wpa|supplicant|dhcp|connectivity|netd|wlan' | tail -200
    } > /run/androidtv-ps4/running.log.part 2>&1
    mv /run/androidtv-ps4/running.log.part /run/androidtv-ps4/running.log
-   # Android's own log, for app and Google sign-in problems. Email addresses
-   # are blanked because these files get posted in public reports.
-   timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system,crash -t 3000 2>/dev/null |
-    sed -E 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<email>/g' > /run/androidtv-ps4/android.log.part
-   mv /run/androidtv-ps4/android.log.part /run/androidtv-ps4/android-logcat.log
+   # Google Play services and Play Store warnings and errors only, for sign-in
+   # problems. No other app's messages. Email addresses and anything that looks
+   # like a token or key are removed before the file is written.
+   timeout 10 nsenter -t "$child" -m -p -n chroot /android /system/bin/logcat -d -b main,system -t 3000 '*:W' 2>/dev/null |
+    grep -iE 'gms|gsf|vending|finsky|checkin|googleauth|gls|auth' |
+    sed -E -e 's/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<removed>/g' -e 's/[A-Za-z0-9_+\/=-]{24,}/<removed>/g' |
+    tail -300 > /run/androidtv-ps4/google-services.tmp
+   mv /run/androidtv-ps4/google-services.tmp /run/androidtv-ps4/google-services.log
   fi
   hardware_report
   copy_logs "$installation/logs"

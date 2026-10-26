@@ -123,7 +123,7 @@ Every start keeps its logs in one folder, `/user/app/ps4-android/logs`, which yo
 - `kernel.log`: the Linux kernel log
 - `android-stages.log`: Android startup
 - `running.log`: Wi-Fi state and recent Wi-Fi messages, updated every minute while Android runs (`kernel.log` is updated too)
-- `android-logcat.log`: Android's own log, for app and sign-in problems, updated every minute while Android runs. Email addresses are blanked out, but check it before posting it publicly
+- `google-services.log`: warnings and errors from Google Play services and the Play Store only, for sign-in problems. Email addresses and tokens are removed before it's written
 
 **On a USB stick.** Plug a FAT32 or exFAT stick into the PS4 before opening the app and leave it in: until Android is running, the same files are copied to a folder called `AndroidTV-PS4-logs` on it every few seconds, so a start with no picture still leaves its logs. If a start fails, plug a stick in any time; the console keeps watching for one until it's turned off. The console never writes these to its own drive's other partitions. A stick with no `AndroidTV-PS4-logs` folder at all after a start means Linux never got going.
 
